@@ -1,4 +1,4 @@
-package orc.pac4j.async.core.logic;
+package org.pac4j.async.core.logic;
 
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
