@@ -38,7 +38,7 @@ public interface AsyncClient<C extends Credentials, U extends UserProfile> {
     /**
      * <p>Get the credentials from the web context. If no validation was made remotely (direct client), credentials must be validated at this step.</p>
      * <p>In some cases, a {@link HttpAction} may be thrown instead.</p> This version of the method assumes that credentials
-     * retrieval can require i/o, which should be performed asynchronously. Therefore, the future is provided so that once
+     * retrieval can require i/o, which should be performed asynchronously. Therefore, return is wrapped in a future so that once
      * the credentials are retrieved, it can be completed and the client code can then proceed. If no i/o is required, then
      * the future can be completed immediately on-thread. We expect subsequent behaviour to be performed using the composition
      * properties of CompletableFutures.
@@ -47,9 +47,9 @@ public interface AsyncClient<C extends Credentials, U extends UserProfile> {
      * now this should be passed to CompletableFuture::completeExceptionally
      *
      * @param context the current web context
-     * @param future - the completable future to complete with the credentials once retrieved.
+     * @return a CompletableFuture wrapping the asynchronous processing
      */
-    void getCredentials(WebContext context, CompletableFuture<C> future);
+    CompletableFuture<C> getCredentials(WebContext context);
 
     /**
      * Get the user profile based on the provided credentials. Again this may involve i/o so we treat it as an
@@ -62,8 +62,11 @@ public interface AsyncClient<C extends Credentials, U extends UserProfile> {
      *
      * @param credentials credentials
      * @param context web context
+     *
+     * @return future wrapping the value which the computation will generate. The computuation should complete
+     * this future when the value has been generated.
      */
-    void getUserProfile(C credentials, WebContext context, CompletableFuture<U> future);
+    CompletableFuture<U> getUserProfile(C credentials, WebContext context);
 
     RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
 
