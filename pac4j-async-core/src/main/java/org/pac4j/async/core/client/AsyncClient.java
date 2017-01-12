@@ -1,5 +1,6 @@
 package org.pac4j.async.core.client;
 
+import org.pac4j.async.core.Named;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
@@ -17,14 +18,7 @@ import java.util.concurrent.CompletableFuture;
  * Initially we will also assume that this is also the case for redirect (should this be a general client method?)
  *
  */
-public interface AsyncClient<C extends Credentials, U extends UserProfile> {
-
-    /**
-     * Get the name of the client.
-     *
-     * @return the name of the client
-     */
-    String getName();
+public interface AsyncClient<C extends Credentials, U extends UserProfile> extends Named {
 
     /**
      * <p>Redirect to the authentication provider for an indirect client.</p>
@@ -69,6 +63,5 @@ public interface AsyncClient<C extends Credentials, U extends UserProfile> {
     CompletableFuture<U> getUserProfile(C credentials, WebContext context);
 
     RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
-
 
 }
