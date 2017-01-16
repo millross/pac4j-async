@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * classes to create our asynchronous environment
  */
 @RunWith(VertxUnitRunner.class)
-public class AsynchronousNonBlockingComputationTest {
+public class AsynchronousComputationTest {
 
     @Rule
     public final RunTestOnContext rule = new RunTestOnContext();
