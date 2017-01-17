@@ -1,6 +1,7 @@
 package org.pac4j.core.client;
 
 import org.pac4j.async.core.Named;
+import org.pac4j.async.core.client.ConfigurableByClientsObject;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
@@ -30,7 +31,7 @@ import java.util.*;
  * @since 1.3.0
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class Clients<T extends Named> extends InitializableObject {
+public class Clients<T extends Named & ConfigurableByClientsObject> extends InitializableObject {
     public final static String DEFAULT_CLIENT_NAME_PARAMETER = "client_name";
 
     private String clientNameParameter = DEFAULT_CLIENT_NAME_PARAMETER;
@@ -92,6 +93,9 @@ public abstract class Clients<T extends Named> extends InitializableObject {
             }
             names.add(lowerName);
 
+            // Instead of using brittle client type checking, make it the responsibility of the client to know how
+            // to configure itself from the Clients object
+            client.configureFromClientsObject(this);
 //            if (client instanceof IndirectClient) {
 //                updateCallbackUrlOfIndirectClient((IndirectClient) client);
 //            }
@@ -99,7 +103,6 @@ public abstract class Clients<T extends Named> extends InitializableObject {
 //            if (!authorizationGenerators.isEmpty()) {
 //                baseClient.addAuthorizationGenerators(this.authorizationGenerators);
 //            }
-            initializeClientFromConfig(client);
         }
     }
 
@@ -276,5 +279,4 @@ public abstract class Clients<T extends Named> extends InitializableObject {
                 "callbackUrlResolver", callbackUrlResolver, "authorizationGenerators", authorizationGenerators);
     }
 
-    protected abstract void initializeClientFromConfig(T client);
 }
