@@ -34,7 +34,12 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
                                                                                                        AsynchronousComputation asyncComputation) {
         return profile -> asyncComputation.fromBlocking(
                 () -> {
-                    authGen.generate(profile);
+                    // several of these could run in parallel so we need to synchronize the profile as we don't know
+                    // what the generator might do to its state so we need to ensure that only one thread gets to write
+                    // its state at a time.
+                    synchronized (profile) {
+                        authGen.generate(profile);
+                    }
                     return null;
                 }
         );
