@@ -3,8 +3,11 @@ package org.pac4j.async.core.authorization.generator;
 import org.pac4j.async.core.AsynchronousComputation;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.profile.CommonProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * Asynchronous version of pac4j's synchronous AuthorizationGenerator class, to be used for implementing non-blocking
@@ -13,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
 
+    Logger LOG = LoggerFactory.getLogger(AsyncAuthorizationGenerator.class);
     /**
      * Given an existing non-blocking but synchronous AuthorizationGenerator, convert it into an async non-blocking
      * one
@@ -20,8 +24,12 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
     static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromNonBlockingAuthorizationGenerator(AuthorizationGenerator<T> authGen) {
         return profile -> AsynchronousComputation.fromNonBlocking(
                 () -> {
-                    authGen.generate(profile);
-                    return null;
+                    if (profile != null) {
+                        authGen.generate(profile);
+                    } else {
+                        LOG.warn("Unexpected null profile in non-blocking generator derived from {}", authGen);
+                    }
+                    return t -> { };
                 }
         );
     }
@@ -37,10 +45,15 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
                     // several of these could run in parallel so we need to synchronize the profile as we don't know
                     // what the generator might do to its state so we need to ensure that only one thread gets to write
                     // its state at a time.
-                    synchronized (profile) {
-                        authGen.generate(profile);
+                    if (profile != null) {
+                        synchronized (profile) {
+                            authGen.generate(profile);
+                        }
+                    } else {
+                        LOG.warn("Unexpected null profile in blocking generator derived from {}", authGen);
                     }
-                    return null;
+
+                    return t -> { };
                 }
         );
     }
@@ -50,6 +63,6 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      *
      * @param profile the user profile for which to generate the authorization information.
      */
-    CompletableFuture<Void> generate(U profile);
+    CompletableFuture<Consumer<U>> generate(U profile);
 
 }

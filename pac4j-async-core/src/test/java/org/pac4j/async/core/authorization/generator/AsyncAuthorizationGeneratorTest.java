@@ -12,6 +12,7 @@ import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +43,7 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
 
         final Function<AtomicInteger, AsyncAuthorizationGenerator<TestProfile>> asyncAuthGenFactory =
                 (AtomicInteger monitor) -> (AsyncAuthorizationGenerator<TestProfile>) profile -> {
-                    final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+                    final CompletableFuture<Consumer<TestProfile>> completableFuture = new CompletableFuture<>();
                     rule.vertx().setTimer(250, l -> {
                         monitor.set(1);
                         completableFuture.complete(null);
@@ -59,7 +60,7 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
         final Async async = context.async();
         final AtomicInteger monitor = new AtomicInteger(0);
 
-        final CompletableFuture<Void> completableFuture = authGenFactory.apply(monitor).generate(null);
+        final CompletableFuture<Consumer<TestProfile>> completableFuture = authGenFactory.apply(monitor).generate(new TestProfile());
 
         completableFuture.thenAccept(i -> vertxContext.runOnContext(v -> {
             assertThat(monitor.get(), is(1));
