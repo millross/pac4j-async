@@ -7,6 +7,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.pac4j.async.core.authorization.generator.VertxContextRunner;
+import org.pac4j.async.core.context.ContextRunner;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -20,12 +22,15 @@ import java.util.function.Supplier;
 @RunWith(VertxUnitRunner.class)
 public abstract class VertxAsyncTestBase {
 
+    protected ContextRunner contextRunner = null;
+
     @Rule
     public final RunTestOnContext rule = new RunTestOnContext();
 
     @Before
     public final void applyExceptionHandling(final TestContext context) {
         rule.vertx().exceptionHandler(context.exceptionHandler());
+        contextRunner = new VertxContextRunner(rule.vertx().getOrCreateContext());
     }
 
     protected static class AsynchronousVertxComputation implements AsynchronousComputation {
