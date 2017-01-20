@@ -62,7 +62,7 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
 
         final CompletableFuture<Consumer<TestProfile>> completableFuture = authGenFactory.apply(monitor).generate(new TestProfile());
 
-        completableFuture.thenAccept(i -> vertxContext.runOnContext(v -> {
+        completableFuture.thenAccept(i -> contextRunner.runOnContext(() -> {
             assertThat(monitor.get(), is(1));
             async.complete();
 
