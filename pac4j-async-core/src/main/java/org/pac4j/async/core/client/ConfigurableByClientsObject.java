@@ -1,5 +1,6 @@
 package org.pac4j.async.core.client;
 
+import org.pac4j.async.core.Named;
 import org.pac4j.core.client.Clients;
 
 /**
@@ -12,8 +13,8 @@ import org.pac4j.core.client.Clients;
  * Type parameter: C: the base class for clients to be used (generally AsyncClient or SyncClient). This will be a
  * type parameter on the client
  */
-public interface ConfigurableByClientsObject<C> {
+public interface ConfigurableByClientsObject<C extends Named & ConfigurableByClientsObject, A> {
 
-    void configureFromClientsObject(Clients toConfigureFrom);
+    void configureFromClientsObject(Clients<C, A> toConfigureFrom);
 
 }

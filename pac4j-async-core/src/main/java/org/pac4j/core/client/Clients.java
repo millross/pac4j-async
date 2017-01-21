@@ -2,7 +2,6 @@ package org.pac4j.core.client;
 
 import org.pac4j.async.core.Named;
 import org.pac4j.async.core.client.ConfigurableByClientsObject;
-import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.http.AjaxRequestResolver;
@@ -24,14 +23,15 @@ import java.util.*;
  * to find the right client according to the input context or type. The {@link #findAllClients()} method returns all the
  * clients.</p>
  *
- * The type parameter is to enable distinguishing between async Clients and sync Clients which are expressed in different
- * class hierarchies but with commom wrapping logic in the Clients class
+ * The type parameters is to enable distinguishing between async Clients and sync Clients which are expressed in different
+ * class hierarchies but with commom wrapping logic in the Clients class, and between AuthorizationGenerators and
+ * AsyncAuthorizationGenerators
  *
  * @author Jerome Leleu
  * @since 1.3.0
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class Clients<T extends Named & ConfigurableByClientsObject> extends InitializableObject {
+public class Clients<T extends Named & ConfigurableByClientsObject, A> extends InitializableObject {
     public final static String DEFAULT_CLIENT_NAME_PARAMETER = "client_name";
 
     private String clientNameParameter = DEFAULT_CLIENT_NAME_PARAMETER;
@@ -46,7 +46,7 @@ public class Clients<T extends Named & ConfigurableByClientsObject> extends Init
 
     private CallbackUrlResolver callbackUrlResolver = new DefaultCallbackUrlResolver();
 
-    private List<AuthorizationGenerator> authorizationGenerators = new ArrayList<>();
+    private List<A> authorizationGenerators = new ArrayList<>();
 
     public Clients() {
     }
@@ -249,25 +249,25 @@ public class Clients<T extends Named & ConfigurableByClientsObject> extends Init
         this.callbackUrlResolver = callbackUrlResolver;
     }
 
-    public List<AuthorizationGenerator> getAuthorizationGenerators() {
+    public List<A> getAuthorizationGenerators() {
         return this.authorizationGenerators;
     }
 
-    public void setAuthorizationGenerators(final List<AuthorizationGenerator> authorizationGenerators) {
+    public void setAuthorizationGenerators(final List<A> authorizationGenerators) {
         CommonHelper.assertNotNull("authorizationGenerators", authorizationGenerators);
         this.authorizationGenerators = authorizationGenerators;
     }
 
-    public void setAuthorizationGenerators(final AuthorizationGenerator... authorizationGenerators) {
+    public void setAuthorizationGenerators(final A... authorizationGenerators) {
         CommonHelper.assertNotNull("authorizationGenerators", authorizationGenerators);
         this.authorizationGenerators = Arrays.asList(authorizationGenerators);
     }
 
-    public void setAuthorizationGenerator(final AuthorizationGenerator authorizationGenerator) {
+    public void setAuthorizationGenerator(final A authorizationGenerator) {
         addAuthorizationGenerator(authorizationGenerator);
     }
 
-    public void addAuthorizationGenerator(final AuthorizationGenerator authorizationGenerator) {
+    public void addAuthorizationGenerator(final A authorizationGenerator) {
         CommonHelper.assertNotNull("authorizationGenerator", authorizationGenerator);
         this.authorizationGenerators.add(authorizationGenerator);
     }

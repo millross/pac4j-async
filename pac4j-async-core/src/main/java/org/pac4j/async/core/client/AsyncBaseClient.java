@@ -1,6 +1,7 @@
 package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
+import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
  *
  */
 public abstract class AsyncBaseClient<C extends Credentials, U extends CommonProfile> extends ProfileDefinitionAware<U>
-        implements AsyncClient<C, U>, ConfigurableByClientsObject {
+        implements AsyncClient<C, U>, ConfigurableByClientsObject<AsyncClient<C, U>, AsyncAuthorizationGenerator<U>> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -67,6 +68,13 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
             return this.getClass().getSimpleName();
         }
         return this.name;
+    }
+
+    @Override
+    public void configureFromClientsObject(Clients<AsyncClient<C, U>, AsyncAuthorizationGenerator<U>> toConfigureFrom) {
+        if (!toConfigureFrom.getAuthorizationGenerators().isEmpty()) {
+            addAuthorizationGenerators(toConfigureFrom.getAuthorizationGenerators());
+        }
     }
 
     /**

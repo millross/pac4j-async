@@ -1,10 +1,11 @@
 package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.Named;
+import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
-import org.pac4j.core.profile.UserProfile;
+import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.redirect.RedirectAction;
 
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * Initially we will also assume that this is also the case for redirect (should this be a general client method?)
  *
  */
-public interface AsyncClient<C extends Credentials, U extends UserProfile> extends Named {
+public interface AsyncClient<C extends Credentials, U extends CommonProfile> extends Named, ConfigurableByClientsObject<AsyncClient<C, U>,  AsyncAuthorizationGenerator<U>> {
 
     /**
      * <p>Redirect to the authentication provider for an indirect client.</p>
