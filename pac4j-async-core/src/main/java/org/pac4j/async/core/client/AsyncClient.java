@@ -61,7 +61,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return future wrapping the value which the computation will generate. The computuation should complete
      * this future when the value has been generated.
      */
-    CompletableFuture<U> getUserProfile(C credentials, WebContext context);
+    CompletableFuture<U> getUserProfileFuture(C credentials, WebContext context);
 
     RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
 
