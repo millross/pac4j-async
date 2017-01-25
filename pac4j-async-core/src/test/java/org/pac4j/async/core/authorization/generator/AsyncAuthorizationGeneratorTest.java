@@ -6,6 +6,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
@@ -60,7 +61,8 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
         final Async async = context.async();
         final AtomicInteger monitor = new AtomicInteger(0);
 
-        final CompletableFuture<Consumer<TestProfile>> completableFuture = authGenFactory.apply(monitor).generate(new TestProfile());
+        final CompletableFuture<Consumer<TestProfile>> completableFuture = authGenFactory.apply(monitor)
+                .generate(TestProfile.from(new TestCredentials("name", "password")));
 
         completableFuture.thenAccept(i -> contextRunner.runOnContext(() -> {
             assertThat(monitor.get(), is(1));

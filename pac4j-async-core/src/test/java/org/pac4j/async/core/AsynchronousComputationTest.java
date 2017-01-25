@@ -22,7 +22,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
     public void testConvertFromNonBlockingSynchronous(final TestContext testContext) {
 
         final Context context = rule.vertx().getOrCreateContext();
-        Async async = testContext.async();
+        final Async async = testContext.async();
         final int input = 1;
 
         AsynchronousComputation.fromNonBlocking(() -> incrementNow(input))
