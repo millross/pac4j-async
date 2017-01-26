@@ -35,6 +35,28 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
 
     }
 
+    /**
+     * Test for failing non-blocking synchronous computation
+     * @param testContext
+     */
+    @Test(timeout = 1000, expected=IntentionalException.class)
+    public void testFromNonBlockingSynchronousFailure(final TestContext testContext) {
+
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final int input = 1;
+
+        AsynchronousComputation.fromNonBlocking(() -> throwException(input))
+                .thenAccept(i -> {
+                    context.runOnContext(x -> {
+                        assertThat(i, is(input + 1));
+                        async.complete();
+                    });
+                });
+
+    }
+
+
     /*
     Test that a completable future around a nonpiece of code will complete immediately on-thread as if it
     had been called directly. In a vertx-like cont
@@ -62,8 +84,61 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
 
     }
 
+    /*
+    Test that a completable future around a blocking piece of code will fail correctly
+     */
+    @Test(timeout = 1000, expected = IntentionalException.class)
+    public void testFromBlockingSynchronousFailure(final TestContext testContext) throws Throwable{
+
+        final Context context = rule.vertx().getOrCreateContext();
+        Async async = testContext.async();
+        final int input = 1;
+
+        new AsynchronousVertxComputation(rule.vertx())
+                .fromBlocking(() -> {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return throwException(input);
+                })
+                .whenComplete((i, t) -> {
+                    if (i != null) {
+                        context.runOnContext(x -> {
+                            assertThat(i, is(input + 1));
+                            async.complete();
+                        });
+                    } else {
+                        // This will need to be delegated to a specific pac4j exception handler at the relevant points,
+                        // this exception handler will need to use the type of exception caught to act according to
+                        // whether it's an unexpected exception, a technical exception or an http action (or
+                        // possibly a credentials exception)
+                        context.runOnContext(v -> {
+                            if (t instanceof IntentionalException) {
+                                // Note that the cast is not actually redundant - this will log as it hits the default
+                                // exception handler, but will be expected by the test
+                                throw (IntentionalException) t;
+                            }
+                            throw new RuntimeException(t);
+                        });
+                    }
+                });
+
+    }
+
     public Integer incrementNow(final Integer i) {
         return i + 1;
+    }
+
+    public Integer throwException(final Integer i) {
+        throw new IntentionalException();
+    }
+
+    private static class IntentionalException extends RuntimeException {
+        public IntentionalException() {
+            super("Intentional exception");
+        }
     }
 
 
