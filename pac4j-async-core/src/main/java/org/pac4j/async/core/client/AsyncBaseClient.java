@@ -47,13 +47,17 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
         final CompletableFuture<U> profileFuture = retrieveUserProfileFuture(credentials, context);
 
-        profileFuture.thenCompose(p -> {
+        return profileFuture.thenCompose(p -> {
             // get a list of futures which wrap the auth modifiers created by applying the generators to the profile
             final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
                     .map(g -> g.generate(p))
                     .toArray(CompletableFuture[]::new);
             // Take this list of futures, and when all complete
             return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
+                    .thenApply(v -> {
+                        logger.debug("All profile modifiers determined " + System.currentTimeMillis());
+                        return v;
+                    })
                     // Convert to a list of consumers
                     .thenApply(v -> {
                         final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
@@ -70,8 +74,6 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
                         return p;
                     });
         });
-
-        return profileFuture;
 
     }
 
