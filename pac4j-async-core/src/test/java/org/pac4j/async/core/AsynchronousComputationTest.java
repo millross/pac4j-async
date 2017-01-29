@@ -5,6 +5,8 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -124,6 +126,36 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
                         });
                     }
                 });
+
+    }
+
+    @Test(timeout = 1000, expected = IntentionalException.class)
+    public void testAsyncExceptionalCompletion(final TestContext testContext) throws Throwable {
+
+        final Context context = rule.vertx().getOrCreateContext();
+        Async async = testContext.async();
+        final int input = 1;
+
+        final CompletableFuture<Integer> future = new CompletableFuture<>();
+        rule.vertx().setTimer(500, i -> {
+            future.completeExceptionally(new IntentionalException());
+        });
+        future.whenComplete((i, t) -> {
+            if (i != null) {
+                context.runOnContext(v -> {
+                    throw new RuntimeException("Future should not have completed successfully");
+                });
+            } else {
+                context.runOnContext(v -> {
+                    if (t instanceof IntentionalException) {
+                        // Note that the cast is not actually redundant - this will log as it hits the default
+                        // exception handler, but will be expected by the test
+                        throw (IntentionalException) t;
+                    }
+                    throw new RuntimeException(t);
+                });
+            }
+        });
 
     }
 
