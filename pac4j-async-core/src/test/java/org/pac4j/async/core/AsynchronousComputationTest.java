@@ -48,7 +48,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final int input = 1;
 
-        AsynchronousComputation.fromNonBlocking(() -> throwException(input))
+        AsynchronousComputation.fromNonBlocking(() -> IntentionalException.throwException(input))
                 .thenAccept(i -> {
                     context.runOnContext(x -> {
                         assertThat(i, is(input + 1));
@@ -103,7 +103,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    return throwException(input);
+                    return IntentionalException.throwException(input);
                 })
                 .whenComplete((i, t) -> {
                     if (i != null) {
@@ -161,16 +161,6 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
 
     public Integer incrementNow(final Integer i) {
         return i + 1;
-    }
-
-    public Integer throwException(final Integer i) {
-        throw new IntentionalException();
-    }
-
-    private static class IntentionalException extends RuntimeException {
-        public IntentionalException() {
-            super("Intentional exception");
-        }
     }
 
 
