@@ -1,19 +1,21 @@
 package org.pac4j.async.core.client;
 
-import com.sun.tools.javac.util.List;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
+import org.pac4j.async.core.IntentionalException;
 import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
+import org.pac4j.async.core.exception.handler.AsyncExceptionHandler;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.redirect.RedirectAction;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -30,8 +32,8 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
     protected static final String HAPPY_PATH_NAME = "happyTestUser";
     protected static final String HAPPY_PATH_PASSWORD = "happyPathPassword";
-    private static final String PERMISSION_ADMIN = "admin";
-    private static final String PERMISSION_SYSTEM = "system";
+    protected static final String PERMISSION_ADMIN = "admin";
+    protected static final String PERMISSION_SYSTEM = "system";
 
     @Test(timeout = 1000)
     public void testGetProfileWithNoAuthenticators(final TestContext testContext) {
@@ -70,14 +72,45 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             rule.vertx().runOnContext(v -> {
                 assertThat(p.getId(), is(HAPPY_PATH_NAME));
                 assertThat(p.getPermissions().size(), is(2));
-                assertThat(p.getPermissions(), is(new HashSet(List.of(PERMISSION_ADMIN, PERMISSION_SYSTEM))));
+                assertThat(p.getPermissions(), is(new HashSet(Arrays.asList(PERMISSION_ADMIN, PERMISSION_SYSTEM))));
                 async.complete();
             });
         });
 
     }
 
-    private final AsyncAuthorizationGenerator<TestProfile> successfulPermissionAuthGenerator(final String permissionName) {
+    @Test(timeout = 1000, expected = IntentionalException.class)
+    public void testFailingGetProfileWithNoAuthenticators(final TestContext testContext) {
+
+        final Async async = testContext.async();
+
+        final AsyncClient<TestCredentials, TestProfile> client = failingRetrievalClient();
+        final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
+
+        // We don't care about web contexts right now
+        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+
+        profileFuture.whenComplete((p, t) -> {
+            if (p != null) {
+                contextRunner.runOnContext(() -> {
+                    throw new RuntimeException("profile should be null");
+                });
+            } else {
+                AsyncExceptionHandler.handleException(t, e -> {
+                    // Note implication of use of completeExceptionally
+                    if (e instanceof IntentionalException) {
+                        contextRunner.runOnContext(() -> {
+                            throw (IntentionalException) e;
+                        });
+                    }
+                    throw new RuntimeException(e);
+                });
+            }
+        });
+    }
+
+
+    protected final AsyncAuthorizationGenerator<TestProfile> successfulPermissionAuthGenerator(final String permissionName) {
         return profile -> {
             LOG.info("Starting processing for profile " + permissionName);
             final CompletableFuture<Consumer<TestProfile>> future = new CompletableFuture<>();
@@ -92,7 +125,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         };
     }
 
-    private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
+    protected AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
             @Override
             protected CompletableFuture<TestProfile> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
@@ -124,5 +157,39 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
         };
     }
+
+    private AsyncBaseClient<TestCredentials, TestProfile> failingRetrievalClient() {
+        return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+            @Override
+            protected CompletableFuture<TestProfile> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+                final CompletableFuture<TestProfile> future = new CompletableFuture<>();
+                rule.vertx().setTimer(300, l -> {
+                    future.completeExceptionally(new IntentionalException());
+                });
+                return future;
+            }
+
+            @Override
+            public HttpAction redirect(WebContext context) throws HttpAction {
+                return null;
+            }
+
+            @Override
+            public CompletableFuture<TestCredentials> getCredentials(WebContext context) {
+                return null;
+            }
+
+            @Override
+            public RedirectAction getLogoutAction(WebContext var1, TestProfile var2, String var3) {
+                return null;
+            }
+
+            @Override
+            protected void internalInit(WebContext webContext) {
+
+            }
+        };
+    }
+
 
 }
