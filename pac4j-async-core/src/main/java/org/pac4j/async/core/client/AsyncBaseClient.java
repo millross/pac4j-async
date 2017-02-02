@@ -65,13 +65,21 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
                                 .map(f -> f.join())
                                 .collect(toList());
                         return profileModifiers;
-                    }).thenApply(l -> {
+                    }).thenCompose(l -> {
                         // And then apply every consumer in that list to the profile - we know that to get here we've
                         // already completed the profile futrue so this is clean. When this future completes, all
                         // modifiers have been applied to the profile. note that we ensure we run on the context
                         // with the intent that we will then be respecting threading guarantees made by the framrwork
-                        contextRunner.runOnContext(() -> l.forEach(c -> c.accept(p)));
-                        return p;
+                        final CompletableFuture<U> modifiersApplicationFuture = new CompletableFuture<>();
+                        contextRunner.runOnContext(() -> {
+                            try {
+                                l.forEach(c -> c.accept(p));
+                                modifiersApplicationFuture.complete(p);
+                            } catch (Throwable t) {
+                                modifiersApplicationFuture.completeExceptionally(t);
+                            }
+                        });
+                        return modifiersApplicationFuture;
                     });
         });
 

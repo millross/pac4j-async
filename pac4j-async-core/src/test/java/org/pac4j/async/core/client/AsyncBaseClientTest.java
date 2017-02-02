@@ -90,6 +90,56 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         // We don't care about web contexts right now
         final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
 
+        expectIntentionalFailureOf(profileFuture);
+    }
+
+
+    @Test(timeout = 1000,  expected = IntentionalException.class)
+    public void testGetProfileSuccessfullyWithFailingAuthGenerator(final TestContext testContext) {
+        final Async async = testContext.async();
+
+        final AsyncBaseClient<TestCredentials, TestProfile> client = happyPathClient();
+
+        client.addAuthorizationGenerator(successfulPermissionAuthGenerator(PERMISSION_ADMIN));
+        client.addAuthorizationGenerator(failingPermissionAuthGenerator());
+        final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
+
+        // We don't care about web contexts right now
+        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+
+        expectIntentionalFailureOf(profileFuture);
+
+    }
+
+    @Test(timeout = 1000,  expected = IntentionalException.class)
+    public void testGetProfileSuccessfullyWithFailingProfileModifier(final TestContext testContext) {
+        testContext.async();
+
+        final AsyncBaseClient<TestCredentials, TestProfile> client = happyPathClient();
+
+        client.addAuthorizationGenerator(successfulPermissionAuthGenerator(PERMISSION_ADMIN));
+        client.addAuthorizationGenerator(failingProfileModifierGenerator());
+        final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
+
+        // We don't care about web contexts right now
+        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+
+        expectIntentionalFailureOf(profileFuture);
+
+    }
+
+    private AsyncAuthorizationGenerator<TestProfile> failingProfileModifierGenerator() {
+        return successfulAuthGenerator(failingProfileModifier());
+    }
+
+    private Consumer<TestProfile> failingProfileModifier() {
+        return p -> {
+            throw new IntentionalException();
+        };
+    }
+
+
+    private void expectIntentionalFailureOf(CompletableFuture<TestProfile> profileFuture) {
         profileFuture.whenComplete((p, t) -> {
             if (p != null) {
                 contextRunner.runOnContext(() -> {
@@ -109,23 +159,36 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         });
     }
 
+    private final AsyncAuthorizationGenerator<TestProfile> successfulPermissionAuthGenerator(final String permissionName) {
+        return successfulAuthGenerator(profileToDecorate -> profileToDecorate.addPermission(permissionName));
+    }
 
-    protected final AsyncAuthorizationGenerator<TestProfile> successfulPermissionAuthGenerator(final String permissionName) {
+    private final AsyncAuthorizationGenerator<TestProfile> successfulAuthGenerator(final Consumer<TestProfile> profileModifier) {
         return profile -> {
-            LOG.info("Starting processing for profile " + permissionName);
+            LOG.info("Starting processing for profile");
             final CompletableFuture<Consumer<TestProfile>> future = new CompletableFuture<>();
-            final Consumer<TestProfile> profileDecorator = profileToDecorate -> {
-                profile.addPermission(permissionName);
-            };
             rule.vertx().setTimer(300, l -> {
-                LOG.info("Completing profile decorator for " + permissionName);
-                future.complete(profileDecorator);
+                LOG.info("Completing profile decorator");
+                future.complete(profileModifier);
             });
             return future;
         };
     }
 
-    protected AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
+    private final AsyncAuthorizationGenerator<TestProfile> failingPermissionAuthGenerator() {
+        return profile -> {
+            LOG.info("Starting failing permission generator processing for profile");
+            final CompletableFuture<Consumer<TestProfile>> future = new CompletableFuture<>();
+            rule.vertx().setTimer(300, l -> {
+                LOG.info("Completing failing profile decorator");
+                future.completeExceptionally(new IntentionalException());
+            });
+            return future;
+        };
+    }
+
+
+    private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
             @Override
             protected CompletableFuture<TestProfile> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
