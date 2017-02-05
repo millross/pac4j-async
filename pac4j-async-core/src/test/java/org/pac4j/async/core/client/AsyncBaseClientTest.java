@@ -17,6 +17,7 @@ import org.pac4j.core.redirect.RedirectAction;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -44,14 +45,14 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
 
-        profileFuture.thenAccept(p -> {
+        profileFuture.thenAccept(o -> o.ifPresent(p -> {
             rule.vertx().runOnContext(v -> {
                 assertThat(p.getId(), is(HAPPY_PATH_NAME));
                 async.complete();
             });
-        });
+        }));
     }
 
     @Test(timeout = 1000)
@@ -65,9 +66,9 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
 
-        profileFuture.thenAccept(p -> {
+        profileFuture.thenAccept(o -> o.ifPresent(p -> {
             LOG.debug("Profile future completed " + System.currentTimeMillis());
             rule.vertx().runOnContext(v -> {
                 assertThat(p.getId(), is(HAPPY_PATH_NAME));
@@ -75,7 +76,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
                 assertThat(p.getPermissions(), is(new HashSet(Arrays.asList(PERMISSION_ADMIN, PERMISSION_SYSTEM))));
                 async.complete();
             });
-        });
+        }));
 
     }
 
@@ -88,7 +89,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
 
         expectIntentionalFailureOf(profileFuture);
     }
@@ -105,7 +106,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
 
         expectIntentionalFailureOf(profileFuture);
 
@@ -122,9 +123,29 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<TestProfile> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
 
         expectIntentionalFailureOf(profileFuture);
+
+    }
+
+    @Test(timeout = 1000)
+    public void testEmptyProfileOptionalPropagatesCorrectly(final TestContext testContext) {
+        final Async async = testContext.async();
+
+        final AsyncBaseClient<TestCredentials, TestProfile> client = emptyProfileClient();
+
+        client.addAuthorizationGenerator(successfulPermissionAuthGenerator(PERMISSION_ADMIN));
+        client.addAuthorizationGenerator(successfulPermissionAuthGenerator(PERMISSION_SYSTEM));
+        final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
+
+        // We don't care about web contexts right now
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+
+        profileFuture.thenAccept(o -> rule.vertx().runOnContext(v -> {
+            assertThat(o.isPresent(), is(false));
+            async.complete();
+        }));
 
     }
 
@@ -139,7 +160,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
 
-    private void expectIntentionalFailureOf(CompletableFuture<TestProfile> profileFuture) {
+    private void expectIntentionalFailureOf(CompletableFuture<Optional<TestProfile>> profileFuture) {
         profileFuture.whenComplete((p, t) -> {
             if (p != null) {
                 contextRunner.runOnContext(() -> {
@@ -191,11 +212,40 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
             @Override
-            protected CompletableFuture<TestProfile> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
-                final CompletableFuture<TestProfile> future = new CompletableFuture<>();
-                rule.vertx().setTimer(300, l -> {
-                    future.complete(TestProfile.from(credentials));
-                });
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+                final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
+                rule.vertx().setTimer(300, l -> future.complete(Optional.of(TestProfile.from(credentials))));
+                return future;
+            }
+
+            @Override
+            public HttpAction redirect(WebContext context) throws HttpAction {
+                return null;
+            }
+
+            @Override
+            public CompletableFuture<TestCredentials> getCredentials(WebContext context) {
+                return null;
+            }
+
+            @Override
+            public RedirectAction getLogoutAction(WebContext var1, TestProfile var2, String var3) {
+                return null;
+            }
+
+            @Override
+            protected void internalInit(WebContext webContext) {
+
+            }
+        };
+    }
+
+    private AsyncBaseClient<TestCredentials, TestProfile> emptyProfileClient() {
+        return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+            @Override
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+                final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
+                rule.vertx().setTimer(300, l -> future.complete(Optional.empty()));
                 return future;
             }
 
@@ -224,8 +274,8 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     private AsyncBaseClient<TestCredentials, TestProfile> failingRetrievalClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
             @Override
-            protected CompletableFuture<TestProfile> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
-                final CompletableFuture<TestProfile> future = new CompletableFuture<>();
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+                final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
                 rule.vertx().setTimer(300, l -> {
                     future.completeExceptionally(new IntentionalException());
                 });

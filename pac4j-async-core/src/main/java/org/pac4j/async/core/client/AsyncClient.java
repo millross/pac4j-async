@@ -8,6 +8,7 @@ import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.redirect.RedirectAction;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -61,7 +62,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return future wrapping the value which the computation will generate. The computuation should complete
      * this future when the value has been generated.
      */
-    CompletableFuture<U> getUserProfileFuture(C credentials, WebContext context);
+    CompletableFuture<Optional<U>> getUserProfileFuture(C credentials, WebContext context);
 
     RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
 
