@@ -3,7 +3,7 @@ package org.pac4j.async.core.logic;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 /**
  *
@@ -21,11 +21,10 @@ public interface AsyncSecurityLogic<R, C extends WebContext> {
      *
      * @param context the web context
      * @param securityGrantedAccessAdapter the success adapter
-     * @param resultHandler callback to accept the result of the security logic behaviour
      * @param parameters additional parameters
      */
-    void perform(C context, SecurityGrantedAccessAdapter<R, C> securityGrantedAccessAdapter,
-                 Consumer<R> resultHandler, Object... parameters);
+    CompletableFuture<R> perform(C context, SecurityGrantedAccessAdapter<R, C> securityGrantedAccessAdapter,
+                                 Object... parameters);
 
 
 }
