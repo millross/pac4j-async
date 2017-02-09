@@ -1,7 +1,6 @@
 package org.pac4j.async.core.session;
 
-import org.pac4j.core.context.WebContext;
-import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.core.context.WebContextBase;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -10,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
  * Asynchronous version of the SessionStore interface to allow for the fact there may be blocking i/o on a session
  * store, meaning that it should be treated asynchronously
  */
-public interface AsyncSessionStore<C extends WebContext> {
+public interface AsyncSessionStore<I, C extends WebContextBase> {
 
     /**
      * Get or create the session identifier and initialize the session with it if necessary.
@@ -18,7 +17,7 @@ public interface AsyncSessionStore<C extends WebContext> {
      * @param context the web context
      * @return the session identifier
      */
-    String getOrCreateSessionId(C context);
+    I getOrCreateSessionId(C context);
 
     /**
      * Get the object from its key in store.
@@ -27,7 +26,7 @@ public interface AsyncSessionStore<C extends WebContext> {
      * @param key the key of the object
      * @return the object in store
      */
-    CompletableFuture<Object> get(C context, String key);
+    <T> CompletableFuture<T> get(C context, String key);
 
     /**
      * Save an object in the store by its key.
@@ -36,7 +35,7 @@ public interface AsyncSessionStore<C extends WebContext> {
      * @param key the key of the object
      * @param value the value to save in store
      */
-    CompletableFuture<Void> set(C context, String key, Object value);
+    <T> CompletableFuture<Void> set(C context, String key, T value);
 
     /**
      * Destroy the web session.
@@ -67,7 +66,7 @@ public interface AsyncSessionStore<C extends WebContext> {
      * @param trackableSession the trackable session
      * @return the new session store
      */
-    default Optional<SessionStore<C>> buildFromTrackableSession(C context, Object trackableSession) {
+    default Optional<AsyncSessionStore<I, C>> buildFromTrackableSession(C context, Object trackableSession) {
         // by default, the session store does not know how to build a new session store
         return Optional.empty();
     }

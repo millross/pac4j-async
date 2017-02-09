@@ -1,4 +1,4 @@
-package org.pac4j.async.core.context;
+package org.pac4j.async.core.execution.context;
 
 /**
  * Interface to be implemented for running tasks on a framework's context. Most async frameworks have the concept of

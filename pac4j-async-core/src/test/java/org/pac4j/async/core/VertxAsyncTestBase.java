@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.pac4j.async.core.authorization.generator.VertxContextRunner;
-import org.pac4j.async.core.context.ContextRunner;
+import org.pac4j.async.core.execution.context.ContextRunner;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;

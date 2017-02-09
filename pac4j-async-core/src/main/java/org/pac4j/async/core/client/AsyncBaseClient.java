@@ -1,7 +1,7 @@
 package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
-import org.pac4j.async.core.context.ContextRunner;
+import org.pac4j.async.core.execution.context.ContextRunner;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
