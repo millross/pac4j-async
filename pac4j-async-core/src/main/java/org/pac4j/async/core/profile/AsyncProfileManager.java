@@ -4,7 +4,6 @@ import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.execution.context.ContextRunner;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
-import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.AnonymousProfile;
@@ -15,6 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static java.util.concurrent.CompletableFuture.*;
+import static org.pac4j.core.context.Pac4jConstants.USER_PROFILES;
 
 /**
  * This class is a generic way to manage the current user profile(s), i.e. the one(s) of the current authenticated user.
@@ -60,13 +62,13 @@ public class AsyncProfileManager<U extends CommonProfile> {
      */
     public CompletableFuture<Void> remove(final boolean removeFromSession) {
 
-        this.context.setRequestAttribute(Pac4jConstants.USER_PROFILES, new LinkedHashMap<String, U>());
+        this.context.setRequestAttribute(USER_PROFILES, new LinkedHashMap<String, U>());
 
         if (removeFromSession) {
-            return this.context.setSessionAttribute(Pac4jConstants.USER_PROFILES, new LinkedHashMap<String, U>());
+            return this.context.setSessionAttribute(USER_PROFILES, new LinkedHashMap<String, U>());
         } else {
             // We've done all we need to
-            return CompletableFuture.completedFuture(null);
+            return completedFuture(null);
         }
     }
 
@@ -88,7 +90,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
                 return profiles;
             });
         } else {
-            profilesFuture = CompletableFuture.completedFuture(new LinkedHashMap<String, U>());
+            profilesFuture = completedFuture(new LinkedHashMap<String, U>());
         }
 
         final CompletableFuture<LinkedHashMap<String, U>> updatedProfilesFuture = profilesFuture.thenApply(profiles -> {
@@ -98,11 +100,9 @@ public class AsyncProfileManager<U extends CommonProfile> {
 
         return updatedProfilesFuture.thenCompose(profiles -> {
             CompletableFuture<Void> saveFuture = (saveInSession ?
-                    this.context.setSessionAttribute(Pac4jConstants.USER_PROFILES, profiles) :
-                    CompletableFuture.completedFuture(null))
-                    .thenAccept(v -> {
-                        this.context.setSessionAttribute(Pac4jConstants.USER_PROFILES, profiles);
-                    });
+                    this.context.setSessionAttribute(USER_PROFILES, profiles) :
+                    completedFuture(null))
+                        .thenAccept(v -> this.context.setRequestAttribute(USER_PROFILES, profiles));
                     return saveFuture;
         });
 
@@ -139,7 +139,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
      */
     protected CompletableFuture<LinkedHashMap<String, U>> retrieveAll(final boolean readFromSession) {
         final LinkedHashMap<String, U> profiles = new LinkedHashMap<>();
-        final Object request = this.context.getRequestAttribute(Pac4jConstants.USER_PROFILES);
+        final Object request = this.context.getRequestAttribute(USER_PROFILES);
         if (request != null) {
             if  (request instanceof LinkedHashMap) {
                 profiles.putAll((LinkedHashMap<String, U>) request);
@@ -149,7 +149,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
             }
         }
         if (readFromSession) {
-            final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionAttribute(Pac4jConstants.USER_PROFILES);
+            final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionAttribute(USER_PROFILES);
             return sessionAttributeFuture.thenCompose(sessionAttribute -> {
                 final CompletableFuture<LinkedHashMap<String, U>> future = new CompletableFuture<>();
                 contextRunner.runOnContext(() -> {
@@ -165,7 +165,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
             });
 
         } else {
-            return CompletableFuture.completedFuture(profiles);
+            return completedFuture(profiles);
         }
     }
 
