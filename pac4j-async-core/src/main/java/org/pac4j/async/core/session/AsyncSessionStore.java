@@ -17,7 +17,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param context the web context
      * @return the session identifier
      */
-    I getOrCreateSessionId(C context);
+    CompletableFuture<I> getOrCreateSessionId(C context);
 
     /**
      * Get the object from its key in store.

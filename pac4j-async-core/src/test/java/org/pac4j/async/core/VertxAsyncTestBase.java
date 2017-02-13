@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 @RunWith(VertxUnitRunner.class)
 public abstract class VertxAsyncTestBase {
 
+    protected static final long DEFAULT_DELAY = 250;
     protected ContextRunner contextRunner = null;
 
     @Rule
@@ -31,6 +32,18 @@ public abstract class VertxAsyncTestBase {
     public final void applyExceptionHandling(final TestContext context) {
         rule.vertx().exceptionHandler(context.exceptionHandler());
         contextRunner = new VertxContextRunner(rule.vertx().getOrCreateContext());
+    }
+
+    protected <T> CompletableFuture<T> delayedResult(final Supplier<T> supplier) {
+        return delayedResult(DEFAULT_DELAY, supplier);
+    }
+
+    private <T> CompletableFuture<T> delayedResult(final long delay, final Supplier<T> supplier) {
+        final CompletableFuture<T> future = new CompletableFuture<T>();
+        rule.vertx().runOnContext(l -> {
+            future.complete(supplier.get());
+        });
+        return future;
     }
 
     protected static class AsynchronousVertxComputation implements AsynchronousComputation {

@@ -53,7 +53,7 @@ public interface AsyncWebContext<I> extends WebContextBase<AsyncSessionStore<I, 
      *
      * @return the session identifier
      */
-    default I getSessionIdentifier() {
+    default CompletableFuture<I> getSessionIdentifier() {
         return getSessionStore().getOrCreateSessionId(this);
     }
 
