@@ -66,4 +66,10 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
 
     RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
 
+    /**
+     * Return true if this client is indirect - i.e. assumes that its profile will be stored in session and that a
+     * redirect to an auth provider will be required if no profile is found.
+     * @return true if indirect, false if direct
+     */
+    boolean isIndirect();
 }
