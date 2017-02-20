@@ -10,7 +10,7 @@ import java.util.List;
  * Implementation of a profile authorizer where we know i/o will be non-blocking (i.e where we can use either an
  * AsyncWebContext or a sync WebContext).
  */
-public abstract class NonBlockingProfileAuthorizer<U extends CommonProfile> implements Authorizer<WebContextBase<?>, U> {
+public abstract class ProfileAuthorizer<C extends WebContextBase<?>, U extends CommonProfile> implements Authorizer<C, U> {
     /**
      * If all profiles are authorized.
      *
@@ -19,7 +19,7 @@ public abstract class NonBlockingProfileAuthorizer<U extends CommonProfile> impl
      * @return whether all profiles are authorized
      * @throws HttpAction an extra HTTP action
      */
-    public boolean isAllAuthorized(final WebContextBase<?> context, final List<U> profiles) throws HttpAction {
+    public Boolean isAllAuthorized(final C context, final List<U> profiles) throws HttpAction {
         for (final U profile : profiles) {
             if (!isProfileAuthorized(context, profile)) {
                 return handleError(context);
@@ -36,7 +36,7 @@ public abstract class NonBlockingProfileAuthorizer<U extends CommonProfile> impl
      * @return whether any of the profiles is authorized
      * @throws HttpAction an extra HTTP action
      */
-    public boolean isAnyAuthorized(final WebContextBase<?> context, final List<U> profiles) throws HttpAction {
+    public Boolean isAnyAuthorized(final C context, final List<U> profiles) throws HttpAction {
         for (final U profile : profiles) {
             if (isProfileAuthorized(context, profile)) {
                 return true;
@@ -53,7 +53,7 @@ public abstract class NonBlockingProfileAuthorizer<U extends CommonProfile> impl
      * @return whether a specific profile is authorized
      * @throws HttpAction whether an additional HTTP action is required
      */
-    protected abstract boolean isProfileAuthorized(WebContextBase<?> context, U profile) throws HttpAction;
+    protected abstract Boolean isProfileAuthorized(C context, U profile) throws HttpAction;
 
     /**
      * Handle the error.
@@ -62,7 +62,7 @@ public abstract class NonBlockingProfileAuthorizer<U extends CommonProfile> impl
      * @return <code>false</code>
      * @throws HttpAction whether an additional HTTP action is required
      */
-    protected boolean handleError(final WebContextBase<?> context) throws HttpAction {
+    protected boolean handleError(final C context) throws HttpAction {
         return false;
     }
 }
