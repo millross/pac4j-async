@@ -4,6 +4,7 @@ import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.execution.context.ContextRunner;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
+import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.AnonymousProfile;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static java.util.concurrent.CompletableFuture.*;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.pac4j.core.context.Pac4jConstants.USER_PROFILES;
 
 /**
@@ -23,7 +24,7 @@ import static org.pac4j.core.context.Pac4jConstants.USER_PROFILES;
  * This version allows for asynchronous session storage
  */
 public class AsyncProfileManager<U extends CommonProfile> {
-    private final Authorizer<U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<U>();
+    private final Authorizer<WebContextBase<?>, U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
 
     protected final AsyncWebContext context;
     private final ContextRunner contextRunner;
