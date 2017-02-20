@@ -211,6 +211,12 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
     private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+
+            @Override
+            public boolean isIndirect() {
+                return false;
+            }
+
             @Override
             protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
@@ -242,6 +248,12 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
     private AsyncBaseClient<TestCredentials, TestProfile> emptyProfileClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+
+            @Override
+            public boolean isIndirect() {
+                return false;
+            }
+
             @Override
             protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
@@ -273,6 +285,12 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
     private AsyncBaseClient<TestCredentials, TestProfile> failingRetrievalClient() {
         return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+
+            @Override
+            public boolean isIndirect() {
+                return false;
+            }
+
             @Override
             protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
