@@ -1,5 +1,6 @@
 package org.pac4j.async.core;
 
+import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import io.vertx.core.Context;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -38,17 +39,38 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
     }
 
     /**
-     * Test for failing non-blocking synchronous computation
+     * Test for failing non-blocking synchronous computation with unchecked exception
      * @param testContext
      */
     @Test(timeout = 1000, expected=IntentionalException.class)
-    public void testFromNonBlockingSynchronousFailure(final TestContext testContext) {
+    public void testFromNonBlockingSynchronousFailureUncheckedException(final TestContext testContext) {
 
         final Context context = rule.vertx().getOrCreateContext();
         final Async async = testContext.async();
         final int input = 1;
 
         AsynchronousComputation.fromNonBlocking(() -> IntentionalException.throwException(input))
+                .thenAccept(i -> {
+                    context.runOnContext(x -> {
+                        assertThat(i, is(input + 1));
+                        async.complete();
+                    });
+                });
+
+    }
+
+    /**
+     * Test for failing non-blocking synchronous computation with checked exception
+     * @param testContext
+     */
+    @Test(timeout = 1000, expected=CheckedIntentionalException.class)
+    public void testFromNonBlockingSynchronousFailureCheckedException(final TestContext testContext) {
+
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final int input = 1;
+
+        AsynchronousComputation.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> CheckedIntentionalException.throwException()))
                 .thenAccept(i -> {
                     context.runOnContext(x -> {
                         assertThat(i, is(input + 1));
