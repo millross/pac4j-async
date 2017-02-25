@@ -20,5 +20,12 @@ public interface AsynchronousComputation {
         return CompletableFuture.completedFuture(syncComputation.get());
     }
 
+    static CompletableFuture<Void> fromNonBlocking(final Runnable syncComputation) {
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        syncComputation.run();
+        future.complete(null);
+        return future;
+    }
+
     <T> CompletableFuture<T> fromBlocking(final Supplier<T> syncComputation);
 }

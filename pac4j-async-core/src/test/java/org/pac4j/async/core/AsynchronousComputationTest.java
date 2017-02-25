@@ -7,6 +7,7 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,13 +30,26 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final int input = 1;
 
         AsynchronousComputation.fromNonBlocking(() -> incrementNow(input))
-            .thenAccept(i -> {
-                context.runOnContext(x -> {
-                    assertThat(i, is(input + 1));
+            .thenAccept(i -> context.runOnContext(x -> {
+                assertThat(i, is(input + 1));
+                async.complete();
+            }));
+
+    }
+
+    @Test(timeout = 1000)
+    public void  testConvertFromNonBlockingSynchronousRunnable(final TestContext testContext) {
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final AtomicInteger mutable = new AtomicInteger(1);
+
+        AsynchronousComputation.fromNonBlocking(() -> mutable.set(10))
+            .thenRun(() -> {
+                context.runOnContext(v -> {
+                    assertThat(mutable.get(), is(10));
                     async.complete();
                 });
             });
-
     }
 
     /**
