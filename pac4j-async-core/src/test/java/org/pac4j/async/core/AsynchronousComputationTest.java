@@ -44,12 +44,10 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final AtomicInteger mutable = new AtomicInteger(1);
 
         AsynchronousComputation.fromNonBlocking(() -> mutable.set(10))
-            .thenRun(() -> {
-                context.runOnContext(v -> {
-                    assertThat(mutable.get(), is(10));
-                    async.complete();
-                });
-            });
+            .thenRun(() -> context.runOnContext(v -> {
+                assertThat(mutable.get(), is(10));
+                async.complete();
+            }));
     }
 
     /**
@@ -117,6 +115,33 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
                 })
                 .thenAccept(i -> context.runOnContext(x -> {
                     assertThat(i, is(input + 1));
+                    async.complete();
+                }));
+
+    }
+
+    /*
+    Test that a completable future around a nonpiece of code will complete immediately on-thread as if it
+    had been called directly. In a vertx-like cont
+     */
+    @Test(timeout = 1000)
+    public void testConvertFromBlockingSynchronousRunnable(final TestContext testContext) {
+
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final AtomicInteger mutable = new AtomicInteger(1);
+
+        new AsynchronousVertxComputation(rule.vertx())
+                .fromBlocking(() -> {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    mutable.set(10);
+                })
+                .thenRun(() -> context.runOnContext(v -> {
+                    assertThat(mutable.get(), is(10));
                     async.complete();
                 }));
 

@@ -28,4 +28,10 @@ public interface AsynchronousComputation {
     }
 
     <T> CompletableFuture<T> fromBlocking(final Supplier<T> syncComputation);
+    default CompletableFuture<Void> fromBlocking(final Runnable syncComputation) {
+        return fromBlocking(() -> {
+            syncComputation.run();
+            return null;
+        });
+    };
 }

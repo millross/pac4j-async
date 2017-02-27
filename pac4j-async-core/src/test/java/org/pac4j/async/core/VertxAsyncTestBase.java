@@ -73,6 +73,7 @@ public abstract class VertxAsyncTestBase {
             return completableFuture;
 
         }
+
     }
 
 
