@@ -33,9 +33,10 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
     }
 
     @Test(timeout = 1000)
-    public void testFromBlocking(final TestContext context) throws Exception {
-        runAsyncAuthGeneratorTest(context, monitor -> AsyncAuthorizationGenerator.fromBlockingAuthorizationGenerator(
-                blockingAuthGenerator(monitor), new AsynchronousVertxComputation(rule.vertx())
+    public void testFromBlocking(final TestContext testContext) throws Exception {
+        final Context context = rule.vertx().getOrCreateContext();
+        runAsyncAuthGeneratorTest(testContext, monitor -> AsyncAuthorizationGenerator.fromBlockingAuthorizationGenerator(
+                blockingAuthGenerator(monitor), new AsynchronousVertxComputation(rule.vertx(), context)
         ));
     }
 
