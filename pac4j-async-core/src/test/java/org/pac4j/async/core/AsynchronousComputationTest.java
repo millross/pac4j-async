@@ -6,7 +6,10 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,13 +32,24 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final int input = 1;
 
         AsynchronousComputation.fromNonBlocking(() -> incrementNow(input))
-            .thenAccept(i -> {
-                context.runOnContext(x -> {
-                    assertThat(i, is(input + 1));
-                    async.complete();
-                });
-            });
+            .thenAccept(i -> context.runOnContext(x -> {
+                assertThat(i, is(input + 1));
+                async.complete();
+            }));
 
+    }
+
+    @Test(timeout = 1000)
+    public void  testConvertFromNonBlockingSynchronousRunnable(final TestContext testContext) {
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final AtomicInteger mutable = new AtomicInteger(1);
+
+        AsynchronousComputation.fromNonBlocking(() -> mutable.set(10))
+            .thenRun(() -> context.runOnContext(v -> {
+                assertThat(mutable.get(), is(10));
+                async.complete();
+            }));
     }
 
     /**
@@ -92,7 +106,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
         final int input = 1;
 
-        new AsynchronousVertxComputation(rule.vertx())
+        new AsynchronousVertxComputation(rule.vertx(), context)
                 .fromBlocking(() -> {
                     try {
                         Thread.sleep(500);
@@ -109,6 +123,33 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
     }
 
     /*
+    Test that a completable future around a nonpiece of code will complete immediately on-thread as if it
+    had been called directly. In a vertx-like cont
+     */
+    @Test(timeout = 1000)
+    public void testConvertFromBlockingSynchronousRunnable(final TestContext testContext) {
+
+        final Context context = rule.vertx().getOrCreateContext();
+        final Async async = testContext.async();
+        final AtomicInteger mutable = new AtomicInteger(1);
+
+        new AsynchronousVertxComputation(rule.vertx(), context)
+                .fromBlocking(() -> {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    mutable.set(10);
+                })
+                .thenRun(() -> context.runOnContext(v -> {
+                    assertThat(mutable.get(), is(10));
+                    async.complete();
+                }));
+
+    }
+
+    /*
     Test that a completable future around a blocking piece of code will fail correctly
      */
     @Test(timeout = 1000, expected = IntentionalException.class)
@@ -118,7 +159,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
         final int input = 1;
 
-        new AsynchronousVertxComputation(rule.vertx())
+        new AsynchronousVertxComputation(rule.vertx(), context)
                 .fromBlocking(() -> {
                     try {
                         Thread.sleep(500);
@@ -179,6 +220,40 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
             }
         });
 
+    }
+
+    @Test(timeout = 1000)
+    public void testFromNonBlockingRunnableOnContext(final TestContext testContext) {
+        final Context context = rule.vertx().getOrCreateContext();
+        Async async = testContext.async();
+
+        final List<Integer> ints = Arrays.asList(1);
+        final CompletableFuture<Void> future = new AsynchronousVertxComputation(rule.vertx(), context)
+                .fromNonBlockingOnContext(() -> {
+                    ints.set(0, 2);
+                });
+        future.thenAccept(v -> {
+            assertThat(ints, is(Arrays.asList(2)));
+            async.complete();
+        });
+    }
+
+    @Test(timeout = 1000)
+    public void testFromNonBlockingSupplierOnContext(final TestContext testContext) {
+        final Context context = rule.vertx().getOrCreateContext();
+        Async async = testContext.async();
+
+        final List<Integer> ints = Arrays.asList(1);
+        final CompletableFuture<Integer> future = new AsynchronousVertxComputation(rule.vertx(), context)
+                .fromNonBlockingOnContext(() -> {
+                    ints.set(0, 2);
+                    return 1;
+                });
+        future.thenAccept(i -> {
+            assertThat(i, is(1));
+            assertThat(ints, is(Arrays.asList(2)));
+            async.complete();
+        });
     }
 
     public Integer incrementNow(final Integer i) {

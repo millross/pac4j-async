@@ -1,5 +1,6 @@
 package org.pac4j.async.core;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
@@ -49,9 +50,11 @@ public abstract class VertxAsyncTestBase {
     protected static class AsynchronousVertxComputation implements AsynchronousComputation {
 
         final Vertx vertx;
+        final VertxContextRunner vertxContextRunner;
 
-        public AsynchronousVertxComputation(Vertx vertx) {
+        public AsynchronousVertxComputation(Vertx vertx, Context context) {
             this.vertx = vertx;
+            this.vertxContextRunner = new VertxContextRunner(context);
         }
 
         @Override
@@ -73,6 +76,12 @@ public abstract class VertxAsyncTestBase {
             return completableFuture;
 
         }
+
+        @Override
+        public ContextRunner getContextRunner() {
+            return vertxContextRunner;
+        }
+
     }
 
 

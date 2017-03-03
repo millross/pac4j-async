@@ -1,5 +1,7 @@
 package org.pac4j.async.core;
 
+import org.pac4j.async.core.execution.context.ContextRunner;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
@@ -20,5 +22,61 @@ public interface AsynchronousComputation {
         return CompletableFuture.completedFuture(syncComputation.get());
     }
 
+    static CompletableFuture<Void> fromNonBlocking(final Runnable syncComputation) {
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        syncComputation.run();
+        future.complete(null);
+        return future;
+    }
+
+    /**
+     * Return a completableFuture obtained by running the specified non-blocking computation on the context associated
+     * with this AsynchronousComputation. This is important where a computation must occur on a specific context
+     * (usually used to ensure it will occur on the correct thread in asynchronous frameworks such as vert.x).
+     *
+     * Note that in general a context will be associated with only one thread, therefore it is sensible to offer an
+     * AsynchronousComputation per context-related thread. The "OnContext" converters are to be used when a computation
+     * will mutate state on that context, the aim being to preserve thread-safety.
+     *
+     * @param syncComputation computation which will return the value with which to complete the future
+     * @param <T> The type with which the CompletableFuture will complete
+     * @return CompletableFuture which will complete with the return value of the computation.
+     */
+    default <T> CompletableFuture<T> fromNonBlockingOnContext(final Supplier<T> syncComputation) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        getContextRunner().runOnContext(() -> future.complete(syncComputation.get()));
+        return future;
+    }
+
+    /**
+     * Return a completableFuture obtained by running the specified void-returning non-blocking computation on the
+     * context associated with this AsynchronousComputation. This is important where a computation must occur on
+     * a specific context (usually used to ensure it will occur on the correct thread in asynchronous frameworks such
+     * as vert.x).
+     *
+     * Note that in general a context will be associated with only one thread, therefore it is sensible to offer an
+     * AsynchronousComputation per context-related thread. The "OnContext" converters are to be used when a computation
+     * will mutate state on that context, the aim being to preserve thread-safety.
+     *
+     * param syncComputation computation which will return the value with which to complete the future
+     * @return CompletableFuture which will complete with the return value of the computation.
+     */
+    default CompletableFuture<Void> fromNonBlockingOnContext(final Runnable syncComputation) {
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        getContextRunner().runOnContext(() -> {
+            syncComputation.run();
+            future.complete(null);
+        });
+        return future;
+    }
+
     <T> CompletableFuture<T> fromBlocking(final Supplier<T> syncComputation);
+    default CompletableFuture<Void> fromBlocking(final Runnable syncComputation) {
+        return fromBlocking(() -> {
+            syncComputation.run();
+            return null;
+        });
+    }
+
+    ContextRunner getContextRunner();
 }
