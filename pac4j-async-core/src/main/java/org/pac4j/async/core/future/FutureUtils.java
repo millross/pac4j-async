@@ -3,6 +3,9 @@ package org.pac4j.async.core.future;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * Utility functions for managing CompletableFutures
@@ -24,5 +27,10 @@ public class FutureUtils {
                         .orElseGet(fallbackFutureSupplier));
     }
 
+    public static CompletableFuture<Boolean> shortCircuitedFuture(final Stream<Supplier<CompletableFuture<Boolean>>> futureSuppliers) {
+        return futureSuppliers.reduce(completedFuture(true),
+                (f, a) -> f.thenCompose(b -> b ? a.get() : completedFuture(false)),
+                (bf1, bf2) -> bf1.thenCompose(b -> b ? bf2 : CompletableFuture.completedFuture(false)));
+    }
 
 }
