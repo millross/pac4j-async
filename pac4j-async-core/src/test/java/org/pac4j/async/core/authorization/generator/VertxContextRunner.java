@@ -1,12 +1,12 @@
 package org.pac4j.async.core.authorization.generator;
 
 import io.vertx.core.Context;
-import org.pac4j.async.core.execution.context.ContextRunner;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 /**
  * Simple context runner for the vert.x framework to show how to construct one.
  */
-public class VertxContextRunner implements ContextRunner {
+public class VertxContextRunner implements AsyncPac4jExecutionContext {
 
     final Context vertxContext;
 
