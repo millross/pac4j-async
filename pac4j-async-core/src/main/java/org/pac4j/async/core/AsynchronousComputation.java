@@ -1,6 +1,6 @@
 package org.pac4j.async.core;
 
-import org.pac4j.async.core.execution.context.ContextRunner;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -44,7 +44,7 @@ public interface AsynchronousComputation {
      */
     default <T> CompletableFuture<T> fromNonBlockingOnContext(final Supplier<T> syncComputation) {
         final CompletableFuture<T> future = new CompletableFuture<>();
-        getContextRunner().runOnContext(() -> future.complete(syncComputation.get()));
+        getExecutionContext().runOnContext(() -> future.complete(syncComputation.get()));
         return future;
     }
 
@@ -63,7 +63,7 @@ public interface AsynchronousComputation {
      */
     default CompletableFuture<Void> fromNonBlockingOnContext(final Runnable syncComputation) {
         final CompletableFuture<Void> future = new CompletableFuture<>();
-        getContextRunner().runOnContext(() -> {
+        getExecutionContext().runOnContext(() -> {
             syncComputation.run();
             future.complete(null);
         });
@@ -78,5 +78,5 @@ public interface AsynchronousComputation {
         });
     }
 
-    ContextRunner getContextRunner();
+    AsyncPac4jExecutionContext getExecutionContext();
 }

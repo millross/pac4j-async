@@ -1,7 +1,7 @@
 package org.pac4j.async.core.profile;
 
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.execution.context.ContextRunner;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.context.WebContextBase;
@@ -27,11 +27,9 @@ public class AsyncProfileManager<U extends CommonProfile> {
     private final Authorizer<WebContextBase<?>, U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
 
     protected final AsyncWebContext context;
-    private final ContextRunner contextRunner;
 
-    public AsyncProfileManager(final AsyncWebContext context, ContextRunner contextRunner) {
+    public AsyncProfileManager(final AsyncWebContext context, AsyncPac4jExecutionContext contextRunner) {
         this.context = context;
-        this.contextRunner = contextRunner;
     }
 
     /**
@@ -153,7 +151,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
             final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionAttribute(USER_PROFILES);
             return sessionAttributeFuture.thenCompose(sessionAttribute -> {
                 final CompletableFuture<LinkedHashMap<String, U>> future = new CompletableFuture<>();
-                contextRunner.runOnContext(() -> {
+                this.context.getExecutionContext().runOnContext(() -> {
                     if  (sessionAttribute instanceof LinkedHashMap) {
                         profiles.putAll((LinkedHashMap<String, U>) sessionAttribute);
                     }

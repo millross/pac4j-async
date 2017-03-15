@@ -8,7 +8,7 @@ package org.pac4j.async.core.execution.context;
  * of an object implementing this interface must be provided where there is code which might need to run on such a
  * context.
  */
-public interface ContextRunner {
+public interface AsyncPac4jExecutionContext {
 
     void runOnContext(Runnable operation);
 

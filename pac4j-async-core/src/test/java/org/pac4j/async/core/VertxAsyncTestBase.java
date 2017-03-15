@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.pac4j.async.core.authorization.generator.VertxContextRunner;
-import org.pac4j.async.core.execution.context.ContextRunner;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public abstract class VertxAsyncTestBase {
 
     protected static final long DEFAULT_DELAY = 250;
-    protected ContextRunner contextRunner = null;
+    protected AsyncPac4jExecutionContext executionContext = null;
 
     @Rule
     public final RunTestOnContext rule = new RunTestOnContext();
@@ -32,7 +32,7 @@ public abstract class VertxAsyncTestBase {
     @Before
     public final void applyExceptionHandling(final TestContext context) {
         rule.vertx().exceptionHandler(context.exceptionHandler());
-        contextRunner = new VertxContextRunner(rule.vertx().getOrCreateContext());
+        executionContext = new VertxContextRunner(rule.vertx().getOrCreateContext());
     }
 
     protected <T> CompletableFuture<T> delayedResult(final Supplier<T> supplier) {
@@ -78,7 +78,7 @@ public abstract class VertxAsyncTestBase {
         }
 
         @Override
-        public ContextRunner getContextRunner() {
+        public AsyncPac4jExecutionContext getExecutionContext() {
             return vertxContextRunner;
         }
 

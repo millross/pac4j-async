@@ -1,7 +1,7 @@
 package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
-import org.pac4j.async.core.execution.context.ContextRunner;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
@@ -29,12 +29,12 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncBaseClient.class);
 
-    private final ContextRunner contextRunner;
+    private final AsyncPac4jExecutionContext contextRunner;
     private String name;
 
     private List<AsyncAuthorizationGenerator<U>> authorizationGenerators = new ArrayList<>();
 
-    public AsyncBaseClient(ContextRunner contextRunner) {
+    public AsyncBaseClient(AsyncPac4jExecutionContext contextRunner) {
         this.contextRunner = contextRunner;
     }
 

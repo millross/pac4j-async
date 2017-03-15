@@ -6,7 +6,7 @@ package org.pac4j.async.core.execution.context;
  * context (meaning that the state of an actor or similar runnnng on a particular context will only be accessed by
  * a specific thread, ensuring thread safety for thst atate. Vert.x is an example of such an async framework.
  */
-public class ContextFreeRunner implements ContextRunner {
+public class ContextlessPac4jExecutionContext implements AsyncPac4jExecutionContext {
     @Override
     public void runOnContext(Runnable operation) {
         operation.run();
