@@ -4,12 +4,12 @@ import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import org.pac4j.async.core.AsynchronousComputation;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.authorization.authorizer.Authorizer;
-import org.pac4j.core.authorization.authorizer.AuthorizerBase;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -17,8 +17,7 @@ import java.util.concurrent.CompletableFuture;
  * merely a simple type definition to keep everything on site.
  *
  */
-public interface AsyncAuthorizer<U extends CommonProfile> extends AuthorizerBase <AsyncWebContext<?>,
-        CompletableFuture<Boolean>, U> {
+public interface AsyncAuthorizer<U extends CommonProfile> {
 
     Logger LOG = LoggerFactory.getLogger(AsyncAuthorizer.class);
 
@@ -29,4 +28,7 @@ public interface AsyncAuthorizer<U extends CommonProfile> extends AuthorizerBase
     static <U extends CommonProfile> AsyncAuthorizer<U> fromNonBlockingAuthorizer(final Authorizer<WebContextBase<?>, U> syncAuthorizer) {
         return (context, profiles) -> AsynchronousComputation.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncAuthorizer.isAuthorized(context, profiles)));
     }
+
+    CompletableFuture<Boolean> isAuthorized(AsyncWebContext<?> context, List<U> profiles);
+
 }
