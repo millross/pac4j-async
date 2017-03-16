@@ -35,7 +35,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         shortCircuitedFuture(new LinkedList<Supplier<CompletableFuture<Boolean>>>()
                 .stream())
-            .thenAccept(b -> contextRunner.runOnContext(() -> {
+            .thenAccept(b -> executionContext.runOnContext(() -> {
                 assertThat(b, is(true));
                 assertThat(failureStep.get(), is(0));
                 async.complete();
@@ -50,7 +50,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 indexedFutureSupplier(1, false),
                 indexedFutureSupplier(2, false))
                 .stream())
-                .thenAccept(b -> contextRunner.runOnContext(() -> {
+                .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(1));
                     async.complete();
@@ -66,7 +66,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 indexedFutureSupplier(1, false),
                 indexedFutureSupplier(2, true))
                 .stream())
-                .thenAccept(b -> contextRunner.runOnContext(() -> {
+                .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(1));
                     async.complete();
@@ -81,7 +81,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 indexedFutureSupplier(1, true),
                 indexedFutureSupplier(2, false))
                 .stream())
-                .thenAccept(b -> contextRunner.runOnContext(() -> {
+                .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(2));
                     async.complete();
@@ -96,7 +96,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 indexedFutureSupplier(1, true),
                 indexedFutureSupplier(2, true))
                 .stream())
-                .thenAccept(b -> contextRunner.runOnContext(() -> {
+                .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(true));
                     assertThat(failureStep.get(), is(2));
                     async.complete();

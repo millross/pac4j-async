@@ -163,14 +163,14 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     private void expectIntentionalFailureOf(CompletableFuture<Optional<TestProfile>> profileFuture) {
         profileFuture.whenComplete((p, t) -> {
             if (p != null) {
-                contextRunner.runOnContext(() -> {
+                executionContext.runOnContext(() -> {
                     throw new RuntimeException("profile should be null");
                 });
             } else {
                 AsyncExceptionHandler.handleException(t, e -> {
                     // Note implication of use of completeExceptionally
                     if (e instanceof IntentionalException) {
-                        contextRunner.runOnContext(() -> {
+                        executionContext.runOnContext(() -> {
                             throw (IntentionalException) e;
                         });
                     }
@@ -210,7 +210,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
 
     private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
 
             @Override
             public boolean isIndirect() {
@@ -247,7 +247,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private AsyncBaseClient<TestCredentials, TestProfile> emptyProfileClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
 
             @Override
             public boolean isIndirect() {
@@ -284,7 +284,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private AsyncBaseClient<TestCredentials, TestProfile> failingRetrievalClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(contextRunner) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
 
             @Override
             public boolean isIndirect() {

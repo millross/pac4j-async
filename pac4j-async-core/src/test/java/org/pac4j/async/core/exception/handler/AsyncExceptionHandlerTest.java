@@ -51,7 +51,7 @@ public class AsyncExceptionHandlerTest extends VertxAsyncTestBase {
            if (i != null) {
                throw new RuntimeException("Future was supposed to fail");
            } else {
-               AsyncExceptionHandler.handleException(t, e -> contextRunner.runOnContext(() -> {
+               AsyncExceptionHandler.handleException(t, e -> executionContext.runOnContext(() -> {
                    if (e instanceof IntentionalException) {
                        throw ((IntentionalException) e);
                    } else {

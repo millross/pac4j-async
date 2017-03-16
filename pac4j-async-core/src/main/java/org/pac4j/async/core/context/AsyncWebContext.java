@@ -1,5 +1,6 @@
 package org.pac4j.async.core.context;
 
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.context.WebContextBase;
 
@@ -56,5 +57,14 @@ public interface AsyncWebContext<I> extends WebContextBase<AsyncSessionStore<I, 
     default CompletableFuture<I> getSessionIdentifier() {
         return getSessionStore().getOrCreateSessionId(this);
     }
+
+    /**
+     * Get the execution context which was in force when this web context was created. This is so that for context-aware
+     * frameworks such as vert.x we will always access this web context from the right context (fulfilling threading
+     * guarantees made by the framework). Note that there is a ContextFreePac4jExecutionContext where the implementing
+     * framework does not relate threads to contexts.
+     * @return
+     */
+    AsyncPac4jExecutionContext getExecutionContext();
 
 }

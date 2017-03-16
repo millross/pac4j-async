@@ -5,6 +5,7 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.async.core.VertxAsyncTestBase;
+import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.context.Cookie;
 
@@ -58,7 +59,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
             });
         }).when(sessionStore).set(any(TestWebContext.class), anyString(), anyObject());
 
-        webContext = new TestWebContext(sessionStore);
+        webContext = new TestWebContext(executionContext, sessionStore);
     }
 
     @Test(timeout = 1000)
@@ -67,7 +68,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
 
         webContext.getSessionIdentifier()
-                .thenAccept(sid -> contextRunner.runOnContext(() -> {
+                .thenAccept(sid -> executionContext.runOnContext(() -> {
                     assertThat(sid, is(SESSION_ID));
                     async.complete();
                 }));
@@ -79,7 +80,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
         webContext.setSessionAttribute(WRITE_KEY, WRITE_VALUE)
                 .thenCompose(v -> webContext.getSessionAttribute(WRITE_KEY))
                 .thenAccept(val -> {
-                   contextRunner.runOnContext(() -> {
+                   executionContext.runOnContext(() -> {
                        assertThat(val, is(WRITE_VALUE));
                        async.complete();
                    });
@@ -90,7 +91,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     public void testGetNonexistentSessionAttributeReturnsNull(final TestContext testContext) {
         final Async async = testContext.async();
         webContext.getSessionAttribute(NO_SUCH_KEY)
-                .thenAccept(val -> contextRunner.runOnContext(() -> {
+                .thenAccept(val -> executionContext.runOnContext(() -> {
                     assertThat(val, is(nullValue()));
                     async.complete();
                 }));
@@ -99,14 +100,23 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     private static class TestWebContext implements AsyncWebContext<String> {
 
         private final AsyncSessionStore sessionStore;
+        private AsyncPac4jExecutionContext executionContext;
 
-        private TestWebContext(final AsyncSessionStore sessionStore) {
+        private TestWebContext(
+                final AsyncPac4jExecutionContext executionConext,
+                final AsyncSessionStore sessionStore) {
+            this.executionContext = executionConext;
             this.sessionStore = sessionStore;
         }
 
         @Override
         public AsyncSessionStore getSessionStore() {
             return sessionStore;
+        }
+
+        @Override
+        public AsyncPac4jExecutionContext getExecutionContext() {
+            return executionContext;
         }
 
         @Override

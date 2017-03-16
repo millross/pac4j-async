@@ -50,7 +50,10 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     @Before
     public void setUp() {
         webContext = mock(AsyncWebContext.class);
-        profileManager = new AsyncProfileManager(webContext, contextRunner);
+        // Use the test's execution context for async work here - this compares with the fact that  it is
+        // effectively the execution context in force when the web context is created
+        when(webContext.getExecutionContext()).thenReturn(executionContext);
+        profileManager = new AsyncProfileManager(webContext, executionContext);
         profiles = new LinkedHashMap<>();
     }
 
@@ -323,7 +326,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
         final Async async = testContext.async();
 
         profileManager.getAll(false)
-                .thenAccept(l -> contextRunner.runOnContext(() -> {
+                .thenAccept(l -> executionContext.runOnContext(() -> {
                     assertThat(l, is(Arrays.asList(profile)));
                     async.complete();
                 }));
@@ -339,7 +342,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
         final Async async = testContext.async();
 
         profileManager.isAuthenticated()
-                .thenAccept(b -> contextRunner.runOnContext(() -> {
+                .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     async.complete();
                 }));
@@ -371,7 +374,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     }
 
     private BiConsumer<CompletableFuture<Optional<CommonProfile>>, Async> assertNoProfileReturned() {
-        return (f, async) -> f.thenAccept(o -> contextRunner.runOnContext(() -> {
+        return (f, async) -> f.thenAccept(o -> executionContext.runOnContext(() -> {
             assertThat(o.isPresent(), is(false));
             async.complete();
         }));
@@ -379,7 +382,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
     private BiConsumer<CompletableFuture<List<CommonProfile>>, Async> assertNotAuthenticatedAndEmptyProfileListReturned() {
         return (f, async) -> f.thenCompose(l -> {
-            contextRunner.runOnContext(() -> assertThat(l, is(empty())));
+            executionContext.runOnContext(() -> assertThat(l, is(empty())));
             return profileManager.isAuthenticated();
         }).thenAccept(b -> {
             assertThat(b, is(false));
@@ -392,7 +395,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     }
 
     private BiConsumer<CompletableFuture<List<CommonProfile>>, Async> assertProfileListReturned(CommonProfile... profiles) {
-        return (f, async) -> f.thenAccept(l -> contextRunner.runOnContext(() -> {
+        return (f, async) -> f.thenAccept(l -> executionContext.runOnContext(() -> {
             assertThat(l, is(Arrays.asList(profiles)));
             async.complete();
         }));
@@ -400,9 +403,9 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
     private BiConsumer<CompletableFuture<Optional<CommonProfile>>, Async> assertAuthenticatedWithProfile(final CommonProfile profile) {
         return (f, async) -> f.thenCompose(o -> {
-            contextRunner.runOnContext(() -> assertThat(o.get(), is(profile)));
+            executionContext.runOnContext(() -> assertThat(o.get(), is(profile)));
             return profileManager.isAuthenticated();
-        }).thenAccept(b -> contextRunner.runOnContext(() -> {
+        }).thenAccept(b -> executionContext.runOnContext(() -> {
             assertThat(b, is(true));
             async.complete();
         }));
