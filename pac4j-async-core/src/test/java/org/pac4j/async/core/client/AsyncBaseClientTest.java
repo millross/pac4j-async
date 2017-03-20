@@ -10,8 +10,8 @@ import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
+import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.exception.handler.AsyncExceptionHandler;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.redirect.RedirectAction;
 
@@ -218,29 +218,29 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, AsyncWebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
                 rule.vertx().setTimer(300, l -> future.complete(Optional.of(TestProfile.from(credentials))));
                 return future;
             }
 
             @Override
-            public HttpAction redirect(WebContext context) throws HttpAction {
+            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
                 return null;
             }
 
             @Override
-            public CompletableFuture<TestCredentials> getCredentials(WebContext context) {
+            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
                 return null;
             }
 
             @Override
-            public RedirectAction getLogoutAction(WebContext var1, TestProfile var2, String var3) {
+            public RedirectAction getLogoutAction(AsyncWebContext var1, TestProfile var2, String var3) {
                 return null;
             }
 
             @Override
-            protected void internalInit(WebContext webContext) {
+            protected void internalInit() {
 
             }
         };
@@ -255,29 +255,29 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, AsyncWebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
                 rule.vertx().setTimer(300, l -> future.complete(Optional.empty()));
                 return future;
             }
 
             @Override
-            public HttpAction redirect(WebContext context) throws HttpAction {
+            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
                 return null;
             }
 
             @Override
-            public CompletableFuture<TestCredentials> getCredentials(WebContext context) {
+            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
                 return null;
             }
 
             @Override
-            public RedirectAction getLogoutAction(WebContext var1, TestProfile var2, String var3) {
+            public RedirectAction getLogoutAction(AsyncWebContext var1, TestProfile var2, String var3) {
                 return null;
             }
 
             @Override
-            protected void internalInit(WebContext webContext) {
+            protected void internalInit() {
 
             }
         };
@@ -292,7 +292,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, WebContext context) {
+            protected CompletableFuture<Optional<TestProfile>> retrieveUserProfileFuture(TestCredentials credentials, AsyncWebContext context) {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
                 rule.vertx().setTimer(300, l -> {
                     future.completeExceptionally(new IntentionalException());
@@ -301,22 +301,22 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            public HttpAction redirect(WebContext context) throws HttpAction {
+            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
                 return null;
             }
 
             @Override
-            public CompletableFuture<TestCredentials> getCredentials(WebContext context) {
+            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
                 return null;
             }
 
             @Override
-            public RedirectAction getLogoutAction(WebContext var1, TestProfile var2, String var3) {
+            public RedirectAction getLogoutAction(AsyncWebContext var1, TestProfile var2, String var3) {
                 return null;
             }
 
             @Override
-            protected void internalInit(WebContext webContext) {
+            protected void internalInit() {
 
             }
         };

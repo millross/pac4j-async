@@ -2,7 +2,7 @@ package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.Named;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
-import org.pac4j.core.context.WebContext;
+import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
@@ -29,7 +29,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return the performed redirection
      * @throws HttpAction whether an additional HTTP action is required
      */
-    HttpAction redirect(WebContext context) throws HttpAction;
+    HttpAction redirect(AsyncWebContext<?> context) throws HttpAction;
 
     /**
      * <p>Get the credentials from the web context. If no validation was made remotely (direct client), credentials must be validated at this step.</p>
@@ -45,7 +45,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @param context the current web context
      * @return a CompletableFuture wrapping the asynchronous processing
      */
-    CompletableFuture<C> getCredentials(WebContext context);
+    CompletableFuture<C> getCredentials(AsyncWebContext<?> context);
 
     /**
      * Get the user profile based on the provided credentials. Again this may involve i/o so we treat it as an
@@ -62,9 +62,9 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return future wrapping the value which the computation will generate. The computuation should complete
      * this future when the value has been generated.
      */
-    CompletableFuture<Optional<U>> getUserProfileFuture(C credentials, WebContext context);
+    CompletableFuture<Optional<U>> getUserProfileFuture(C credentials, AsyncWebContext context);
 
-    RedirectAction getLogoutAction(WebContext var1, U var2, String var3);
+    RedirectAction getLogoutAction(AsyncWebContext var1, U var2, String var3);
 
     /**
      * Return true if this client is indirect - i.e. assumes that its profile will be stored in session and that a

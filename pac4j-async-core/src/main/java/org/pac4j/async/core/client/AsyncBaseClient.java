@@ -1,12 +1,12 @@
 package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
+import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
+import org.pac4j.async.core.profile.definition.ProfileDefinitionAware;
 import org.pac4j.core.client.Clients;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.definition.ProfileDefinitionAware;
 import org.pac4j.core.util.CommonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +39,8 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
     }
 
     @Override
-    public CompletableFuture<Optional<U>> getUserProfileFuture(final C credentials, final WebContext context) {
-        init(context);
+    public CompletableFuture<Optional<U>> getUserProfileFuture(final C credentials, final AsyncWebContext context) {
+        init();
 
         logger.debug("credentials : {}", credentials);
         if (credentials == null) {
@@ -171,7 +171,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
      * Note that unlike the sync version this won't throw HttpAction as that's a job for the underlying computation,
      * rather than the future wrapper
      */
-    protected abstract CompletableFuture<Optional<U>> retrieveUserProfileFuture(final C credentials, final WebContext context);
+    protected abstract CompletableFuture<Optional<U>> retrieveUserProfileFuture(final C credentials, final AsyncWebContext context);
 
     public void setName(final String name) {
         this.name = name;
@@ -198,7 +198,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
      * @param oldSessionId the old session identifier
      * @param context the web context
      */
-    public void notifySessionRenewal(final String oldSessionId, final WebContext context) { }
+    public void notifySessionRenewal(final String oldSessionId, final AsyncWebContext context) { }
 
     public List<AsyncAuthorizationGenerator<U>> getAuthorizationGenerators() {
         return this.authorizationGenerators;
