@@ -80,7 +80,7 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
     @Test
     public void testCorrectBehaviourWhenNoTokenInSession() throws Exception {
 
-        PowerMockito.mockStatic(UUID.class);
+        PowerMockito.   mockStatic(UUID.class);
         when(UUID.randomUUID()).thenReturn(RANDOM_UUID);
 
         final CompletableFuture<String> future = new CompletableFuture<>();
