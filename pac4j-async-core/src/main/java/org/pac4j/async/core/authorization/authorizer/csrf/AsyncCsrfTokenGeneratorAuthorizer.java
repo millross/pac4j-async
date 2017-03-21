@@ -2,7 +2,6 @@ package org.pac4j.async.core.authorization.authorizer.csrf;
 
 import org.pac4j.async.core.authorization.authorizer.AsyncAuthorizer;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.profile.CommonProfile;
@@ -17,7 +16,6 @@ import java.util.concurrent.CompletableFuture;
 public class AsyncCsrfTokenGeneratorAuthorizer implements AsyncAuthorizer<CommonProfile>{
 
     private AsyncCsrfTokenGenerator csrfTokenGenerator;
-    private final AsyncPac4jExecutionContext contextRunner;
 
     private String domain;
 
@@ -27,10 +25,8 @@ public class AsyncCsrfTokenGeneratorAuthorizer implements AsyncAuthorizer<Common
 
     private Boolean secure;
 
-    public AsyncCsrfTokenGeneratorAuthorizer(final AsyncCsrfTokenGenerator csrfTokenGenerator,
-                                             final AsyncPac4jExecutionContext contextRunner) {
+    public AsyncCsrfTokenGeneratorAuthorizer(final AsyncCsrfTokenGenerator csrfTokenGenerator) {
         this.csrfTokenGenerator = csrfTokenGenerator;
-        this.contextRunner = contextRunner;
     }
 
     @Override
@@ -38,7 +34,7 @@ public class AsyncCsrfTokenGeneratorAuthorizer implements AsyncAuthorizer<Common
         CommonHelper.assertNotNull("csrfTokenGenerator", csrfTokenGenerator);
         final CompletableFuture<String> tokenFuture = csrfTokenGenerator.get(context);
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
-        tokenFuture.thenAccept(token -> contextRunner.runOnContext(() -> {
+        tokenFuture.thenAccept(token -> context.getExecutionContext().runOnContext(() -> {
             context.setRequestAttribute(Pac4jConstants.CSRF_TOKEN, token);
             final Cookie cookie = new Cookie(Pac4jConstants.CSRF_TOKEN, token);
             if (domain != null) {
