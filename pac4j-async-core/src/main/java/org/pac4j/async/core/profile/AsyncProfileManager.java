@@ -1,7 +1,6 @@
 package org.pac4j.async.core.profile;
 
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.context.WebContextBase;
@@ -28,7 +27,7 @@ public class AsyncProfileManager<U extends CommonProfile> {
 
     protected final AsyncWebContext context;
 
-    public AsyncProfileManager(final AsyncWebContext context, AsyncPac4jExecutionContext contextRunner) {
+    public AsyncProfileManager(final AsyncWebContext context) {
         this.context = context;
     }
 
