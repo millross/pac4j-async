@@ -4,6 +4,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.async.core.IntentionalException;
 import org.pac4j.async.core.TestCredentials;
@@ -23,6 +24,8 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -36,6 +39,13 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     protected static final String PERMISSION_ADMIN = "admin";
     protected static final String PERMISSION_SYSTEM = "system";
 
+    private AsyncWebContext<String> webContext = mock(AsyncWebContext.class);
+
+    @Before
+    public void setupWebContext() {
+        when(webContext.getExecutionContext()).thenReturn(executionContext);
+    }
+
     @Test(timeout = 1000)
     public void testGetProfileWithNoAuthenticators(final TestContext testContext) {
 
@@ -45,7 +55,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, webContext);
 
         profileFuture.thenAccept(o -> o.ifPresent(p -> {
             rule.vertx().runOnContext(v -> {
@@ -66,7 +76,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, webContext);
 
         profileFuture.thenAccept(o -> o.ifPresent(p -> {
             LOG.debug("Profile future completed " + System.currentTimeMillis());
@@ -89,7 +99,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, webContext);
 
         expectIntentionalFailureOf(profileFuture);
     }
@@ -123,7 +133,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, webContext);
 
         expectIntentionalFailureOf(profileFuture);
 
@@ -140,7 +150,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
         final TestCredentials credentials = new TestCredentials(HAPPY_PATH_NAME, HAPPY_PATH_PASSWORD);
 
         // We don't care about web contexts right now
-        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, null);
+        final CompletableFuture<Optional<TestProfile>> profileFuture = client.getUserProfileFuture(credentials, webContext);
 
         profileFuture.thenAccept(o -> rule.vertx().runOnContext(v -> {
             assertThat(o.isPresent(), is(false));
@@ -210,7 +220,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
 
     private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>() {
 
             @Override
             public boolean isIndirect() {
@@ -247,7 +257,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private AsyncBaseClient<TestCredentials, TestProfile> emptyProfileClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>() {
 
             @Override
             public boolean isIndirect() {
@@ -284,7 +294,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private AsyncBaseClient<TestCredentials, TestProfile> failingRetrievalClient() {
-        return new AsyncBaseClient<TestCredentials, TestProfile>(executionContext) {
+        return new AsyncBaseClient<TestCredentials, TestProfile>() {
 
             @Override
             public boolean isIndirect() {

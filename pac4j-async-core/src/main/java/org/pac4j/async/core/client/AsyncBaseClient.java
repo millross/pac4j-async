@@ -2,7 +2,6 @@ package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.profile.definition.ProfileDefinitionAware;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.credentials.Credentials;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,14 +27,9 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncBaseClient.class);
 
-    private final AsyncPac4jExecutionContext contextRunner;
     private String name;
 
     private List<AsyncAuthorizationGenerator<U>> authorizationGenerators = new ArrayList<>();
-
-    public AsyncBaseClient(AsyncPac4jExecutionContext contextRunner) {
-        this.contextRunner = contextRunner;
-    }
 
     @Override
     public CompletableFuture<Optional<U>> getUserProfileFuture(final C credentials, final AsyncWebContext context) {
@@ -51,116 +44,39 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
         // We need to end up with a CompletableFuture of Optional<P>
 
-        return profileFuture.<Optional<U>>thenCompose(new Function<Optional<U>, CompletableFuture<Optional<U>>>() {
-            @Override
-            public CompletableFuture<Optional<U>> apply(Optional<U> profileOption) {
-                final Optional<CompletableFuture<Optional<U>>> optionalCompletableFuture = profileOption.map(p -> {
-                    final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
-                            .map(g -> g.generate(p))
-                            .toArray(CompletableFuture[]::new);
-                    return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
-                            .thenApply(v -> {
-                                logger.debug("All profile modifiers determined " + System.currentTimeMillis());
-                                return v;
-                            })
-                            // Convert to a list of consumers
-                            .thenApply(v -> {
-                                final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
-                                        .stream()
-                                        .map(f -> f.join())
-                                        .collect(toList());
-                                return profileModifiers;
-                            }).thenApply(l -> {
-                                // And then apply every consumer in that list to the profile - we know that to get here we've
-                                // already completed the profile futrue so this is clean. When this future completes, all
-                                // modifiers have been applied to the profile. note that we ensure we run on the context
-                                // with the intent that we will then be respecting threading guarantees made by the framrwork
-                                contextRunner.runOnContext(() -> l.forEach(c -> c.accept(p)));
-                                return Optional.of(p);
-                            });
+        return profileFuture.<Optional<U>>thenCompose(profileOption -> {
+            final Optional<CompletableFuture<Optional<U>>> optionalCompletableFuture = profileOption.map(p -> {
+                final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
+                        .map(g -> g.generate(p))
+                        .toArray(CompletableFuture[]::new);
+                return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
+                        .thenApply(v -> {
+                            logger.debug("All profile modifiers determined " + System.currentTimeMillis());
+                            return v;
+                        })
+                        // Convert to a list of consumers
+                        .thenApply(v -> {
+                            final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
+                                    .stream()
+                                    .map(f -> f.join())
+                                    .collect(toList());
+                            return profileModifiers;
+                        }).thenApply(l -> {
+                            // And then apply every consumer in that list to the profile - we know that to get here we've
+                            // already completed the profile futrue so this is clean. When this future completes, all
+                            // modifiers have been applied to the profile. note that we ensure we run on the context
+                            // with the intent that we will then be respecting threading guarantees made by the framrwork
+                            context.getExecutionContext().runOnContext(() -> l.forEach(c -> c.accept(p)));
+                            return Optional.of(p);
+                        });
 
-                });
-                return optionalCompletableFuture.
-                        // Unwrap, substituting the empty future if we don't get anything, I think (to review)
-                        orElse(CompletableFuture.completedFuture(Optional.empty()));
-            }
+            });
+            return optionalCompletableFuture.
+                    // Unwrap, substituting the empty future if we don't get anything, I think (to review)
+                    orElse(CompletableFuture.completedFuture(Optional.empty()));
         });
 
     }
-
-//                p -> {
-//
-//            // get a list of futures which wrap the auth modifiers created by applying the generators to the profile
-//            final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
-//                    .map(g -> g.generate(p))
-//                    .toArray(CompletableFuture[]::new);
-//
-//            final CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
-//                    .thenApply(v -> {
-//                        logger.debug("All profile modifiers determined " + System.currentTimeMillis());
-//                        return v;
-//                    });
-//
-//            final CompletableFuture<List<Consumer<U>>> modifiersListFuture = allDoneFuture.thenApply(v -> {
-//                final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
-//                        .stream()
-//                        .map(f -> f.join())
-//                        .collect(toList());
-//                return profileModifiers;
-//            });
-//
-//            final CompletableFuture<Optional<U>> uCompletableFuture = modifiersListFuture.thenApply(l -> {
-//                contextRunner.runOnContext(() -> l.forEach(c -> c.accept(p)));
-//                return Optional.of(p);
-//            });
-//
-//            return uCompletableFuture;
-
-//            // Take this list of futures, and when all complete
-//            return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
-//                    .thenApply(v -> {
-//                        logger.debug("All profile modifiers determined " + System.currentTimeMillis());
-//                        return v;
-//                    })
-//                    // Convert to a list of consumers
-//                    .thenApply(v -> {
-//                        final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
-//                                .stream()
-//                                .map(f -> f.join())
-//                                .collect(toList());
-//                        return profileModifiers;
-//                    }).thenApply(l -> {
-//                        // And then apply every consumer in that list to the profile - we know that to get here we've
-//                        // already completed the profile futrue so this is clean. When this future completes, all
-//                        // modifiers have been applied to the profile. note that we ensure we run on the context
-//                        // with the intent that we will then be respecting threading guarantees made by the framrwork
-//                        contextRunner.runOnContext(() -> l.forEach(c -> c.accept(p)));
-//                        return Optional.of(p);
-//                    });
-
-//        });
-//
-//    }
-
-    //    @Override = make this async
-//    public final U getUserProfileFuture(final C credentials, final WebContext context) throws HttpAction {
-//        init(context);
-//        logger.debug("credentials : {}", credentials);
-//        if (credentials == null) {
-//            return null;
-//        }
-//
-//        final U profile = retrieveUserProfileFuture(credentials, context);
-//        if (profile != null) {
-//            profile.setClientName(getName());
-//            if (this.authorizationGenerators != null) {
-//                for (AsyncAuthorizationGenerator<U> authorizationGenerator : this.authorizationGenerators) {
-//                    authorizationGenerator.generate(profile);
-//                }
-//            }
-//        }
-//        return profile;
-//    }
 
     /**
      * Retrieve a user userprofile.
