@@ -53,7 +53,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
         // Use the test's execution context for async work here - this compares with the fact that  it is
         // effectively the execution context in force when the web context is created
         when(webContext.getExecutionContext()).thenReturn(executionContext);
-        profileManager = new AsyncProfileManager(webContext, executionContext);
+        profileManager = new AsyncProfileManager(webContext);
         profiles = new LinkedHashMap<>();
     }
 
