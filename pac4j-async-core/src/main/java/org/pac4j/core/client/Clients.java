@@ -5,9 +5,9 @@ import org.pac4j.async.core.client.ConfigurableByClientsObject;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.http.AjaxRequestResolver;
-import org.pac4j.core.http.CallbackUrlResolver;
 import org.pac4j.core.http.DefaultAjaxRequestResolver;
-import org.pac4j.core.http.DefaultCallbackUrlResolver;
+import org.pac4j.core.http.DefaultUrlResolver;
+import org.pac4j.core.http.UrlResolver;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.InitializableObject;
 
@@ -44,7 +44,7 @@ public class Clients<T extends Named & ConfigurableByClientsObject, A> extends I
 
     private AjaxRequestResolver ajaxRequestResolver = new DefaultAjaxRequestResolver();
 
-    private CallbackUrlResolver callbackUrlResolver = new DefaultCallbackUrlResolver();
+    private UrlResolver urlResolver = new DefaultUrlResolver();
 
     private List<A> authorizationGenerators = new ArrayList<>();
 
@@ -241,12 +241,12 @@ public class Clients<T extends Named & ConfigurableByClientsObject, A> extends I
         this.ajaxRequestResolver = ajaxRequestResolver;
     }
 
-    public CallbackUrlResolver getCallbackUrlResolver() {
-        return callbackUrlResolver;
+    public UrlResolver getCallbackUrlResolver() {
+        return urlResolver;
     }
 
-    public void setCallbackUrlResolver(final CallbackUrlResolver callbackUrlResolver) {
-        this.callbackUrlResolver = callbackUrlResolver;
+    public void setCallbackUrlResolver(final UrlResolver urlResolver) {
+        this.urlResolver = urlResolver;
     }
 
     public List<A> getAuthorizationGenerators() {
@@ -276,7 +276,7 @@ public class Clients<T extends Named & ConfigurableByClientsObject, A> extends I
     public String toString() {
         return CommonHelper.toString(this.getClass(), "callbackUrl", this.callbackUrl, "clientNameParameter",
                 this.clientNameParameter, "clients", getClients(), "defaultClient", defaultClient, "ajaxRequestResolver", ajaxRequestResolver,
-                "callbackUrlResolver", callbackUrlResolver, "authorizationGenerators", authorizationGenerators);
+                "callbackUrlResolver", urlResolver, "authorizationGenerators", authorizationGenerators);
     }
 
 }
