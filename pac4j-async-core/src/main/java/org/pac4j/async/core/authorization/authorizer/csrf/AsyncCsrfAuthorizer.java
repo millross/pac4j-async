@@ -34,7 +34,7 @@ public class AsyncCsrfAuthorizer implements AsyncAuthorizer<CommonProfile> {
     }
 
     @Override
-    public CompletableFuture<Boolean> isAuthorized(AsyncWebContext<?> context, List<CommonProfile> profiles) {
+    public CompletableFuture<Boolean> isAuthorized(AsyncWebContext context, List<CommonProfile> profiles) {
         final boolean checkRequest = !onlyCheckPostRequest || ContextHelper.isPost(context);
         if (checkRequest) {
             final String parameterToken = context.getRequestParameter(parameterName);

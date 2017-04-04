@@ -35,7 +35,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     private final static CommonProfile PROFILE3 = new CommonProfile();
 
     private LinkedHashMap<String, CommonProfile> profiles;
-    private AsyncWebContext<CommonProfile> webContext;
+    private AsyncWebContext webContext;
     private AsyncProfileManager<CommonProfile> profileManager;
 
     static {

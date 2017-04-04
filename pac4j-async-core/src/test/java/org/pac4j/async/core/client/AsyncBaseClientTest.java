@@ -39,7 +39,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     protected static final String PERMISSION_ADMIN = "admin";
     protected static final String PERMISSION_SYSTEM = "system";
 
-    private AsyncWebContext<String> webContext = mock(AsyncWebContext.class);
+    private AsyncWebContext webContext = mock(AsyncWebContext.class);
 
     @Before
     public void setupWebContext() {
@@ -195,7 +195,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private final AsyncAuthorizationGenerator<TestProfile> successfulAuthGenerator(final Consumer<TestProfile> profileModifier) {
-        return profile -> {
+        return (context, profile) -> {
             LOG.info("Starting processing for profile");
             final CompletableFuture<Consumer<TestProfile>> future = new CompletableFuture<>();
             rule.vertx().setTimer(300, l -> {
@@ -207,7 +207,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     }
 
     private final AsyncAuthorizationGenerator<TestProfile> failingPermissionAuthGenerator() {
-        return profile -> {
+        return (context, profile) -> {
             LOG.info("Starting failing permission generator processing for profile");
             final CompletableFuture<Consumer<TestProfile>> future = new CompletableFuture<>();
             rule.vertx().setTimer(300, l -> {

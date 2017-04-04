@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  *
  */
-public interface AsyncSecurityGrantedAccessAdapter<R, C extends AsyncWebContext<?>> {
+public interface AsyncSecurityGrantedAccessAdapter<R, C extends AsyncWebContext> {
     /**
      * Adapt the current successful action as the expected result.
      *

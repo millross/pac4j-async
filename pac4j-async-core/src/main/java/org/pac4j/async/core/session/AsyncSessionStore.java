@@ -1,6 +1,6 @@
 package org.pac4j.async.core.session;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.async.core.context.AsyncWebContext;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
  * Asynchronous version of the SessionStore interface to allow for the fact there may be blocking i/o on a session
  * store, meaning that it should be treated asynchronously
  */
-public interface AsyncSessionStore<I, C extends WebContextBase> {
+public interface AsyncSessionStore {
 
     /**
      * Get or create the session identifier and initialize the session with it if necessary.
@@ -17,7 +17,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param context the web context
      * @return the session identifier
      */
-    CompletableFuture<I> getOrCreateSessionId(C context);
+    CompletableFuture<String> getOrCreateSessionId(AsyncWebContext context);
 
     /**
      * Get the object from its key in store.
@@ -26,7 +26,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param key the key of the object
      * @return the object in store
      */
-    <T> CompletableFuture<T> get(C context, String key);
+    <T> CompletableFuture<T> get(AsyncWebContext context, String key);
 
     /**
      * Save an object in the store by its key.
@@ -35,7 +35,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param key the key of the object
      * @param value the value to save in store
      */
-    <T> CompletableFuture<Void> set(C context, String key, T value);
+    <T> CompletableFuture<Void> set(AsyncWebContext context, String key, T value);
 
     /**
      * Destroy the web session.
@@ -43,7 +43,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param context the web context
      * @return whether the session has been destroyed
      */
-    default CompletableFuture<Boolean> destroySession(C context) {
+    default CompletableFuture<Boolean> destroySession(AsyncWebContext context) {
         // by default, the session has not been destroyed and this can be done immediately
         return CompletableFuture.completedFuture(false);
     }
@@ -54,7 +54,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param context the web context
      * @return the trackable object
      */
-    default CompletableFuture<Optional<Object>> getTrackableSession(C context) {
+    default CompletableFuture<Optional<Object>> getTrackableSession(AsyncWebContext context) {
         // by default, the session store does not know how to keep track the native session
         return CompletableFuture.completedFuture(Optional.empty());
     }
@@ -66,7 +66,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param trackableSession the trackable session
      * @return the new session store
      */
-    default Optional<AsyncSessionStore<I, C>> buildFromTrackableSession(C context, Object trackableSession) {
+    default Optional<AsyncSessionStore> buildFromTrackableSession(AsyncWebContext context, Object trackableSession) {
         // by default, the session store does not know how to build a new session store
         return Optional.empty();
     }
@@ -77,7 +77,7 @@ public interface AsyncSessionStore<I, C extends WebContextBase> {
      * @param context the web context
      * @return whether the session store has renewed the session
      */
-    default CompletableFuture<Boolean> renewSession(C context) {
+    default CompletableFuture<Boolean> renewSession(AsyncWebContext context) {
         // by default, the session store does not know how to renew the native session
         return CompletableFuture.completedFuture(false);
     }

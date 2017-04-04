@@ -30,9 +30,9 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     private static final String WRITE_KEY = "WRITE_KEY";
     public static final String WRITE_VALUE = "WRITE_VALUE";
 
-    private AsyncSessionStore<String, TestWebContext> sessionStore = mock(AsyncSessionStore.class);
+    private AsyncSessionStore sessionStore = mock(AsyncSessionStore.class);
 
-    private AsyncWebContext<String> webContext;
+    private AsyncWebContext webContext;
 
     @Before
     public void setUp() {
@@ -97,7 +97,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
                 }));
     }
 
-    private static class TestWebContext implements AsyncWebContext<String> {
+    private static class TestWebContext implements AsyncWebContext {
 
         private final AsyncSessionStore sessionStore;
         private AsyncPac4jExecutionContext executionContext;

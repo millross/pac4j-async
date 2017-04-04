@@ -9,14 +9,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  *
  */
-public interface AsyncWebContext<I> extends WebContextBase<AsyncSessionStore<I, AsyncWebContext<I>>> {
+public interface AsyncWebContext extends WebContextBase<AsyncSessionStore> {
 
     /**
      * Get the session store.
      *
      * @return the session store
      */
-    default AsyncSessionStore<I, AsyncWebContext<I>> getSessionStore() {
+    default AsyncSessionStore getSessionStore() {
         throw new UnsupportedOperationException("To be implemented");
     }
 
@@ -25,7 +25,7 @@ public interface AsyncWebContext<I> extends WebContextBase<AsyncSessionStore<I, 
      *
      * @param sessionStore the session store
      */
-    default void setSessionStore(AsyncSessionStore<I, AsyncWebContext<I>> sessionStore) {
+    default void setSessionStore(AsyncSessionStore sessionStore) {
         throw new UnsupportedOperationException("To be implemented");
     }
 
@@ -54,7 +54,7 @@ public interface AsyncWebContext<I> extends WebContextBase<AsyncSessionStore<I, 
      *
      * @return the session identifier
      */
-    default CompletableFuture<I> getSessionIdentifier() {
+    default CompletableFuture<String> getSessionIdentifier() {
         return getSessionStore().getOrCreateSessionId(this);
     }
 

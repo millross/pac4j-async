@@ -36,7 +36,7 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
     private static final UUID SESSION_UUID = UUID.randomUUID();
 
     private Vertx vertx;
-    private AsyncWebContext<String> webContext;
+    private AsyncWebContext webContext;
     private final Mutable<String> uidFromSession = Mutable.of(null);
 
     @Before

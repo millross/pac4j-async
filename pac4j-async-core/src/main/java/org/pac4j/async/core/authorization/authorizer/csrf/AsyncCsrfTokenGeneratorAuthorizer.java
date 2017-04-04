@@ -30,7 +30,7 @@ public class AsyncCsrfTokenGeneratorAuthorizer implements AsyncAuthorizer<Common
     }
 
     @Override
-    public CompletableFuture<Boolean> isAuthorized(final AsyncWebContext<?> context, final List<CommonProfile> profiles) {
+    public CompletableFuture<Boolean> isAuthorized(final AsyncWebContext context, final List<CommonProfile> profiles) {
         CommonHelper.assertNotNull("csrfTokenGenerator", csrfTokenGenerator);
         final CompletableFuture<String> tokenFuture = csrfTokenGenerator.get(context);
         final CompletableFuture<Boolean> result = new CompletableFuture<>();
