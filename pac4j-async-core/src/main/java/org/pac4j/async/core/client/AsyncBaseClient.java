@@ -4,6 +4,7 @@ import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.profile.definition.ProfileDefinitionAware;
 import org.pac4j.core.client.Clients;
+import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
@@ -47,7 +48,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
         return profileFuture.<Optional<U>>thenCompose(profileOption -> {
             final Optional<CompletableFuture<Optional<U>>> optionalCompletableFuture = profileOption.map(p -> {
                 final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
-                        .map(g -> g.generate(p))
+                        .map(g -> g.generate(context, p))
                         .toArray(CompletableFuture[]::new);
                 return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
                         .thenApply(v -> {

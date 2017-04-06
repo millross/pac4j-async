@@ -29,7 +29,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return the performed redirection
      * @throws HttpAction whether an additional HTTP action is required
      */
-    HttpAction redirect(AsyncWebContext<?> context) throws HttpAction;
+    HttpAction redirect(AsyncWebContext context) throws HttpAction;
 
     /**
      * <p>Get the credentials from the web context. If no validation was made remotely (direct client), credentials must be validated at this step.</p>
@@ -45,7 +45,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @param context the current web context
      * @return a CompletableFuture wrapping the asynchronous processing
      */
-    CompletableFuture<C> getCredentials(AsyncWebContext<?> context);
+    CompletableFuture<C> getCredentials(AsyncWebContext context);
 
     /**
      * Get the user profile based on the provided credentials. Again this may involve i/o so we treat it as an

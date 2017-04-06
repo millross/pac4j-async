@@ -1,7 +1,9 @@
 package org.pac4j.async.core.authorization.generator;
 
 import org.pac4j.async.core.AsynchronousComputation;
+import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
+import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +23,11 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      * Given an existing non-blocking but synchronous AuthorizationGenerator, convert it into an async non-blocking
      * one
      */
-    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromNonBlockingAuthorizationGenerator(AuthorizationGenerator<T> authGen) {
-        return profile -> AsynchronousComputation.fromNonBlocking(
+    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromNonBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen) {
+        return (context, profile) -> AsynchronousComputation.fromNonBlocking(
                 () -> {
                     if (profile != null) {
-                        authGen.generate(profile);
+                        authGen.generate(context, profile);
                     } else {
                         LOG.warn("Unexpected null profile in non-blocking generator derived from {}", authGen);
                     }
@@ -38,16 +40,16 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      * Given an existing blocking synchronous AuthorizationGenerator, convert it into an async
      * one
      */
-    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<T> authGen,
+    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen,
                                                                                                        AsynchronousComputation asyncComputation) {
-        return profile -> asyncComputation.fromBlocking(
+        return (context, profile) -> asyncComputation.fromBlocking(
                 () -> {
                     // several of these could run in parallel so we need to synchronize the profile as we don't know
                     // what the generator might do to its state so we need to ensure that only one thread gets to write
                     // its state at a time.
                     if (profile != null) {
                         synchronized (profile) {
-                            authGen.generate(profile);
+                            authGen.generate(context, profile);
                         }
                     } else {
                         LOG.warn("Unexpected null profile in blocking generator derived from {}", authGen);
@@ -63,6 +65,6 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      *
      * @param profile the user profile for which to generate the authorization information.
      */
-    CompletableFuture<Consumer<U>> generate(U profile);
+    CompletableFuture<Consumer<U>> generate(AsyncWebContext context, U profile);
 
 }
