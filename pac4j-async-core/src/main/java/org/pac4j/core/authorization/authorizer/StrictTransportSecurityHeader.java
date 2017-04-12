@@ -10,7 +10,7 @@ import java.util.List;
 /**
  *
  */
-public class StrictTransportSecurityHeader implements Authorizer<WebContextBase<?>, CommonProfile> {
+public class StrictTransportSecurityHeader implements Authorizer<WebContextBase, CommonProfile> {
 
     /*
          * 6 months in seconds.
@@ -26,7 +26,7 @@ public class StrictTransportSecurityHeader implements Authorizer<WebContextBase<
     }
 
     @Override
-    public Boolean isAuthorized(final WebContextBase<?> context, final List<CommonProfile> profiles) throws HttpAction {
+    public Boolean isAuthorized(final WebContextBase context, final List<CommonProfile> profiles) throws HttpAction {
         if (ContextHelper.isHttpsOrSecure(context)) {
             context.setResponseHeader("Strict-Transport-Security", "max-age=" + maxAge + " ; includeSubDomains");
         }

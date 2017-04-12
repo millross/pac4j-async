@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Async-convertible version of CorsAuthorizer
  */
-public class CorsAuthorizer implements Authorizer<WebContextBase<?>, CommonProfile> {
+public class CorsAuthorizer implements Authorizer<WebContextBase, CommonProfile> {
 
     private String allowOrigin;
 
@@ -29,7 +29,7 @@ public class CorsAuthorizer implements Authorizer<WebContextBase<?>, CommonProfi
 
 
     @Override
-    public Boolean isAuthorized(WebContextBase<?> context, List<CommonProfile> profiles) throws HttpAction {
+    public Boolean isAuthorized(WebContextBase context, List<CommonProfile> profiles) throws HttpAction {
 
         CommonHelper.assertNotBlank("allowOrigin", allowOrigin);
 

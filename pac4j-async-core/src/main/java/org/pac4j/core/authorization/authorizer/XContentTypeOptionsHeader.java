@@ -12,9 +12,9 @@ import java.util.List;
  * @author Jerome Leleu
  * @since 1.8.1
  */
-public class XContentTypeOptionsHeader implements Authorizer<WebContextBase<?>, CommonProfile> {
+public class XContentTypeOptionsHeader implements Authorizer<WebContextBase, CommonProfile> {
     @Override
-    public Boolean isAuthorized(WebContextBase<?> context, List<CommonProfile> profiles) throws HttpAction {
+    public Boolean isAuthorized(WebContextBase context, List<CommonProfile> profiles) throws HttpAction {
         context.setResponseHeader("X-Content-Type-Options", "nosniff");
         return true;
     }

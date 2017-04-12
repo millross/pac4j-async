@@ -2,7 +2,6 @@ package org.pac4j.async.core.authorization.checker;
 
 import org.pac4j.async.core.authorization.authorizer.AsyncAuthorizer;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 
 import java.util.List;
@@ -20,8 +19,7 @@ public interface AsyncAuthorizationChecker {
      * @param profiles the profile
      * @param authorizerNames the authorizers
      * @param authorizersMap the map of authorizers
-     * @return whether the user is authorized.
-     * @throws HttpAction whether an additional HTTP action is required
+     * @return whether the user is authorized. Note that the future will complete exceptionally, possibly with an HttpAction, if required
      */
-    CompletableFuture<Boolean> isAuthorized(AsyncWebContext context, List<CommonProfile> profiles, String authorizerNames, Map<String, AsyncAuthorizer> authorizersMap) throws HttpAction;
+    CompletableFuture<Boolean> isAuthorized(AsyncWebContext context, List<CommonProfile> profiles, String authorizerNames, Map<String, AsyncAuthorizer> authorizersMap);
 }
