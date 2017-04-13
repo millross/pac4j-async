@@ -18,7 +18,9 @@ public class DefaultAsyncCsrfTokenGenerator implements AsyncCsrfTokenGenerator {
                     final String token = UUID.randomUUID().toString();
                     final CompletableFuture<String> tokenFuture = new CompletableFuture<>();
                     context.setSessionAttribute(Pac4jConstants.CSRF_TOKEN, token)
-                            .thenAccept(v -> tokenFuture.complete(token));
+                            .thenAccept(v -> {
+                                tokenFuture.complete(token);
+                            });
                     return tokenFuture;
                 });
 
