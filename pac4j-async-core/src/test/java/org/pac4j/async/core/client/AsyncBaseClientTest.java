@@ -6,10 +6,7 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.pac4j.async.core.IntentionalException;
-import org.pac4j.async.core.TestCredentials;
-import org.pac4j.async.core.TestProfile;
-import org.pac4j.async.core.VertxAsyncTestBase;
+import org.pac4j.async.core.*;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.exception.handler.AsyncExceptionHandler;
@@ -24,8 +21,6 @@ import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  *
@@ -39,11 +34,12 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     protected static final String PERMISSION_ADMIN = "admin";
     protected static final String PERMISSION_SYSTEM = "system";
 
-    private AsyncWebContext webContext = mock(AsyncWebContext.class);
+    private AsyncWebContext webContext;
 
     @Before
     public void setupWebContext() {
-        when(webContext.getExecutionContext()).thenReturn(executionContext);
+        // We don't have an execution context till this point so we need to initialise here
+        webContext =  MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
     }
 
     @Test(timeout = 1000)
