@@ -3,6 +3,8 @@ package org.pac4j.async.core;
 import io.vertx.core.Vertx;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
+import org.pac4j.core.context.Cookie;
+import org.pac4j.core.context.HttpConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,7 @@ import java.util.function.Consumer;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.pac4j.core.context.HttpConstants.SCHEME_HTTPS;
+import static org.pac4j.core.context.HttpConstants.HTTP_METHOD.GET;
 
 /**
  *
@@ -22,7 +24,7 @@ public class MockAsyncWebContextBuilder {
     private static final String DEFAULT_FULL_REQUEST_URL = "http://localhost:80";
 
     private Consumer<AsyncWebContext> constructor;
-//    private final AsyncPac4jExecutionContext executionContext;
+    private HttpConstants.HTTP_METHOD httpMethod = GET;
     private final Map<String, Object> dummySession = new HashMap<>();
     private final Map<String, Object> requestAttributes = new HashMap<>();
 
@@ -78,6 +80,7 @@ public class MockAsyncWebContextBuilder {
             }).when(webContext).getRequestAttribute(anyString());
 
             when(webContext.getFullRequestURL()).thenReturn(DEFAULT_FULL_REQUEST_URL);
+            when(webContext.getRequestMethod()).thenReturn(httpMethod.name());
         };
 
     }
@@ -97,6 +100,23 @@ public class MockAsyncWebContextBuilder {
             }).when(webContext).setResponseHeader(anyString(), anyString());
 
         });
+        return this;
+    }
+
+    public MockAsyncWebContextBuilder withRecordedResponseCookies(final Map<String, Cookie> writtenCookies) {
+        constructor = constructor.andThen(webContext -> {
+            doAnswer(invocation ->  {
+                final Cookie cookie = invocation.getArgumentAt(0, Cookie.class);
+                writtenCookies.put(cookie.getName(), cookie);
+                return null;
+            }).when(webContext).addResponseCookie(any(Cookie.class));
+
+        });
+        return this;
+    }
+
+    public MockAsyncWebContextBuilder withRequestMethod(final HttpConstants.HTTP_METHOD method) {
+        this.httpMethod = method;
         return this;
     }
 
