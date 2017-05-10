@@ -1,4 +1,4 @@
-package org.pac4j.async.core.authorization.generator;
+package org.pac4j.async.core;
 
 import io.vertx.core.Context;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;

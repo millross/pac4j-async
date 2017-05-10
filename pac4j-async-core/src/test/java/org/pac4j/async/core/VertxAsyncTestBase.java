@@ -8,7 +8,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
-import org.pac4j.async.core.authorization.generator.VertxContextRunner;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;

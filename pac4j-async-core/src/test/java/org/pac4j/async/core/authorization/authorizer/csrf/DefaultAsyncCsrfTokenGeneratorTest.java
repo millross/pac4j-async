@@ -1,12 +1,12 @@
 package org.pac4j.async.core.authorization.authorizer.csrf;
 
-import com.aol.cyclops.closures.mutable.Mutable;
 import io.vertx.core.Vertx;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
+import org.pac4j.async.core.MockAsyncWebContextBuilder;
+import org.pac4j.async.core.VertxContextRunner;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -14,15 +14,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.pac4j.core.context.Pac4jConstants.CSRF_TOKEN;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -37,22 +35,12 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
 
     private Vertx vertx;
     private AsyncWebContext webContext;
-    private final Mutable<String> uidFromSession = Mutable.of(null);
 
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
-        webContext = mock(AsyncWebContext.class);
-        uidFromSession.set(null);
-        when(webContext.getSessionAttribute(CSRF_TOKEN))
-                .thenReturn(delayedCompletion(() -> uidFromSession.get()));
-        doAnswer((InvocationOnMock invocation) -> {
-            final Object value = invocation.getArguments()[1 ];
-            return delayedCompletion(() -> {
-                uidFromSession.set((String)value);
-                return null;
-            });
-        }).when(webContext).setSessionAttribute(eq(CSRF_TOKEN), anyObject());
+        final CompletableFuture<Void> setSessionAttributeFuture;
+        webContext = MockAsyncWebContextBuilder.from(vertx, new VertxContextRunner(vertx.getOrCreateContext())).build();
     }
 
     @After
@@ -62,8 +50,10 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
 
     @Test
     public void testCorrectBehaviourWhenTokenInSession() throws Exception {
-
-        uidFromSession.set(SESSION_UUID.toString());
+        final CountDownLatch lock = new CountDownLatch(1);
+        webContext.setSessionAttribute(CSRF_TOKEN, SESSION_UUID.toString())
+            .thenRun(() -> lock.countDown());
+        lock.await(1, TimeUnit.SECONDS);
         PowerMockito.mockStatic(UUID.class);
         when(UUID.randomUUID()).thenReturn(RANDOM_UUID);
 
