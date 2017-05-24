@@ -8,7 +8,7 @@ import org.pac4j.async.core.client.AsyncBaseClient;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.util.TestsConstants;
 import org.pac4j.core.client.Clients;
-import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.exception.TechnicalException;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class DefaultClientFinderTest implements TestsConstants {
     public void testBadClientOnRequest() {
         final AsyncClient client = namedMockAsyncClient(NAME);
         final Clients clients = new Clients(client);
-        final WebContext context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, FAKE_VALUE);
+        final WebContextBase context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, FAKE_VALUE);
         expectedEx.expect(TechnicalException.class);
         expectedEx.expectMessage("No client found for name: " + FAKE_VALUE);
         finder.find(clients, context, NAME);
@@ -66,7 +66,7 @@ public class DefaultClientFinderTest implements TestsConstants {
         final AsyncClient client1 = namedMockAsyncClient(NAME);
         final AsyncClient client2 = namedMockAsyncClient(CLIENT_NAME);
         final Clients clients = new Clients(client1, client2);
-        final WebContext context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, NAME);
+        final WebContextBase context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, NAME);
         expectedEx.expect(TechnicalException.class);
         expectedEx.expectMessage("Client not allowed: " + NAME);
         finder.find(clients, context, CLIENT_NAME);
@@ -77,7 +77,7 @@ public class DefaultClientFinderTest implements TestsConstants {
         final AsyncClient client1 = namedMockAsyncClient(NAME);
         final AsyncClient client2 = namedMockAsyncClient(CLIENT_NAME);
         final Clients clients = new Clients(client1, client2);
-        final WebContext context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, NAME);
+        final WebContextBase context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, NAME);
         expectedEx.expect(TechnicalException.class);
         expectedEx.expectMessage("Client not allowed: " + NAME);
         finder.find(clients, context, CLIENT_NAME + "," + FAKE_VALUE);
@@ -88,7 +88,7 @@ public class DefaultClientFinderTest implements TestsConstants {
         final AsyncClient client1 = namedMockAsyncClient(NAME);
         final AsyncClient client2 = namedMockAsyncClient(CLIENT_NAME);
         final Clients clients = new Clients(client1, client2);
-        final WebContext context = mockWebContext();
+        final WebContextBase context = mockWebContext();
         final List<AsyncClient> currentClients = finder.find(clients, context, CLIENT_NAME);
         assertThat(currentClients.size(), is(1));
         assertThat(currentClients.get(0), is(client2));
@@ -99,7 +99,7 @@ public class DefaultClientFinderTest implements TestsConstants {
         final AsyncClient client1 = namedMockAsyncClient(NAME);
         final AsyncClient client2 = namedMockAsyncClient(CLIENT_NAME);
         final Clients clients = new Clients(client1, client2);
-        final WebContext context = mockWebContext();
+        final WebContextBase context = mockWebContext();
         expectedEx.expect(TechnicalException.class);
         expectedEx.expectMessage("No client found for name: " + FAKE_VALUE);
         finder.find(clients, context, FAKE_VALUE);
@@ -129,7 +129,7 @@ public class DefaultClientFinderTest implements TestsConstants {
     private void internalTestClientOnRequestAllowedList(final String parameterName, final String names) {
         final AsyncClient client = namedMockAsyncClient(NAME);
         final Clients clients = new Clients(client);
-        final WebContext context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, parameterName);
+        final WebContextBase context = mockWebContextWithClientNameParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER, parameterName);
         final List<AsyncClient> currentClients = finder.find(clients, context, names);
         assertThat(currentClients.size(), is(1));
         assertThat(currentClients.get(0), is(client));
@@ -139,7 +139,7 @@ public class DefaultClientFinderTest implements TestsConstants {
         final AsyncClient client1 = namedMockAsyncClient(NAME);
         final AsyncClient client2 = namedMockAsyncClient(CLIENT_NAME);
         final Clients clients = new Clients(client1, client2);
-        final WebContext context = mockWebContext();
+        final WebContextBase context = mockWebContext();
         final List<AsyncClient> currentClients = finder.find(clients, context, names);
         assertThat(currentClients.size(), is(2));
         assertThat(currentClients.get(0), is(client2));
@@ -152,13 +152,13 @@ public class DefaultClientFinderTest implements TestsConstants {
         return client;
     }
 
-    private final WebContext mockWebContext() {
-        final WebContext context = mock(WebContext.class);
+    private final WebContextBase mockWebContext() {
+        final WebContextBase context = mock(WebContextBase.class);
         return context;
     }
 
-    private final WebContext mockWebContextWithClientNameParameter(final String parameterName, final String parameterValue) {
-        final WebContext context = mock(WebContext.class);
+    private final WebContextBase mockWebContextWithClientNameParameter(final String parameterName, final String parameterValue) {
+        final WebContextBase context = mock(WebContextBase.class);
         when(context.getRequestParameter(parameterName)).thenReturn(parameterValue);
         return context;
     }

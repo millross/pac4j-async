@@ -2,7 +2,7 @@ package org.pac4j.core.client;
 
 import org.pac4j.async.core.Named;
 import org.pac4j.async.core.client.ConfigurableByClientsObject;
-import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.http.AjaxRequestResolver;
 import org.pac4j.core.http.DefaultAjaxRequestResolver;
@@ -19,7 +19,7 @@ import java.util.*;
  * <p>The {@link #init()} method is used to initialize the callback urls of the clients from the callback url of the
  * clients group if empty and a specific parameter added to define the client targeted. It is implicitly called by the
  * "finders" methods and doesn't need to be called explicitly.</p>
- * <p>The {@link #findClient(WebContext)}, {@link #findClient(String)} or {@link #findClient(Class)} methods must be called
+ * <p>The {@link #findClient(WebContextBase)}, {@link #findClient(String)} or {@link #findClient(Class)} methods must be called
  * to find the right client according to the input context or type. The {@link #findAllClients()} method returns all the
  * clients.</p>
  *
@@ -139,7 +139,7 @@ public class Clients<T extends Named & ConfigurableByClientsObject, A> extends I
      * @param context web context
      * @return the right client
      */
-    public T findClient(final WebContext context) {
+    public T findClient(final WebContextBase<?> context) {
         init();
         final String name = context.getRequestParameter(this.clientNameParameter);
         if (name == null && defaultClient != null) {
