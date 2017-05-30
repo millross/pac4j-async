@@ -3,8 +3,11 @@ package org.pac4j.core.client;
 import org.pac4j.async.core.profile.definition.ProfileDefinitionAware;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.credentials.extractor.CredentialsExtractor;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +24,11 @@ import java.util.List;
 public abstract class CommonBaseClient<C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>, AG>
         extends ProfileDefinitionAware <U>{
 
+    private static final Logger logger = LoggerFactory.getLogger(CommonBaseClient.class);
+
     private String name;
     protected List<AG> authorizationGenerators = new ArrayList<>();
+    private CredentialsExtractor<C, WC> credentialsExtractor;
 
     public void setName(final String name) {
         this.name = name;
@@ -74,6 +80,20 @@ public abstract class CommonBaseClient<C extends Credentials, U extends CommonPr
     public void addAuthorizationGenerators(final List<AG> authorizationGenerators) {
         CommonHelper.assertNotNull("authorizationGenerators", authorizationGenerators);
         this.authorizationGenerators.addAll(authorizationGenerators);
+    }
+
+    public CredentialsExtractor<C, WC> getCredentialsExtractor() {
+        return credentialsExtractor;
+    }
+
+    protected void defaultCredentialsExtractor(final CredentialsExtractor<C, WC> credentialsExtractor) {
+        if (this.credentialsExtractor == null) {
+            this.credentialsExtractor = credentialsExtractor;
+        }
+    }
+
+    public void setCredentialsExtractor(final CredentialsExtractor<C, WC> credentialsExtractor) {
+        this.credentialsExtractor = credentialsExtractor;
     }
 
     @Override
