@@ -70,4 +70,9 @@ public interface Client<C extends Credentials, U extends CommonProfile, WC exten
      * @return the redirection
      */
     RedirectAction getLogoutAction(WC context, U currentProfile, String targetUrl);
+
+    /**
+     * Identify whether this client is an indirect client, rather than using type checking.
+     */
+    boolean isIndirect();
 }

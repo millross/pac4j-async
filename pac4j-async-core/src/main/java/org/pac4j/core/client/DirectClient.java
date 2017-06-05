@@ -46,4 +46,9 @@ public abstract class DirectClient<C extends Credentials, U extends CommonProfil
     public final RedirectAction getLogoutAction(final WC context, final U currentProfile, final String targetUrl) {
         return null;
     }
+
+    @Override
+    public boolean isIndirect() {
+        return false;
+    }
 }
