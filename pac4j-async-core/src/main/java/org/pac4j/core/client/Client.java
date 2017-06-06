@@ -26,6 +26,13 @@ import org.pac4j.core.redirect.RedirectAction;
 public interface Client<C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>> {
 
     /**
+     * Identify whether this client represents an anonymous client, rather than using type checking
+     */
+    default boolean isAnonymous() {
+        return false;
+    }
+
+    /**
      * Get the name of the client.
      * 
      * @return the name of the client
