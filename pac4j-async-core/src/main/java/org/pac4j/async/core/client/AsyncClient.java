@@ -23,6 +23,13 @@ import java.util.concurrent.CompletableFuture;
 public interface AsyncClient<C extends Credentials, U extends CommonProfile> extends Named, ConfigurableByClientsObject<AsyncClient<C, U>,  AsyncAuthorizationGenerator<U>> {
 
     /**
+     * Return true if this client represents an anonymous access.
+     */
+    default boolean isAnonymous() {
+            return false;
+    }
+
+    /**
      * <p>Redirect to the authentication provider for an indirect client.</p>
      *
      * @param context the current web context
@@ -72,4 +79,5 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * @return true if indirect, false if direct
      */
     boolean isIndirect();
+
 }
