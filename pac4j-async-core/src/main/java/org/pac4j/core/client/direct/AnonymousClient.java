@@ -1,0 +1,35 @@
+package org.pac4j.core.client.direct;
+
+import org.pac4j.core.authorization.generator.AuthorizationGenerator;
+import org.pac4j.core.client.DirectClient;
+import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.credentials.AnonymousCredentials;
+import org.pac4j.core.profile.AnonymousProfile;
+
+/**
+ * Anonymous client. Not to be used except for advanced use cases.
+ *
+ * @author Jerome Leleu
+ * @since 1.8.1
+ */
+public final class AnonymousClient extends DirectClient<AnonymousCredentials, AnonymousProfile, WebContextBase<?>, AuthorizationGenerator<WebContextBase<?>, AnonymousProfile>> {
+
+    public final static AnonymousClient INSTANCE = new AnonymousClient();
+
+    public AnonymousClient() {
+        logger.warn("AnonymousClient is an advanced feature: be careful when using it to avoid any security issue!");
+    }
+
+    @Override
+    protected void clientInit() {
+        defaultCredentialsExtractor(ctx -> AnonymousCredentials.INSTANCE);
+        defaultAuthenticator((cred, ctx )-> {
+            cred.setUserProfile(AnonymousProfile.INSTANCE);
+        });
+    }
+
+    @Override
+    public boolean isAnonymous() {
+        return true;
+    }
+}
