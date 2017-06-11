@@ -15,5 +15,5 @@ import org.pac4j.core.profile.CommonProfile;
 /**
  *
  */
-public class AsyncConfig<R, C extends AsyncWebContext> extends Config<AsyncClient, C, AsyncAuthorizer<CommonProfile>, AsyncMatcher, AsyncSecurityLogic<R, C>, AsyncCallbackLogic<R, C>, AsyncLogoutLogic<R, C>, AsyncSessionStore, AsyncProfileManager<? extends CommonProfile>> {
+public class AsyncConfig<R, U extends CommonProfile, C extends AsyncWebContext> extends Config<AsyncClient, C, AsyncAuthorizer<CommonProfile>, AsyncMatcher, AsyncSecurityLogic<R, C>, AsyncCallbackLogic<R, C>, AsyncLogoutLogic<R, C>, AsyncSessionStore, AsyncProfileManager<U, C>> {
 }

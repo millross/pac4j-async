@@ -22,12 +22,12 @@ import static org.pac4j.core.context.Pac4jConstants.USER_PROFILES;
  * This class is a generic way to manage the current user profile(s), i.e. the one(s) of the current authenticated user.
  * This version allows for asynchronous session storage
  */
-public class AsyncProfileManager<U extends CommonProfile> {
+public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebContext> {
     private final Authorizer<WebContextBase<?>, U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
 
     protected final AsyncWebContext context;
 
-    public AsyncProfileManager(final AsyncWebContext context) {
+    public AsyncProfileManager(final C context) {
         this.context = context;
     }
 
