@@ -27,10 +27,11 @@ public class FutureUtils {
                         .orElseGet(fallbackFutureSupplier));
     }
 
-    public static CompletableFuture<Boolean> shortCircuitedFuture(final Stream<Supplier<CompletableFuture<Boolean>>> futureSuppliers) {
-        return futureSuppliers.reduce(completedFuture(true),
-                (f, a) -> f.thenCompose(b -> b ? a.get() : completedFuture(false)),
-                (bf1, bf2) -> bf1.thenCompose(b -> b ? bf2 : CompletableFuture.completedFuture(false)));
+    public static CompletableFuture<Boolean> shortCircuitedFuture(final Stream<Supplier<CompletableFuture<Boolean>>> futureSuppliers,
+                                                                  final Boolean fallbackOn) {
+        return futureSuppliers.reduce(completedFuture(!fallbackOn),
+                (f, a) -> f.thenCompose(b -> (b != fallbackOn) ? a.get() : completedFuture(fallbackOn)),
+                (bf1, bf2) -> bf1.thenCompose(b  -> (b != fallbackOn) ? bf2 : CompletableFuture.completedFuture(fallbackOn)));
     }
 
 }

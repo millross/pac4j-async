@@ -34,7 +34,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
     public void testEmptyStream(final TestContext testContext) throws Exception {
         final Async async = testContext.async();
         shortCircuitedFuture(new LinkedList<Supplier<CompletableFuture<Boolean>>>()
-                .stream())
+                .stream(), false)
             .thenAccept(b -> executionContext.runOnContext(() -> {
                 assertThat(b, is(true));
                 assertThat(failureStep.get(), is(0));
@@ -49,7 +49,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
         shortCircuitedFuture(Arrays.asList(
                 indexedFutureSupplier(1, false),
                 indexedFutureSupplier(2, false))
-                .stream())
+                .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(1));
@@ -65,7 +65,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
         shortCircuitedFuture(Arrays.asList(
                 indexedFutureSupplier(1, false),
                 indexedFutureSupplier(2, true))
-                .stream())
+                .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(1));
@@ -73,14 +73,30 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 }));
     }
 
-    // short circuited future: first of two succeeds, second of two fails
+    // short circuited future: first of two fails, second of two succeeds, will result in false, but value for first
+    // step will be set
     @Test
-    public void testOnlySecondOfTwoFailing(final TestContext testContext) throws Exception {
+    public void testShortCircuitOnFirstOfTwoWithFallbackOnTrue(final TestContext testContext) throws Exception {
         final Async async = testContext.async();
         shortCircuitedFuture(Arrays.asList(
                 indexedFutureSupplier(1, true),
                 indexedFutureSupplier(2, false))
-                .stream())
+                .stream(), true)
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(true));
+                    assertThat(failureStep.get(), is(1));
+                    async.complete();
+                }));
+    }
+
+    // short circuited future: first of two succeeds, second of two fails
+    @Test
+    public void testShortCircuitOnSecond(final TestContext testContext) throws Exception {
+        final Async async = testContext.async();
+        shortCircuitedFuture(Arrays.asList(
+                indexedFutureSupplier(1, true),
+                indexedFutureSupplier(2, false))
+                .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
                     assertThat(failureStep.get(), is(2));
@@ -95,7 +111,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
         shortCircuitedFuture(Arrays.asList(
                 indexedFutureSupplier(1, true),
                 indexedFutureSupplier(2, true))
-                .stream())
+                .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(true));
                     assertThat(failureStep.get(), is(2));

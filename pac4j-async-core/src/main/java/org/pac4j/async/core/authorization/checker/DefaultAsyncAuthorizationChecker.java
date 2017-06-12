@@ -124,7 +124,7 @@ public class DefaultAsyncAuthorizationChecker implements AsyncAuthorizationCheck
 
         if ( isNotEmpty(authorizers)) {
             return shortCircuitedFuture(authorizers.stream()
-                    .map(a -> () -> a.isAuthorized(context, profiles)));
+                    .map(a -> () -> a.isAuthorized(context, profiles)), false);
         } else {
             return CompletableFuture.completedFuture(true);
         }

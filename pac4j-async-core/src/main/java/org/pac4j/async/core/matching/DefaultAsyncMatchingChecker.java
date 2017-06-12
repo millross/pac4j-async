@@ -34,7 +34,7 @@ public class DefaultAsyncMatchingChecker implements AsyncMatchingChecker {
                     .collect(Collectors.toList());
 
             return shortCircuitedFuture(matchers.stream()
-                        .map(m -> () -> m.matches(context)));
+                        .map(m -> () -> m.matches(context)), false);
         }
 
         return CompletableFuture.completedFuture(true);
