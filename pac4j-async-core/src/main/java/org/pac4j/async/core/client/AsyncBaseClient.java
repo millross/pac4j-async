@@ -9,13 +9,13 @@ import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;
+import static org.pac4j.async.core.future.FutureUtils.combineFuturesToList;
 
 /**
  *
@@ -41,30 +41,17 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
         return profileFuture.thenCompose(profileOption -> {
             final Optional<CompletableFuture<Optional<U>>> optionalCompletableFuture = profileOption.map(p -> {
-                final CompletableFuture<Consumer<U>>[] profileModifiersFutureArray = authorizationGenerators.stream()
+                // Frustratingly because we want to use the same set of futures twice (to ensure they will have
+                // completed before we get the result which we will then pul lout via join() we have to process
+                // the stream, collect, then map to the result
+                final List<CompletableFuture<Consumer<U>>> profileModifierFutures = authorizationGenerators
+                        .stream()
                         .map(g -> g.generate(context, p))
-                        .toArray(CompletableFuture[]::new);
-                return CompletableFuture.allOf((CompletableFuture<?>[]) profileModifiersFutureArray)
-                        .thenApply(v -> {
-                            logger.debug("All profile modifiers determined " + System.currentTimeMillis());
-                            return v;
-                        })
-                        // Convert to a list of consumers
-                        .thenApply(v -> {
-                            final List<Consumer<U>> profileModifiers = Arrays.asList(profileModifiersFutureArray)
-                                    .stream()
-                                    .map(f -> f.join())
-                                    .collect(toList());
-                            return profileModifiers;
-                        }).thenApply(l -> {
-                            // And then apply every consumer in that list to the profile - we know that to get here we've
-                            // already completed the profile futrue so this is clean. When this future completes, all
-                            // modifiers have been applied to the profile. note that we ensure we run on the context
-                            // with the intent that we will then be respecting threading guarantees made by the framrwork
+                        .collect(toList());
+                return combineFuturesToList(profileModifierFutures).thenApply(l -> {
                             context.getExecutionContext().runOnContext(() -> l.forEach(c -> c.accept(p)));
                             return Optional.of(p);
                         });
-
             });
             return optionalCompletableFuture.
                     // Unwrap, substituting the empty future if we don't get anything, I think (to review)
