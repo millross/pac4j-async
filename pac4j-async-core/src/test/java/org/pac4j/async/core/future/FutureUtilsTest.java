@@ -4,10 +4,12 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.pac4j.async.core.IntentionalException;
 import org.pac4j.async.core.VertxAsyncTestBase;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -117,6 +119,39 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                     assertThat(failureStep.get(), is(2));
                     async.complete();
                 }));
+    }
+
+    @Test
+    public void combineListSuccess(final TestContext testContext) throws Exception {
+        final Async async = testContext.async();
+        final List<CompletableFuture<Integer>> futureList = Arrays.asList(delayedFuture(2, 100),
+                delayedFuture(3, 300),
+                delayedFuture(1, 200));
+        FutureUtils.combineFuturesToList(futureList)
+                .thenAccept(l -> {
+                   assertThat(l, is(Arrays.asList(2, 3, 1)));
+                   async.complete();
+                });
+    }
+
+    @Test(timeout = 1000, expected = IntentionalException.class)
+    public void combineListWithFailure(final TestContext testContext) throws Throwable {
+        final Async async = testContext.async();
+        final List<CompletableFuture<Integer>> futureList = Arrays.asList(delayedFuture(2, 100),
+                delayedException(300, new IntentionalException()),
+                delayedFuture(1, 200));
+        FutureUtils.combineFuturesToList(futureList)
+                .whenComplete((v, t)-> {
+                    if (t != null) {
+                        rule.vertx().getOrCreateContext().runOnContext(x -> {
+                            throw (RuntimeException) t.getCause();
+                        });
+                    }
+                });
+    }
+
+    private CompletableFuture<Integer> delayedFuture(final int value, final int delayMs) {
+        return delayedResult(delayMs, () -> value);
     }
 
     private Supplier<CompletableFuture<Boolean>> indexedFutureSupplier(final int index, final boolean value) {

@@ -34,15 +34,19 @@ public abstract class VertxAsyncTestBase {
         executionContext = new VertxContextRunner(rule.vertx().getOrCreateContext());
     }
 
-    protected <T> CompletableFuture<T> delayedResult(final Supplier<T> supplier) {
+    protected  <T> CompletableFuture<T> delayedResult(final Supplier<T> supplier) {
         return delayedResult(DEFAULT_DELAY, supplier);
     }
 
-    private <T> CompletableFuture<T> delayedResult(final long delay, final Supplier<T> supplier) {
+    protected <T> CompletableFuture<T> delayedResult(final long delay, final Supplier<T> supplier) {
         final CompletableFuture<T> future = new CompletableFuture<T>();
-        rule.vertx().runOnContext(l -> {
-            future.complete(supplier.get());
-        });
+        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> future.complete(supplier.get())));
+        return future;
+    }
+
+    protected <T> CompletableFuture<T> delayedException (final long delay, final Exception e) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> future.completeExceptionally(e)));
         return future;
     }
 

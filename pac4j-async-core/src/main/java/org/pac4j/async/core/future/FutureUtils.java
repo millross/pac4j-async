@@ -1,5 +1,8 @@
 package org.pac4j.async.core.future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +16,8 @@ import static java.util.stream.Collectors.toList;
  * Utility functions for managing CompletableFutures
  */
 public class FutureUtils {
+
+    protected static final Logger logger = LoggerFactory.getLogger(FutureUtils.class);
 
     /**
      * Simple wrapper for CompletableFuture.allOf to act on a list of futures
@@ -35,12 +40,13 @@ public class FutureUtils {
      */
     public static <T> CompletableFuture<List<T>> combineFuturesToList(List<CompletableFuture<T>> futureList) {
 
+        logger.info("combineFuturesToList() called");
         return allOf(futureList.stream())
-                // Convert to a list of consumers
-                // And then apply every consumer in that list to the profile - we know that to get here we've
-                // already completed the profile future so this is clean. When this future completes, all
-                // modifiers have been applied to the profile. note that we ensure we run on the context
-                // with the intent that we will then be respecting threading guarantees made by the framrwork
+                // Convert to a list of futures
+                .thenApply(v -> {
+                    logger.info("All futures now completed");
+                    return v;
+                })
                 .thenApply(v -> futureList
                         .stream()
                         .map(f -> f.join())
