@@ -16,5 +16,5 @@ public interface AsyncProfileSaveStrategy {
     <T extends CommonProfile, C extends AsyncWebContext>CompletableFuture<Boolean> saveOperation(final AsyncProfileManager<T, C> manager,
                                                                                                  final boolean saveProfileInSession,
                                                                                                  T profile);
-    CompletableFuture<Boolean> combinerResults(final List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers);
+    CompletableFuture<Boolean> combineResults(final List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers);
 }

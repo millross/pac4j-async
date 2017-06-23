@@ -1,0 +1,50 @@
+package org.pac4j.async.core.profile.save;
+
+import org.pac4j.async.core.context.AsyncWebContext;
+import org.pac4j.async.core.profile.AsyncProfileManager;
+import org.pac4j.core.profile.CommonProfile;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static org.pac4j.async.core.future.FutureUtils.combineFuturesToList;
+import static org.pac4j.async.core.future.FutureUtils.shortCircuitedFuture;
+
+/**
+ * Async profile save strategy enumeration allowing for multiprofile true or false
+ */
+public enum AsyncProfileSave implements AsyncProfileSaveStrategy {
+
+    SINGLE_PROFILE_SAVE(false) {
+        @Override
+        public CompletableFuture<Boolean> combineResults(List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers) {
+            return shortCircuitedFuture(saveFutureSuppliers.stream(), true);
+        }
+    },
+    MULTI_PROFILE_SAVE(true) {
+        @Override
+        public CompletableFuture<Boolean> combineResults(List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers) {
+            final List<CompletableFuture<Boolean>> futureList = saveFutureSuppliers.stream()
+                    .map(s -> s.get()).collect(Collectors.toList());
+            return combineFuturesToList(futureList).thenApply(l ->
+                    l.stream().filter(b -> b == true).findFirst().orElse(false));
+        }
+    };
+
+
+    private boolean multiProfile;
+
+    AsyncProfileSave(final boolean multiProfile) {
+        this.multiProfile = multiProfile;
+    }
+
+    private boolean isMultiProfile() { return multiProfile; }
+
+    @Override
+    public <T extends CommonProfile, C extends AsyncWebContext> CompletableFuture<Boolean> saveOperation(AsyncProfileManager<T, C> manager, boolean saveProfileInSession, T profile) {
+        return manager.save(saveProfileInSession, profile, multiProfile).thenApply(v -> Boolean.TRUE);
+    }
+
+}
