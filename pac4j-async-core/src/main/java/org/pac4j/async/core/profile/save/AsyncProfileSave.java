@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import static org.pac4j.async.core.future.FutureUtils.shortCircuitedFuture;
 public enum AsyncProfileSave implements AsyncProfileSaveStrategy {
 
     SINGLE_PROFILE_SAVE(false) {
+
         @Override
         public CompletableFuture<Boolean> combineResults(List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers) {
             return shortCircuitedFuture(saveFutureSuppliers.stream(), true);
@@ -43,8 +45,9 @@ public enum AsyncProfileSave implements AsyncProfileSaveStrategy {
     private boolean isMultiProfile() { return multiProfile; }
 
     @Override
-    public <T extends CommonProfile, C extends AsyncWebContext> CompletableFuture<Boolean> saveOperation(AsyncProfileManager<T, C> manager, boolean saveProfileInSession, T profile) {
-        return manager.save(saveProfileInSession, profile, multiProfile).thenApply(v -> Boolean.TRUE);
+    public <T extends CommonProfile, C extends AsyncWebContext> CompletableFuture<Boolean> saveProfile(AsyncProfileManager<T, C> manager, Function<T, Boolean> determineSaveToSession, T profile) {
+        return profile != null ? manager.save(determineSaveToSession.apply(profile), profile, multiProfile).thenApply(v -> Boolean.TRUE) :
+        CompletableFuture.completedFuture(false);
     }
-
+    
 }

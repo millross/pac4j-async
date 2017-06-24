@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -13,8 +14,8 @@ import java.util.function.Supplier;
  * true value represents a saved profile,
  */
 public interface AsyncProfileSaveStrategy {
-    <T extends CommonProfile, C extends AsyncWebContext>CompletableFuture<Boolean> saveOperation(final AsyncProfileManager<T, C> manager,
-                                                                                                 final boolean saveProfileInSession,
-                                                                                                 T profile);
+    <T extends CommonProfile, C extends AsyncWebContext>CompletableFuture<Boolean> saveProfile(final AsyncProfileManager<T, C> manager,
+                                                                                               final Function<T, Boolean> saveToSession,
+                                                                                               T profile);
     CompletableFuture<Boolean> combineResults(final List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers);
 }
