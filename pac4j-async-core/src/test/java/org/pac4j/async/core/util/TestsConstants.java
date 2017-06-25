@@ -49,4 +49,5 @@ public interface TestsConstants {
     String LOGIN_URL = "http://myserver/login";
     String PAC4J_BASE_URL = "http://www.pac4j.org/";
     String PAC4J_URL = PAC4J_BASE_URL + "test.html";
+    String TEST_CLIENT_1 = "testClient1";
 }

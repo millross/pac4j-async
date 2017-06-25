@@ -35,8 +35,6 @@ public class MockAsyncWebContextBuilder {
 
     private MockAsyncWebContextBuilder(final Vertx vertx,
             final AsyncPac4jExecutionContext executionContext) {
-//        this.executionContext = executionContext;
-
 
         constructor = webContext -> {
             // Set up execution context
