@@ -29,7 +29,7 @@ import static org.pac4j.async.core.util.TestsConstants.*;
 /**
  * Tests for the single and multi profile save strategy implementations
  */
-public class AsyncProfileSaveTest extends VertxAsyncTestBase {
+public class AsyncSingleProfileSaveTest extends VertxAsyncTestBase {
 
     @Test(timeout = 2000)
     public void singleProfileSaveNullProfileToEmptySession(final TestContext testContext) {
