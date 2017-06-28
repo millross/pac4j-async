@@ -3,7 +3,6 @@ package org.pac4j.async.core.profile.save;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
 import org.pac4j.async.core.TestCredentials;
@@ -13,10 +12,12 @@ import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.profile.AsyncProfileManager;
 import org.pac4j.core.profile.CommonProfile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,57 +99,54 @@ public class AsyncMultiProfileSaveTest extends VertxAsyncTestBase {
                 .thenAccept(validateProfiles(async, profile, originalProfile));
     }
 
-    @Ignore("Not implemented")
     @Test(timeout = 2000)
     public void multiProfileNoProfilesSuccessfullySaved(final TestContext testContext) {
-        throw new RuntimeException("Test not implemented");
-//        final CompletableFuture<Boolean> saveDidNotOccur = delayedResult(() -> false);
-//        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidNotOccur,
-//                () -> saveDidNotOccur);
-//        final Async async = testContext.async();
-//        SINGLE_PROFILE_SAVE.combineResults(saveSimulations)
-//                .thenAccept(b -> {
-//                    executionContext.runOnContext(() -> {
-//                        assertThat(b, is(false));
-//                        async.complete();
-//                    });
-//                });
+        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidNotOccur(),
+                () -> saveDidNotOccur());
+        final Async async = testContext.async();
+        MULTI_PROFILE_SAVE.combineResults(saveSimulations)
+                .thenAccept(b -> {
+                    executionContext.runOnContext(() -> {
+                        assertThat(b, is(false));
+                        async.complete();
+                    });
+                });
     }
 
-    @Ignore("Not implemented")
     @Test
     public void multiProfileFirstProfileSucessfullySaved(final TestContext testContext) {
-        throw new RuntimeException("Test not implemented");
-//        final CompletableFuture<Boolean> saveDidNotOccur = delayedResult(() -> false);
-//        final CompletableFuture<Boolean> saveDidOccur = delayedResult(() -> true);
-//        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidOccur,
-//                () -> saveDidNotOccur);
-//        final Async async = testContext.async();
-//        SINGLE_PROFILE_SAVE.combineResults(saveSimulations)
-//                .thenAccept(b -> {
-//                    executionContext.runOnContext(() -> {
-//                        assertThat(b, is(true));
-//                        async.complete();
-//                    });
-//                });
+        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidOccur(),
+                () -> saveDidNotOccur());
+        final Async async = testContext.async();
+        MULTI_PROFILE_SAVE.combineResults(saveSimulations)
+                .thenAccept(b -> {
+                    executionContext.runOnContext(() -> {
+                        assertThat(b, is(true));
+                        async.complete();
+                    });
+                });
     }
 
-    @Ignore("Not implemented")
     @Test
     public void multiProfileSecondProfileIsFirstToSuccessfullySave(final TestContext testContext) {
-        throw new RuntimeException("Test not implemented");
-//        final CompletableFuture<Boolean> saveDidNotOccur = delayedResult(() -> false);
-//        final CompletableFuture<Boolean> saveDidOccur = delayedResult(() -> true);
-//        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidNotOccur,
-//                () -> saveDidOccur);
-//        final Async async = testContext.async();
-//        SINGLE_PROFILE_SAVE.combineResults(saveSimulations)
-//                .thenAccept(b -> {
-//                    executionContext.runOnContext(() -> {
-//                        assertThat(b, is(true));
-//                        async.complete();
-//                    });
-//                });
+        final List<Supplier<CompletableFuture<Boolean>>> saveSimulations = Arrays.asList(() -> saveDidNotOccur(),
+                () -> saveDidOccur());
+        final Async async = testContext.async();
+        MULTI_PROFILE_SAVE.combineResults(saveSimulations)
+                .thenAccept(b -> {
+                    executionContext.runOnContext(() -> {
+                        assertThat(b, is(true));
+                        async.complete();
+                    });
+                });
+    }
+
+    private CompletableFuture<Boolean> saveDidNotOccur() {
+        return delayedResult(() -> false);
+    }
+
+    private CompletableFuture<Boolean> saveDidOccur() {
+        return delayedResult(() -> true);
     }
 
     private TestProfile profile(final String userName) {
