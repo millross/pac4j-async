@@ -21,7 +21,7 @@ public class AsyncIndirectAuthenticationInitiator<C extends AsyncWebContext> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncIndirectAuthenticationInitiator.class);
 
-    final CompletableFuture<HttpAction> intiateIndirectFlow(final C context, final List<AsyncClient> currentClients) throws HttpAction {
+    public final CompletableFuture<HttpAction> initiateIndirectFlow(final C context, final List<AsyncClient> currentClients) {
 
         logger.debug("Starting indirect flow authentication");
         final String requestedUrl = context.getFullRequestURL();
