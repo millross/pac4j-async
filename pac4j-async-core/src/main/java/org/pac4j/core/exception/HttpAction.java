@@ -10,7 +10,7 @@ import org.pac4j.core.util.CommonHelper;
  * @author Jerome Leleu
  * @since 1.4.0
  */
-public class HttpAction extends Exception {
+public class HttpAction extends RuntimeException {
 
     private static final long serialVersionUID = -3959659239684160075L;
 
