@@ -10,11 +10,12 @@ import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.exception.HttpAction;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static com.aol.cyclops.invokedynamic.ExceptionSoftener.softenBiFunction;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 
 /**
@@ -95,6 +96,48 @@ public class AsyncExceptionHandlerTest extends VertxAsyncTestBase {
             });
             return null;
         });
+    }
+
+    @Test(timeout = 1000)
+    public void testHttpActionThrownDuringResultTransformation(final TestContext testContext) {
+        final Async async = testContext.async();
+        final CompletableFuture<HttpAction> future = this.<Integer>delayedResult(100, () -> 2)
+                .<HttpAction>thenApply(v -> {
+                    throw new IntentionalException();
+                })
+                .handle(softenBiFunction(AsyncExceptionHandler::extractAsyncHttpAction));
+        assertExceptionalCompletion(future, async, t -> assertThat(t instanceof IntentionalException, is(true)));
+
+    }
+
+    @Test(timeout = 1000)
+    public void testOtherExceptionThrownDuringResultTransformation(final TestContext testContext) {
+        final Async async = testContext.async();
+        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        final HttpAction forbiddenAction = HttpAction.forbidden("Forbidden", asyncWebContext);
+        final CompletableFuture<HttpAction> okFuture = this.<Integer>delayedResult(100, () -> 2)
+                .<HttpAction>thenApply(v -> {
+                    throw forbiddenAction;
+                })
+                .handle(softenBiFunction(AsyncExceptionHandler::extractAsyncHttpAction));
+        okFuture.thenAccept(a -> {
+            assertThat(a.getCode(), is(403));
+            async.complete();
+        });
+
+    }
+
+    private <T> void assertExceptionalCompletion(final CompletableFuture<T> future, final Async async,
+                                             final Consumer<Throwable> exceptionAssertions) {
+        future.handle((a, t) -> {
+            assertThat(a, is(nullValue()));
+            AsyncExceptionHandler.handleException(t, unwrapped -> {
+                exceptionAssertions.accept(unwrapped);
+                async.complete();
+            });
+            return null;
+        });
+
     }
 
     private void applyAsyncExceptionHandlingTo(CompletableFuture<Integer> future) {
