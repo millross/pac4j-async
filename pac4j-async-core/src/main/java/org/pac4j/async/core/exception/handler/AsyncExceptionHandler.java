@@ -2,6 +2,7 @@ package org.pac4j.async.core.exception.handler;
 
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.exception.HttpAction;
+import org.pac4j.core.exception.TechnicalException;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -25,6 +26,16 @@ public interface AsyncExceptionHandler<T> {
             return result;
         } else throw unwrapped;
     }
+
+    static <T> T wrapUnexpectedException(final T result, final Throwable t) {
+        if (result != null) {
+            return result;
+        } else {
+            final TechnicalException wrapped = (t instanceof TechnicalException) ? (TechnicalException) t : new TechnicalException(t);
+            throw wrapped;
+        }
+    }
+
 
     static Throwable unwrapAsyncException(final Throwable t) {
         return (t instanceof CompletionException) ? t.getCause() : t;
