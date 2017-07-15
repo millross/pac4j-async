@@ -21,7 +21,7 @@ import static org.pac4j.core.context.HttpConstants.HTTP_METHOD.GET;
  */
 public class MockAsyncWebContextBuilder {
 
-    private static final String DEFAULT_FULL_REQUEST_URL = "http://localhost:80";
+    public static final String DEFAULT_FULL_REQUEST_URL = "http://localhost:80";
 
     private Consumer<AsyncWebContext> constructor;
     private HttpConstants.HTTP_METHOD httpMethod = GET;
