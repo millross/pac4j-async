@@ -31,8 +31,14 @@ public interface AsyncExceptionHandler<T> {
         if (result != null) {
             return result;
         } else {
-            final TechnicalException wrapped = (t instanceof TechnicalException) ? (TechnicalException) t : new TechnicalException(t);
-            throw wrapped;
+            // Http actions should be thrown outwards as is
+            if (t instanceof HttpAction) {
+                throw (HttpAction) t;
+            } else {
+                // All other exceptions should be wrapped in TechnicalExceptions, if not already wrapped
+                final TechnicalException wrapped = (t instanceof TechnicalException) ? (TechnicalException) t : new TechnicalException(t);
+                throw wrapped;
+            }
         }
     }
 

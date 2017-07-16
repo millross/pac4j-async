@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Asynchronous version of the pac4j synchronous authorization checker
  */
-public interface AsyncAuthorizationChecker {
+public interface AsyncAuthorizationChecker<U extends CommonProfile> {
     /**
      * Check whether the user is authorized.
      *
@@ -21,5 +21,5 @@ public interface AsyncAuthorizationChecker {
      * @param authorizersMap the map of authorizers
      * @return whether the user is authorized. Note that the future will complete exceptionally, possibly with an HttpAction, if required
      */
-    CompletableFuture<Boolean> isAuthorized(AsyncWebContext context, List<CommonProfile> profiles, String authorizerNames, Map<String, AsyncAuthorizer> authorizersMap);
+    CompletableFuture<Boolean> isAuthorized(AsyncWebContext context, List<U> profiles, String authorizerNames, Map<String, AsyncAuthorizer> authorizersMap);
 }

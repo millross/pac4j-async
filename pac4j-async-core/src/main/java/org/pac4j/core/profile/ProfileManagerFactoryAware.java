@@ -12,7 +12,7 @@ import java.util.function.Function;
  * @author Jerome Leleu
  * @since 2.0.0
  */
-public abstract class ProfileManagerFactoryAware<C extends WebContextBase<?>, PM> {
+public abstract class ProfileManagerFactoryAware<C extends WebContextBase<?>, PM, CFG extends Config<?, C, ?, ?, ?,  ?, ?, ?, PM>> {
 
         protected abstract Function<C, PM> defaultProfileManagerFactory();
 
@@ -24,7 +24,7 @@ public abstract class ProfileManagerFactoryAware<C extends WebContextBase<?>, PM
          * @param config the configuration
          * @return profile manager implementation built from the context
          */
-        protected PM getProfileManager(final C context, final Config<?, C, ?, ?, ?,  ?, ?, ?, PM> config) {
+        protected PM getProfileManager(final C context, final CFG config) {
             final Function<C, PM> configProfileManagerFactory =  config.getProfileManagerFactory();
             if (configProfileManagerFactory != null) {
                 return configProfileManagerFactory.apply(context);

@@ -23,8 +23,10 @@ public interface AsyncSecurityLogic<R, C extends AsyncWebContext> {
      * @param securityGrantedAccessAdapter the success adapter
      * @param parameters additional parameters
      */
-    CompletableFuture<R> perform(C context, SecurityGrantedAccessAdapter<R, C> securityGrantedAccessAdapter,
-                                 Object... parameters);
+    CompletableFuture<R> perform(final C context,
+                                 final SecurityGrantedAccessAdapter<R, C> securityGrantedAccessAdapter,
+                                 final String clients, final String authorizers, final String matchers,
+                                 final Object... parameters);
 
 
 }

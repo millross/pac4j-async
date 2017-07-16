@@ -20,7 +20,7 @@ import static org.pac4j.core.util.CommonHelper.*;
 /**
  *
  */
-public class DefaultAsyncAuthorizationChecker implements AsyncAuthorizationChecker {
+public class DefaultAsyncAuthorizationChecker implements AsyncAuthorizationChecker<CommonProfile> {
 
     private static final CorsAuthorizer SYNC_CORS_AUTHORIZER = new CorsAuthorizer();
 
