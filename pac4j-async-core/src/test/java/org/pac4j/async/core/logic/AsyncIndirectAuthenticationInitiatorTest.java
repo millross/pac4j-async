@@ -4,8 +4,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Test;
 import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
 import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.VertxAsyncTestBase;
@@ -15,7 +13,6 @@ import org.pac4j.async.core.client.AsyncIndirectClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.Pac4jConstants;
-import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.redirect.RedirectAction;
@@ -41,7 +38,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
     private static final String AUTH_REDIRECT_URL = "http://example.com/redirect";
     private static RedirectAction REDIRECT_ACTION = RedirectAction.redirect(AUTH_REDIRECT_URL);
 
-    private AsyncIndirectAuthenticationInitiator<AsyncWebContext> authInitiator = new AsyncIndirectAuthenticationInitiator<>();
+    private AsyncIndirectAuthenticationFlow<AsyncWebContext> authInitiator = new AsyncIndirectAuthenticationFlow<>();
 
     @Test(timeout = 2000)
     public void noIndirectClientsAvailable(final TestContext testContext) {

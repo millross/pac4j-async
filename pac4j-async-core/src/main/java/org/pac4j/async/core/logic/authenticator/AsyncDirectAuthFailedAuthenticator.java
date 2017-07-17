@@ -2,7 +2,7 @@ package org.pac4j.async.core.logic.authenticator;
 
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.logic.AsyncIndirectAuthenticationInitiator;
+import org.pac4j.async.core.logic.AsyncIndirectAuthenticationFlow;
 import org.pac4j.core.exception.HttpAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class AsyncDirectAuthFailedAuthenticator<C extends AsyncWebContext> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncDirectAuthFailedAuthenticator.class);
 
-    private final AsyncIndirectAuthenticationInitiator<C> indirectAuthenticationInitiator = new AsyncIndirectAuthenticationInitiator<>();
+    private final AsyncIndirectAuthenticationFlow<C> indirectAuthenticationInitiator = new AsyncIndirectAuthenticationFlow<>();
 
     public final CompletableFuture<HttpAction> authenticate(final C context, final List<AsyncClient> currentClients) {
 

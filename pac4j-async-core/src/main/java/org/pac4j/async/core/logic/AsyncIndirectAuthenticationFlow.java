@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -17,9 +18,9 @@ import java.util.concurrent.CompletableFuture;
  * clients. This initiation includes both saving of the redirect url in the session and then triggering the redirect
  *
  */
-public class AsyncIndirectAuthenticationInitiator<C extends AsyncWebContext> {
+public class AsyncIndirectAuthenticationFlow<C extends AsyncWebContext> {
 
-    protected static final Logger logger = LoggerFactory.getLogger(AsyncIndirectAuthenticationInitiator.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AsyncIndirectAuthenticationFlow.class);
 
     public final CompletableFuture<HttpAction> initiateIndirectFlow(final C context, final List<AsyncClient> currentClients) {
 
@@ -34,6 +35,17 @@ public class AsyncIndirectAuthenticationInitiator<C extends AsyncWebContext> {
                     .findFirst()
                     .map(ExceptionSoftener.softenFunction(c -> c.redirect(context)))
                     .orElseThrow(() -> new TechnicalException("No indirect client available for redirect")));
+    }
+
+    public final CompletableFuture<HttpAction> redirectToOriginallyRequestedUrl(final C context, final String defaultUrl) {
+        return context.<String>getSessionAttribute(Pac4jConstants.REQUESTED_URL)
+                .thenApply(Optional::ofNullable)
+                .thenApply(o -> o.orElse(defaultUrl))
+                .thenCompose(v -> context.setSessionAttribute(Pac4jConstants.REQUESTED_URL, null)
+                        .thenApply(voidResult -> {
+                            logger.debug("redirectUrl: {}", v);
+                            return HttpAction.redirect("redirect", context, v);
+                        }));
     }
 
 }
