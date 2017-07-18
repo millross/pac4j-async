@@ -1,7 +1,6 @@
 package org.pac4j.core.client;
 
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.credentials.authenticator.Authenticator;
@@ -12,13 +11,8 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.pac4j.core.profile.creator.ProfileCreator;
 import org.pac4j.core.util.CommonHelper;
-import org.pac4j.core.util.InitializableWebObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *
@@ -132,6 +126,15 @@ public abstract class BaseClient <C extends Credentials, U extends CommonProfile
     public void setProfileCreator(final ProfileCreator<C, U, WC> profileCreator) {
         this.profileCreator = profileCreator;
     }
+
+    /**
+     * Notify of the web session renewal.
+     *
+     * @param oldSessionId the old session identifier
+     * @param context the web context
+     */
+    public void notifySessionRenewal(final String oldSessionId, final WC context) { }
+
 
     @Override
     public String toString() {
