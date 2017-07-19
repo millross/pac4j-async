@@ -15,9 +15,9 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 /**
  * Wrapper for the logic around session renewal besides the basic session store renewal code.
  */
-public class AsyncSessionRenewer<C extends AsyncWebContext> {
+public class AsyncSessionRenewerImpl<C extends AsyncWebContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AsyncSessionRenewer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsyncSessionRenewerImpl.class);
 
     protected CompletableFuture<Void> renewSession(final C context, final AsyncConfig<?, ?, C> config) {
 
