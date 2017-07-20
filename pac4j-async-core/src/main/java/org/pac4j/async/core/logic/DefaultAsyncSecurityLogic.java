@@ -19,6 +19,7 @@ import org.pac4j.async.core.profile.save.AsyncProfileSaveStrategy;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.client.finder.ClientFinder;
 import org.pac4j.core.client.finder.DefaultClientFinder;
+import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.http.HttpActionAdapter;
@@ -111,7 +112,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
                     if (b) {
 
                         logger.debug("clients: {}", clients);
-                        final List<AsyncClient> currentClients = clientFinder.find(configClients, context, clients);
+                        final List<AsyncClient<? extends Credentials, U>> currentClients = clientFinder.find(configClients, context, clients);
                         logger.debug("currentClients: {}", currentClients);
                         final boolean loadProfilesFromSession = loadFromSessionDecision.make(context, currentClients);
                         logger.debug("loadProfilesFromSession: {}", loadProfilesFromSession);

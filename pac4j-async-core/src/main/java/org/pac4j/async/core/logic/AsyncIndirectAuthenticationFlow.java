@@ -4,8 +4,10 @@ import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.Pac4jConstants;
+import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +24,8 @@ public class AsyncIndirectAuthenticationFlow<C extends AsyncWebContext> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncIndirectAuthenticationFlow.class);
 
-    public final CompletableFuture<HttpAction> initiateIndirectFlow(final C context, final List<AsyncClient> currentClients) {
+    public final <U extends CommonProfile> CompletableFuture<HttpAction> initiateIndirectFlow(final C context,
+                                                                    final List<? extends AsyncClient<? extends Credentials, U>> currentClients) {
 
         logger.debug("Starting indirect flow authentication");
         final String requestedUrl = context.getFullRequestURL();

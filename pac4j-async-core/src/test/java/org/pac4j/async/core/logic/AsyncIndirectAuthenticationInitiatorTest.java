@@ -13,6 +13,7 @@ import org.pac4j.async.core.client.AsyncIndirectClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.Pac4jConstants;
+import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.redirect.RedirectAction;
@@ -24,9 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.pac4j.async.core.exception.handler.AsyncExceptionHandler.unwrapAsyncException;
 
 /**
@@ -44,7 +43,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
     public void noIndirectClientsAvailable(final TestContext testContext) {
         final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
                 .build();
-        final List<AsyncClient> clients = Arrays.asList(getDirectClient());
+        final List<AsyncClient<? extends Credentials, CommonProfile>> clients = Arrays.asList(getDirectClient());
         final Async async = testContext.async();
         authInitiator.initiateIndirectFlow(context, clients)
             .handle((a, t) -> {
@@ -65,7 +64,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
         final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
-        final List<AsyncClient> clients = Arrays.asList(getIndirectClient());
+        final List<AsyncClient<? extends Credentials, CommonProfile>> clients = Arrays.asList(getIndirectClient());
         final Async async = testContext.async();
         authInitiator.initiateIndirectFlow(context, clients)
                 .whenComplete((a, t) -> {
@@ -97,9 +96,6 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
             final AsyncWebContext context = invocation.getArgumentAt(0, AsyncWebContext.class);
             return REDIRECT_ACTION.perform(context);
         }).when(mockClient).redirect(Matchers.any(AsyncWebContext.class));
-//        when().thenReturn(HttpAction.redirect("Redirect"));
-//                .thenReturn()
-//                getRedirectAction()).thenReturn(REDIRECT_ACTION);
         return mockClient;
     }
 }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -39,14 +40,14 @@ public class AsyncDirectClientAuthenticator {
         this.loadFromSessionDecision = loadFromSessionDecision;
     }
 
-    public final <U extends CommonProfile, C extends AsyncWebContext>
-        CompletableFuture<List<U>> authenticate(final List<AsyncClient> currentClients,
-                     final C context,
-                     final AsyncProfileManager<U, C> manager) {
+    public final <U extends CommonProfile, WC extends AsyncWebContext>
+        CompletableFuture<List<U>> authenticate(final List<AsyncClient<? extends Credentials, U>> currentClients,
+                     final WC context,
+                     final AsyncProfileManager<U, WC> manager) {
 
         final Stream<AsyncDirectClient> directClientsStream = currentClients.stream()
                 .filter(c -> !c.isIndirect())
-                .map(c -> (AsyncDirectClient) c);
+                .map(c -> (AsyncDirectClient<? extends Credentials, U>) c);
 
         final List<CompletableFuture<Supplier<CompletableFuture<Boolean>>>> saveOperationList = directClientsStream
                 .peek(c -> logger.debug("Performing authentication for direct client: {}", c))
@@ -54,13 +55,19 @@ public class AsyncDirectClientAuthenticator {
                     final CompletableFuture<Credentials> credsFuture = c.getCredentials(context);
                     // Annoyingly type inference fails unless we enforce the intermediate type
                     // though this should be unnecessary
-                    final CompletableFuture<U> profileFuture = credsFuture
+                    final CompletableFuture<Optional<U>> profileFuture = credsFuture
                             .thenCompose(creds -> c.getUserProfileFuture(creds, context));
 
-                    return credsFuture.thenCombine(profileFuture, (creds, profile) ->
-                            (Supplier<CompletableFuture<Boolean>>) () -> saveStrategy.saveProfile(manager,
-                                    ctx -> saveToSessionDecision.make(context, currentClients, c, profile),
-                                    profile));
+                    return credsFuture.thenCombine(profileFuture, (creds, profile) -> {
+                        if (profile.isPresent()) {
+                            return (Supplier<CompletableFuture<Boolean>>) () -> saveStrategy.saveProfile(manager,
+                                    ctx -> saveToSessionDecision.make(context, currentClients, c, profile.get()),
+                                    profile.get());
+
+                        } else {
+                            return (Supplier<CompletableFuture<Boolean>>) () -> CompletableFuture.completedFuture(false);
+                        }
+                    });
                 }).collect(Collectors.toList());
 
         // We can now determine whether we successfully saved any or not and attempt to retrieve them

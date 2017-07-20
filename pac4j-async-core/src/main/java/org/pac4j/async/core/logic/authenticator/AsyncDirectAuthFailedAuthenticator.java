@@ -3,7 +3,9 @@ package org.pac4j.async.core.logic.authenticator;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.logic.AsyncIndirectAuthenticationFlow;
+import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
+import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ public class AsyncDirectAuthFailedAuthenticator<C extends AsyncWebContext> {
 
     private final AsyncIndirectAuthenticationFlow<C> indirectAuthenticationInitiator = new AsyncIndirectAuthenticationFlow<>();
 
-    public final CompletableFuture<HttpAction> authenticate(final C context, final List<AsyncClient> currentClients) {
+    public final  <U extends CommonProfile> CompletableFuture<HttpAction> authenticate(final C context, final List<AsyncClient<? extends Credentials, U>> currentClients) {
 
         if (startAuthentication(context, currentClients)) {
             logger.debug("Starting authentication");
@@ -43,7 +45,8 @@ public class AsyncDirectAuthFailedAuthenticator<C extends AsyncWebContext> {
      * @param currentClients the current clients
      * @return whether we must start a login process
      */
-    protected boolean startAuthentication(final C context, final List<AsyncClient> currentClients) {
+    protected <U extends CommonProfile> boolean startAuthentication(final C context,
+                                          final List<AsyncClient<? extends Credentials, U>> currentClients) {
         return isNotEmpty(currentClients) && currentClients.get(0).isIndirect();
     }
 
@@ -55,7 +58,7 @@ public class AsyncDirectAuthFailedAuthenticator<C extends AsyncWebContext> {
      * @return an unauthorized error
      * @throws HttpAction whether an additional HTTP action is required
      */
-    protected HttpAction unauthorized(final C context, final List<AsyncClient> currentClients) {
+    protected <U extends CommonProfile> HttpAction unauthorized(final C context, final List<AsyncClient<? extends Credentials, U>> currentClients) {
         return HttpAction.unauthorized("unauthorized", context, null);
     }
 
