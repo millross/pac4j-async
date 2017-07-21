@@ -10,10 +10,11 @@ import org.pac4j.async.core.matching.AsyncMatcher;
 import org.pac4j.async.core.profile.AsyncProfileManager;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.CommonProfile;
 
 /**
  *
  */
-public class AsyncConfig<R, U extends CommonProfile, C extends AsyncWebContext> extends Config<AsyncClient, C, AsyncAuthorizer<CommonProfile>, AsyncMatcher, AsyncSecurityLogic<R, C>, AsyncCallbackLogic<R, C>, AsyncLogoutLogic<R, C>, AsyncSessionStore, AsyncProfileManager<U, C>> {
+public class AsyncConfig<R, U extends CommonProfile, C extends AsyncWebContext> extends Config<AsyncClient<? extends Credentials, ? extends U>, C, AsyncAuthorizer<CommonProfile>, AsyncMatcher, AsyncSecurityLogic<R, C>, AsyncCallbackLogic<R, U, C>, AsyncLogoutLogic<R, C>, AsyncSessionStore, AsyncProfileManager<U, C>, U> {
 }

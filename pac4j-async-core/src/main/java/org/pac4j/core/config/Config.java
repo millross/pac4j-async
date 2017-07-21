@@ -17,9 +17,9 @@ import java.util.function.Function;
 /**
  *
  */
-public class Config<T extends Named & ConfigurableByClientsObject, C extends WebContextBase<?>, A, M, SL, CL, LL, S, PM>  {
+public class Config<T extends Named & ConfigurableByClientsObject, C extends WebContextBase<?>, A, M, SL, CL, LL, S, PM, U extends CommonProfile>  {
 
-    protected Clients<T, AuthorizationGenerator<C, ? extends CommonProfile>> clients;
+    protected Clients<T, AuthorizationGenerator<C, U>> clients;
 
     protected Map<String, A> authorizers = new HashMap<>();
 
@@ -96,7 +96,7 @@ public class Config<T extends Named & ConfigurableByClientsObject, C extends Web
         setAuthorizers(authorizers);
     }
 
-    public Clients getClients() {
+    public Clients<T, AuthorizationGenerator<C, U>> getClients() {
         return clients;
     }
 

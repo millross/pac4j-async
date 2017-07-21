@@ -4,7 +4,10 @@ import org.pac4j.async.core.client.AsyncBaseClient;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.context.AsyncWebContext;
+import org.pac4j.async.core.session.renewal.AsyncSessionRenewalStrategy;
 import org.pac4j.core.client.Clients;
+import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,11 +18,12 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 /**
  * Wrapper for the logic around session renewal besides the basic session store renewal code.
  */
-public class AsyncSessionRenewerImpl<C extends AsyncWebContext> {
+public class AsyncSessionRenewerImpl<C extends AsyncWebContext> implements AsyncSessionRenewalStrategy{
 
     private static final Logger logger = LoggerFactory.getLogger(AsyncSessionRenewerImpl.class);
 
-    protected CompletableFuture<Void> renewSession(final C context, final AsyncConfig<?, ?, C> config) {
+    @Override
+    public  <R, U extends CommonProfile, C extends AsyncWebContext> CompletableFuture<Void> renewSession(C context, AsyncConfig<R, U, C> config) {
 
         final AsyncSessionStore sessionStore = context.getSessionStore();
 
@@ -32,7 +36,7 @@ public class AsyncSessionRenewerImpl<C extends AsyncWebContext> {
                    final CompletableFuture<String> newSessionIdFuture = sessionStore.getOrCreateSessionId(context);
                    return oldSessionIdFuture.thenCombine(newSessionIdFuture, (oldSessionId, newSessionId) -> {
                        logger.debug("Renewing session: {} -> {}", oldSessionId, newSessionId);
-                       final Clients<AsyncClient<?, ?>, ?> clients = config.getClients();
+                       final Clients<AsyncClient<? extends Credentials, ? extends U>, ?> clients = config.getClients();
                        if (clients != null) {
                            clients.getClients().stream()
                                    .map(ac -> (AsyncBaseClient<?, ?>) ac)
