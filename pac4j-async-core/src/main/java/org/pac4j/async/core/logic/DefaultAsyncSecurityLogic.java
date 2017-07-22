@@ -58,6 +58,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
     private final AsyncLoadProfileFromSessionDecision<C> loadFromSessionDecision = new AsyncLoadProfileFromSessionDecision<>();
     private final AsyncDirectClientAuthenticator directClientAuthenticator; // to attempt direct client authentication initially
     private final AsyncDirectAuthFailedAuthenticator<C> directAuthFailedAuthenticator = new AsyncDirectAuthFailedAuthenticator<>();
+
     // Can be injected to provide custom exception handling for different frameworks, defaults to throwing the exception out
     // to the execution context provided.
     private final AsyncExceptionHandler<R> exceptionHandler;

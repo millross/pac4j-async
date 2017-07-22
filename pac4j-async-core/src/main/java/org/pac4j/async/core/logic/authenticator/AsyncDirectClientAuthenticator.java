@@ -1,5 +1,6 @@
 package org.pac4j.async.core.logic.authenticator;
 
+import org.pac4j.async.core.authenticate.AsyncClientAuthenticator;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.client.AsyncDirectClient;
 import org.pac4j.async.core.context.AsyncWebContext;
@@ -26,13 +27,15 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 /**
  *
  */
-public class AsyncDirectClientAuthenticator {
+public class AsyncDirectClientAuthenticator<U extends CommonProfile, C extends AsyncWebContext> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AsyncDirectClientAuthenticator.class);
 
     private final AsyncProfileSaveStrategy saveStrategy;
     private final AsyncSaveProfileToSessionDecision saveToSessionDecision;
     private final AsyncLoadProfileFromSessionDecision loadFromSessionDecision;
+    private final AsyncClientAuthenticator<U, C> perClientAuthenticator = new AsyncClientAuthenticator<>();
+
 
     public AsyncDirectClientAuthenticator(final AsyncProfileSaveStrategy saveStrategy, AsyncSaveProfileToSessionDecision saveToSessionDecision, AsyncLoadProfileFromSessionDecision loadFromSessionDecision) {
         this.saveStrategy = saveStrategy;
@@ -40,10 +43,9 @@ public class AsyncDirectClientAuthenticator {
         this.loadFromSessionDecision = loadFromSessionDecision;
     }
 
-    public final <U extends CommonProfile, WC extends AsyncWebContext>
-        CompletableFuture<List<U>> authenticate(final List<AsyncClient<? extends Credentials, U>> currentClients,
-                     final WC context,
-                     final AsyncProfileManager<U, WC> manager) {
+    public final CompletableFuture<List<U>> authenticate(final List<AsyncClient<? extends Credentials, U>> currentClients,
+                     final C context,
+                     final AsyncProfileManager<U, C> manager) {
 
         final Stream<AsyncDirectClient> directClientsStream = currentClients.stream()
                 .filter(c -> !c.isIndirect())
@@ -52,13 +54,8 @@ public class AsyncDirectClientAuthenticator {
         final List<CompletableFuture<Supplier<CompletableFuture<Boolean>>>> saveOperationList = directClientsStream
                 .peek(c -> logger.debug("Performing authentication for direct client: {}", c))
                 .map(c -> {
-                    final CompletableFuture<Credentials> credsFuture = c.getCredentials(context);
-                    // Annoyingly type inference fails unless we enforce the intermediate type
-                    // though this should be unnecessary
-                    final CompletableFuture<Optional<U>> profileFuture = credsFuture
-                            .thenCompose(creds -> c.getUserProfileFuture(creds, context));
-
-                    return credsFuture.thenCombine(profileFuture, (creds, profile) -> {
+                    final CompletableFuture<Optional<U>> profileOptionFuture = perClientAuthenticator.authenticateFor(c, context);
+                    return profileOptionFuture.thenApply(profile -> {
                         if (profile.isPresent()) {
                             return (Supplier<CompletableFuture<Boolean>>) () -> saveStrategy.saveProfile(manager,
                                     ctx -> saveToSessionDecision.make(context, currentClients, c, profile.get()),
@@ -68,13 +65,14 @@ public class AsyncDirectClientAuthenticator {
                             return (Supplier<CompletableFuture<Boolean>>) () -> CompletableFuture.completedFuture(false);
                         }
                     });
+
                 }).collect(Collectors.toList());
 
         // We can now determine whether we successfully saved any or not and attempt to retrieve them
         return  FutureUtils.combineFuturesToList(saveOperationList)
                 .thenCompose(saveStrategy::combineResults)
                 .thenCompose(b -> b ? manager.getAll(loadFromSessionDecision.make(context, currentClients)) :
-                        completedFuture(new LinkedList()));
+                        completedFuture(new LinkedList<>()));
 
     }
 
