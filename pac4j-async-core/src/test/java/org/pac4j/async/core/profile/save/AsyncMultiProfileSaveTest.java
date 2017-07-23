@@ -2,7 +2,6 @@ package org.pac4j.async.core.profile.save;
 
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
 import org.pac4j.async.core.TestCredentials;
@@ -167,13 +166,6 @@ public class AsyncMultiProfileSaveTest extends VertxAsyncTestBase {
 
         };
 
-    }
-
-    private Consumer<List<CommonProfile>> validateProfiles(final Async async, final Matcher<List<CommonProfile>> expectedProfiles) {
-        return l -> executionContext.runOnContext(() -> {
-            assertThat(l, is(expectedProfiles));
-            async.complete();
-        });
     }
 
     private Consumer<List<CommonProfile>> validateProfiles(final Async async, final CommonProfile... expectedProfiles) {

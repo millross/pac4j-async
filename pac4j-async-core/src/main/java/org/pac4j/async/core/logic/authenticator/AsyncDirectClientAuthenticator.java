@@ -55,15 +55,11 @@ public class AsyncDirectClientAuthenticator<U extends CommonProfile, C extends A
                 .peek(c -> logger.debug("Performing authentication for direct client: {}", c))
                 .map(c -> {
                     final CompletableFuture<Optional<U>> profileOptionFuture = perClientAuthenticator.authenticateFor(c, context);
-                    return profileOptionFuture.thenApply(profile -> {
-                        if (profile.isPresent()) {
-                            return (Supplier<CompletableFuture<Boolean>>) () -> saveStrategy.saveProfile(manager,
-                                    ctx -> saveToSessionDecision.make(context, currentClients, c, profile.get()),
-                                    profile.get());
+                    return profileOptionFuture.thenApply(profileOption -> {
+                        final U profile = profileOption.orElse(null);
+                        return (Supplier<CompletableFuture<Boolean>>) () -> saveStrategy.saveProfile(manager,
+                                    ctx -> saveToSessionDecision.make(context, currentClients, c, profile), profile);
 
-                        } else {
-                            return (Supplier<CompletableFuture<Boolean>>) () -> CompletableFuture.completedFuture(false);
-                        }
                     });
 
                 }).collect(Collectors.toList());
