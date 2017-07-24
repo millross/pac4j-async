@@ -8,6 +8,7 @@ import org.pac4j.core.context.HttpConstants;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -30,6 +31,8 @@ public class MockAsyncWebContextBuilder {
 
     public static MockAsyncWebContextBuilder from(final Vertx vertx ,
                                                   final AsyncPac4jExecutionContext executionContext) {
+        Objects.requireNonNull(vertx);
+        Objects.requireNonNull(executionContext);
         return new MockAsyncWebContextBuilder(vertx, executionContext);
     }
 

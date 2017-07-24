@@ -2,6 +2,7 @@ package org.pac4j.async.core.exception.handler;
 
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.async.core.IntentionalException;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
@@ -22,7 +23,13 @@ public class DefaultAsyncExceptionHandlerTest extends VertxAsyncTestBase {
 
     final AtomicReference<Throwable> thrown = new AtomicReference<>(null);
     final AsyncExceptionHandler<Integer> exceptionHandler = new DefaultAsyncExceptionHandler<>();
-    final AsyncWebContext webContext = MockAsyncWebContextBuilder.from(rule.vertx(), pac4jExecutionContext()).build();
+    // This requires non-null vertx, so must be set up in @Before blocks
+    AsyncWebContext webContext = null;
+
+    @Before
+    public void createWebContext() {
+        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), pac4jExecutionContext()).build();
+    }
 
     @Test
     public void successfulResult(final TestContext testContext) {
