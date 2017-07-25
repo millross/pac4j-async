@@ -1,7 +1,9 @@
 package org.pac4j.async.core;
 
+import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -11,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -48,6 +51,24 @@ public abstract class VertxAsyncTestBase {
         final CompletableFuture<T> future = new CompletableFuture<>();
         rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> future.completeExceptionally(e)));
         return future;
+    }
+
+    protected <T> CompletableFuture<Void> assertSuccessfulEvaluation (final CompletableFuture<T> future,
+                                                                      final Consumer<T> assertions,
+                                                                      final Async async){
+        return future.handle((v, t) -> {
+            if (v != null) {
+                    executionContext.runOnContext(() -> {
+                        assertions.accept(v);
+                        async.complete();
+                    });
+            } else {
+                executionContext.runOnContext(ExceptionSoftener.softenRunnable(() -> {
+                    throw t.getCause();
+                }));
+            }
+            return null;
+        });
     }
 
     protected static class AsynchronousVertxComputation implements AsynchronousComputation {
