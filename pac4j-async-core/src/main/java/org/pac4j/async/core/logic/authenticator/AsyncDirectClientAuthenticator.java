@@ -2,7 +2,6 @@ package org.pac4j.async.core.logic.authenticator;
 
 import org.pac4j.async.core.authenticate.AsyncClientAuthenticator;
 import org.pac4j.async.core.client.AsyncClient;
-import org.pac4j.async.core.client.AsyncDirectClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.future.FutureUtils;
 import org.pac4j.async.core.logic.decision.AsyncLoadProfileFromSessionDecision;
@@ -47,9 +46,9 @@ public class AsyncDirectClientAuthenticator<U extends CommonProfile, C extends A
                      final C context,
                      final AsyncProfileManager<U, C> manager) {
 
-        final Stream<AsyncDirectClient> directClientsStream = currentClients.stream()
-                .filter(c -> !c.isIndirect())
-                .map(c -> (AsyncDirectClient<? extends Credentials, U>) c);
+        final Stream<AsyncClient<? extends Credentials, U>> directClientsStream = currentClients.stream()
+                .filter(c -> !c.isIndirect());
+//                .map(c -> (AsyncDirectClient<? extends Credentials, U>) c);
 
         final List<CompletableFuture<Supplier<CompletableFuture<Boolean>>>> saveOperationList = directClientsStream
                 .peek(c -> logger.debug("Performing authentication for direct client: {}", c))

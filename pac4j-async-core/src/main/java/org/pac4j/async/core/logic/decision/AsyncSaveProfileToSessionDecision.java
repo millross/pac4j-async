@@ -1,7 +1,6 @@
 package org.pac4j.async.core.logic.decision;
 
 import org.pac4j.async.core.client.AsyncClient;
-import org.pac4j.async.core.client.AsyncDirectClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.profile.CommonProfile;
 
@@ -19,7 +18,7 @@ public class AsyncSaveProfileToSessionDecision<U extends CommonProfile, C extend
     }
 
     public boolean make(final C context, final List<AsyncClient> currentClients,
-                        final AsyncDirectClient directClient, final U profile) {
+                        final AsyncClient directClient, final U profile) {
         return saveToSession;
     }
 
