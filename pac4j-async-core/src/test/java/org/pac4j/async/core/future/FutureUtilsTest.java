@@ -23,12 +23,12 @@ import static org.pac4j.async.core.future.FutureUtils.shortCircuitedFuture;
  */
 public class FutureUtilsTest extends VertxAsyncTestBase {
 
-    final AtomicInteger failureStep = new AtomicInteger(0);
+    final AtomicInteger endStep = new AtomicInteger(0);
 
     @Before
     public void setup() {
         // Reset the failure step to zero
-        failureStep.set(0);
+        endStep.set(0);
     }
 
     // empty short circuited future
@@ -39,7 +39,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), false)
             .thenAccept(b -> executionContext.runOnContext(() -> {
                 assertThat(b, is(true));
-                assertThat(failureStep.get(), is(0));
+                assertThat(endStep.get(), is(0));
                 async.complete();
             }));
     }
@@ -54,7 +54,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
-                    assertThat(failureStep.get(), is(1));
+                    assertThat(endStep.get(), is(1));
                     async.complete();
                 }));
     }
@@ -70,7 +70,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
-                    assertThat(failureStep.get(), is(1));
+                    assertThat(endStep.get(), is(1));
                     async.complete();
                 }));
     }
@@ -86,7 +86,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), true)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(true));
-                    assertThat(failureStep.get(), is(1));
+                    assertThat(endStep.get(), is(1));
                     async.complete();
                 }));
     }
@@ -101,7 +101,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(false));
-                    assertThat(failureStep.get(), is(2));
+                    assertThat(endStep.get(), is(2));
                     async.complete();
                 }));
     }
@@ -116,7 +116,7 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 .stream(), false)
                 .thenAccept(b -> executionContext.runOnContext(() -> {
                     assertThat(b, is(true));
-                    assertThat(failureStep.get(), is(2));
+                    assertThat(endStep.get(), is(2));
                     async.complete();
                 }));
     }
@@ -150,13 +150,81 @@ public class FutureUtilsTest extends VertxAsyncTestBase {
                 });
     }
 
+    @Test(timeout = 1000)
+    public void allInSequenceWithEmptyList(final TestContext testContext) {
+        final Async async = testContext.async();
+        FutureUtils.allInSequence(Arrays.<Supplier<CompletableFuture<Boolean>>>asList()
+                .stream())
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(false));
+                    assertThat(endStep.get(), is(0));
+                    async.complete();
+                }));
+    }
+
+    @Test(timeout = 1000)
+    public void allInSequenceAllPassing(final TestContext testContext) {
+        final Async async = testContext.async();
+        FutureUtils.allInSequence(Arrays.<Supplier<CompletableFuture<Boolean>>>asList(
+                indexedFutureSupplier(1, true),
+                indexedFutureSupplier(2, true))
+                .stream())
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(true));
+                    assertThat(endStep.get(), is(2));
+                    async.complete();
+                }));
+    }
+
+    @Test(timeout = 1000)
+    public void allInSequenceAllFailing(final TestContext testContext) {
+        final Async async = testContext.async();
+        FutureUtils.allInSequence(Arrays.<Supplier<CompletableFuture<Boolean>>>asList(
+                indexedFutureSupplier(1, false),
+                indexedFutureSupplier(2, false))
+                .stream())
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(false));
+                    assertThat(endStep.get(), is(2));
+                    async.complete();
+                }));
+    }
+
+    @Test(timeout = 1000)
+    public void allInSequenceOnlyFirstOfTwoFailing(final TestContext testContext) {
+        final Async async = testContext.async();
+        FutureUtils.allInSequence(Arrays.<Supplier<CompletableFuture<Boolean>>>asList(
+                indexedFutureSupplier(1, false),
+                indexedFutureSupplier(2, true))
+                .stream())
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(true));
+                    assertThat(endStep.get(), is(2));
+                    async.complete();
+                }));
+    }
+
+    @Test(timeout = 1000)
+    public void allInSequenceOnlySecondOfTwoFailing(final TestContext testContext) {
+        final Async async = testContext.async();
+        FutureUtils.allInSequence(Arrays.<Supplier<CompletableFuture<Boolean>>>asList(
+                indexedFutureSupplier(1, true),
+                indexedFutureSupplier(2, false))
+                .stream())
+                .thenAccept(b -> executionContext.runOnContext(() -> {
+                    assertThat(b, is(true));
+                    assertThat(endStep.get(), is(2));
+                    async.complete();
+                }));
+    }
+
     private CompletableFuture<Integer> delayedFuture(final int value, final int delayMs) {
         return delayedResult(delayMs, () -> value);
     }
 
     private Supplier<CompletableFuture<Boolean>> indexedFutureSupplier(final int index, final boolean value) {
         return () -> delayedResult(() -> {
-            failureStep.set(index);
+            endStep.set(index);
             return value;
         });
 

@@ -68,6 +68,17 @@ public class FutureUtils {
                         .orElseGet(fallbackFutureSupplier));
     }
 
+    /**
+     * Execute all the computations in the list in sequence. Return a completable future which will complete as follows:-
+     * If any succeeded (marked by a completion value of true) complete with true, otherwise complete with false
+     * @return completable future representing the combined result above
+     */
+    public static CompletableFuture<Boolean> allInSequence(final Stream<Supplier<CompletableFuture<Boolean>>> futureSuppliers) {
+        return futureSuppliers.reduce(completedFuture(Boolean.FALSE),
+                (f, a) -> f.thenCompose(b1 -> a.get().thenCompose(b2 -> CompletableFuture.completedFuture(b1 || b2))),
+                (bf1, bf2) -> bf1.thenCompose(b1 -> bf2.thenCompose(b2 -> CompletableFuture.completedFuture(b1 || b2))));
+    }
+
     public static CompletableFuture<Boolean> shortCircuitedFuture(final Stream<Supplier<CompletableFuture<Boolean>>> futureSuppliers,
                                                                   final Boolean fallbackOn) {
         return futureSuppliers.reduce(completedFuture(!fallbackOn),
