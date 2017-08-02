@@ -1,5 +1,6 @@
 package org.pac4j.async.core.client;
 
+import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuthenticationStrategy;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.client.Clients;
@@ -70,6 +71,13 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
      * rather than the future wrapper
      */
     protected abstract CompletableFuture<Optional<U>> retrieveUserProfileFuture(final C credentials, final AsyncWebContext context);
+
+    /**
+     * Retrieve the strategy for recording failed authentication attempts. This lets us define getCredentials in the same
+     * way for all clients, as the fundamental variation is whether or not any recording must be made of failed
+     * authentication attempts.
+     */
+    protected abstract RecordFailedAuthenticationStrategy authFailureRecorder();
 
     @Override
     public void configureFromClientsObject(Clients<AsyncClient<C, U>, AsyncAuthorizationGenerator<U>> toConfigureFrom) {

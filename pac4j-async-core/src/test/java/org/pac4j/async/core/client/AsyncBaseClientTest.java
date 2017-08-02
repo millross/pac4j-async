@@ -7,6 +7,7 @@ import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.pac4j.async.core.*;
+import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuthenticationStrategy;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.exception.handler.AsyncExceptionHandler;
@@ -231,6 +232,11 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
+            protected RecordFailedAuthenticationStrategy authFailureRecorder() {
+                return null;
+            }
+
+            @Override
             public HttpAction redirect(AsyncWebContext context) throws HttpAction {
                 return null;
             }
@@ -265,6 +271,11 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
                 final CompletableFuture<Optional<TestProfile>> future = new CompletableFuture<>();
                 rule.vertx().setTimer(300, l -> future.complete(Optional.empty()));
                 return future;
+            }
+
+            @Override
+            protected RecordFailedAuthenticationStrategy authFailureRecorder() {
+                return null;
             }
 
             @Override
@@ -304,6 +315,11 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
                     future.completeExceptionally(new IntentionalException());
                 });
                 return future;
+            }
+
+            @Override
+            protected RecordFailedAuthenticationStrategy authFailureRecorder() {
+                return null;
             }
 
             @Override
