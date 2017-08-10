@@ -1,6 +1,7 @@
 package org.pac4j.async.core.profile.save;
 
 import org.pac4j.async.core.context.AsyncWebContext;
+import org.pac4j.async.core.future.FutureUtils;
 import org.pac4j.async.core.profile.AsyncProfileManager;
 import org.pac4j.core.profile.CommonProfile;
 
@@ -8,9 +9,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import static org.pac4j.async.core.future.FutureUtils.combineFuturesToList;
 import static org.pac4j.async.core.future.FutureUtils.shortCircuitedFuture;
 
 /**
@@ -28,10 +27,11 @@ public enum AsyncProfileSave implements AsyncProfileSaveStrategy {
     MULTI_PROFILE_SAVE(true) {
         @Override
         public CompletableFuture<Boolean> combineResults(List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers) {
-            final List<CompletableFuture<Boolean>> futureList = saveFutureSuppliers.stream()
-                    .map(s -> s.get()).collect(Collectors.toList());
-            return combineFuturesToList(futureList).thenApply(l ->
-                    l.stream().filter(b -> b == true).findFirst().orElse(false));
+            return FutureUtils.allInSequence(saveFutureSuppliers.stream());
+//            final List<CompletableFuture<Boolean>> futureList = saveFutureSuppliers.stream()
+//                    .map(s -> s.get()).collect(Collectors.toList());
+//            return combineFuturesToList(futureList).thenApply(l ->
+//                    l.stream().filter(b -> b == true).findFirst().orElse(false));
         }
     };
 
