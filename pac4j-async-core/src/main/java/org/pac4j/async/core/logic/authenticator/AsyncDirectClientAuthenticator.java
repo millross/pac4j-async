@@ -48,7 +48,6 @@ public class AsyncDirectClientAuthenticator<U extends CommonProfile, C extends A
 
         final Stream<AsyncClient<? extends Credentials, U>> directClientsStream = currentClients.stream()
                 .filter(c -> !c.isIndirect());
-//                .map(c -> (AsyncDirectClient<? extends Credentials, U>) c);
 
         final List<CompletableFuture<Supplier<CompletableFuture<Boolean>>>> saveOperationList = directClientsStream
                 .peek(c -> logger.debug("Performing authentication for direct client: {}", c))

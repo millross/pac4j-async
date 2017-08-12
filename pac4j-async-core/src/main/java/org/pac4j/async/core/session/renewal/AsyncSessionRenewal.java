@@ -1,11 +1,11 @@
 package org.pac4j.async.core.session.renewal;
 
+import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.client.AsyncBaseClient;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
-import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.CommonProfile;
@@ -50,7 +50,7 @@ public enum AsyncSessionRenewal implements AsyncSessionRenewalStrategy {
                         final CompletableFuture<String> newSessionIdFuture = sessionStore.getOrCreateSessionId(context);
                         return oldSessionIdFuture.thenCombine(newSessionIdFuture, (oldSessionId, newSessionId) -> {
                             logger.debug("Renewing session: {} -> {}", oldSessionId, newSessionId);
-                            final Clients<AsyncClient<? extends Credentials, ? extends U>, ? extends AuthorizationGenerator<? extends AsyncWebContext, ? extends U>> clients = config.getClients();
+                            final Clients<AsyncClient<? extends Credentials, ? extends U>, AsyncAuthorizationGenerator<U>> clients = config.getClients();
                             if (clients != null) {
                                 clients.getClients().stream()
                                         .map(ac -> (AsyncBaseClient<?, ?>) ac)

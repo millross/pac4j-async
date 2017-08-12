@@ -28,10 +28,6 @@ public enum AsyncProfileSave implements AsyncProfileSaveStrategy {
         @Override
         public CompletableFuture<Boolean> combineResults(List<Supplier<CompletableFuture<Boolean>>> saveFutureSuppliers) {
             return FutureUtils.allInSequence(saveFutureSuppliers.stream());
-//            final List<CompletableFuture<Boolean>> futureList = saveFutureSuppliers.stream()
-//                    .map(s -> s.get()).collect(Collectors.toList());
-//            return combineFuturesToList(futureList).thenApply(l ->
-//                    l.stream().filter(b -> b == true).findFirst().orElse(false));
         }
     };
 

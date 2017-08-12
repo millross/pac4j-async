@@ -2,6 +2,7 @@ package org.pac4j.async.core.logic;
 
 import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import org.pac4j.async.core.authenticate.AsyncClientAuthenticator;
+import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.context.AsyncWebContext;
@@ -10,7 +11,6 @@ import org.pac4j.async.core.profile.AsyncProfileManager;
 import org.pac4j.async.core.profile.save.AsyncProfileSaveStrategy;
 import org.pac4j.async.core.session.renewal.AsyncSessionRenewal;
 import org.pac4j.async.core.session.renewal.AsyncSessionRenewalStrategy;
-import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.credentials.Credentials;
@@ -61,7 +61,7 @@ public class DefaultAsyncCallbackLogic<R, U extends CommonProfile, WC extends As
         assertNotNull("config", config);
         assertNotNull("httpActionAdapter", httpActionAdapter);
         assertNotBlank(Pac4jConstants.DEFAULT_URL, defaultUrl);
-        final Clients<AsyncClient<? extends Credentials, ? extends U>, AuthorizationGenerator<WC, U>> clients = config.getClients();
+        final Clients<AsyncClient<? extends Credentials, ? extends U>, AsyncAuthorizationGenerator<U>> clients = config.getClients();
         assertNotNull("clients", clients);
 
         // logic
