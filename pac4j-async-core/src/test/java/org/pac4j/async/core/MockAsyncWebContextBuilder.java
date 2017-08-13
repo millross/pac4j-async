@@ -2,7 +2,6 @@ package org.pac4j.async.core;
 
 import io.vertx.core.Vertx;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.HttpConstants;
 
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static org.mockito.Matchers.anyObject;
@@ -30,18 +30,19 @@ public class MockAsyncWebContextBuilder {
     private final Map<String, Object> requestAttributes = new HashMap<>();
 
     public static MockAsyncWebContextBuilder from(final Vertx vertx ,
-                                                  final AsyncPac4jExecutionContext executionContext) {
+                                                  final AsynchronousComputation asyncComputationAdapter) {
         Objects.requireNonNull(vertx);
-        Objects.requireNonNull(executionContext);
-        return new MockAsyncWebContextBuilder(vertx, executionContext);
+        Objects.requireNonNull(asyncComputationAdapter);
+        return new MockAsyncWebContextBuilder(vertx, asyncComputationAdapter);
     }
 
     private MockAsyncWebContextBuilder(final Vertx vertx,
-            final AsyncPac4jExecutionContext executionContext) {
+            final AsynchronousComputation asynchronousComputationAdapter) {
 
         constructor = webContext -> {
             // Set up execution context
-            when(webContext.getExecutionContext()).thenReturn(executionContext);
+            when(webContext.getExecutionContext()).thenReturn(asynchronousComputationAdapter.getExecutionContext());
+            when(webContext.getAsyncComputationAdapter()).thenReturn(asynchronousComputationAdapter);
 
             // Set up session attributes
             doAnswer(invocation -> {
@@ -112,6 +113,21 @@ public class MockAsyncWebContextBuilder {
                 return null;
             }).when(webContext).addResponseCookie(any(Cookie.class));
 
+        });
+        return this;
+    }
+
+    public MockAsyncWebContextBuilder withStatusRecording(final AtomicInteger status) {
+        status.set(-1);
+        constructor = constructor.andThen(webContext -> {
+            doAnswer(invocation -> {
+                if (status.get() != -1) {
+                    throw new RuntimeException("Status has already been set");
+                }
+                final int newStatus = invocation.getArgumentAt(0, Integer.class).intValue();
+                status.set(newStatus);
+                return null;
+            }).when(webContext).setResponseStatus(anyInt());
         });
         return this;
     }

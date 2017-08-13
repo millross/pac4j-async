@@ -41,7 +41,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
 
     @Test(timeout = 2000)
     public void noIndirectClientsAvailable(final TestContext testContext) {
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .build();
         final List<AsyncClient<? extends Credentials, CommonProfile>> clients = Arrays.asList(getDirectClient());
         final Async async = testContext.async();
@@ -61,7 +61,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
     public void indirectClientAvailable(final TestContext testContext) {
 
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
         final List<AsyncClient<? extends Credentials, CommonProfile>> clients = Arrays.asList(getIndirectClient());

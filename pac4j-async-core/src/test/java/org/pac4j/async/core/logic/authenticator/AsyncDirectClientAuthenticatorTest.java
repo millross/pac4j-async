@@ -46,7 +46,7 @@ public class AsyncDirectClientAuthenticatorTest extends VertxAsyncTestBase {
 
     @Before
     public void setupClient() {
-        webContextBuilder = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext);
+        webContextBuilder = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter);
     }
 
     @Test

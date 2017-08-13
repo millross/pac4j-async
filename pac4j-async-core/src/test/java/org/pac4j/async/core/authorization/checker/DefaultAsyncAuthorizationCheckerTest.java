@@ -207,7 +207,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testHsts(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .withScheme(SCHEME_HTTPS)
                 .build();
@@ -219,7 +219,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testHstsCaseTrim(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .withScheme(SCHEME_HTTPS)
                 .build();
@@ -231,7 +231,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testNosniff(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
 
@@ -243,7 +243,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testNoframe(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
 
@@ -256,7 +256,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testXssprotection(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
 
@@ -268,7 +268,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testNocache(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
 
@@ -285,7 +285,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testAllowAjaxRequests(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
 
@@ -310,7 +310,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testSecurityHeaders(final TestContext testContext) throws Exception {
         final Map<String, String> responseHeaders = new HashMap<>();
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .withScheme(SCHEME_HTTPS)
                 .build();
@@ -327,10 +327,10 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
                         ).forEach(s -> assertThat(responseHeaders.get(s), is(notNullValue()))));
     }
 
-    @Test
+    @Test(timeout=1000)
     public void testCsrf(final TestContext testContext) throws Exception {
         final Map<String, Cookie> responseCookies = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseCookies(responseCookies)
                 .build();
 
@@ -347,7 +347,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testCsrfToken(final TestContext testContext) throws Exception {
 
         final Map<String, Cookie> responseCookies = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseCookies(responseCookies)
                 .build();
 
@@ -365,7 +365,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
 
         final Map<String, Cookie> responseCookies = new HashMap<>();
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseCookies(responseCookies)
                 .withRequestMethod(POST)
                 .build();
@@ -383,7 +383,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testCsrfTokenPost(final TestContext testContext) throws Exception {
 
         final Map<String, Cookie> responseCookies = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseCookies(responseCookies)
                 .withRequestMethod(POST)
                 .build();
@@ -401,7 +401,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     public void testCsrfPostTokenParameter(final TestContext testContext) throws Exception {
 
         final Map<String, Cookie> responseCookies = new HashMap<>();
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseCookies(responseCookies)
                 .withRequestMethod(POST)
                 .build();
@@ -423,7 +423,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testCsrfCheckPost(final TestContext testContext) throws Exception {
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRequestMethod(POST)
                 .build();
 
@@ -440,7 +440,7 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
     @Test
     public void testCsrfCheckPostTokenParameter(final TestContext testContext) throws Exception {
 
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRequestMethod(POST)
                 .build();        final DefaultAsyncCsrfTokenGenerator generator = new DefaultAsyncCsrfTokenGenerator();
 
@@ -495,17 +495,18 @@ public class DefaultAsyncAuthorizationCheckerTest extends VertxAsyncTestBase imp
                                             final Supplier<CompletableFuture<Boolean>> toTest,
                                             final Consumer<Boolean> assertions) throws Exception {
         final Async async = testContext.async();
-        toTest.get().thenAccept(b -> executionContext.runOnContext(() -> {
-            assertions.accept(b);
-            async.complete();
-        }));
+        assertSuccessfulEvaluation(toTest.get(), assertions, async);
+//        toTest.get().thenAccept(b -> executionContext.runOnContext(() -> {
+//            assertions.accept(b);
+//            async.complete();
+//        }));
 
     }
 
     private AsyncWebContext mockWebContext(final Map<String, String> responseHeaders,
                                            final Map<String, Cookie> responseCookies,
                                            final HTTP_METHOD httpMethod) {
-        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext)
+        final AsyncWebContext context = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter)
                 .withRecordedResponseHeaders(responseHeaders)
                 .withRecordedResponseCookies(responseCookies)
                 .withRequestMethod(httpMethod)

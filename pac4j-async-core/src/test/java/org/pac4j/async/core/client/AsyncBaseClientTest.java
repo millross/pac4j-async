@@ -40,7 +40,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
     @Before
     public void setupWebContext() {
         // We don't have an execution context till this point so we need to initialise here
-        webContext =  MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        webContext =  MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
     }
 
     @Test(timeout = 1000)

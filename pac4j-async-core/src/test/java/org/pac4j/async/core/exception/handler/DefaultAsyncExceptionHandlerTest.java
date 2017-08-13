@@ -12,6 +12,7 @@ import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,7 +29,7 @@ public class DefaultAsyncExceptionHandlerTest extends VertxAsyncTestBase {
 
     @Before
     public void createWebContext() {
-        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), pac4jExecutionContext()).build();
+        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
     }
 
     @Test
@@ -43,7 +44,7 @@ public class DefaultAsyncExceptionHandlerTest extends VertxAsyncTestBase {
         });
     }
 
-    @Test
+    @Test(expected = IntentionalException.class) // Exception should be thrown out to context
     public void exceptionalResult(final TestContext testContext) {
         final IntentionalException e = new IntentionalException();
         final Async async = testContext.async();

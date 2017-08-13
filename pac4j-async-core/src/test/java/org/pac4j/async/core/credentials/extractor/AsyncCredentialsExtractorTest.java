@@ -35,7 +35,7 @@ public class AsyncCredentialsExtractorTest extends VertxAsyncTestBase {
 
     @Before
     public void setupWebContext() {
-        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
     }
 
     @Test(timeout=1000)

@@ -47,7 +47,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
     @Before
     public void setUp() {
-        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        webContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
         // Use the test's execution context for async work here - this compares with the fact that  it is
         // effectively the execution context in force when the web context is created
         profileManager = new AsyncProfileManager(webContext);

@@ -4,8 +4,9 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.pac4j.async.core.AsynchronousComputation;
 import org.pac4j.async.core.VertxAsyncTestBase;
-import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
+import org.pac4j.async.core.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.context.Cookie;
 
@@ -59,7 +60,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
             });
         }).when(sessionStore).set(any(TestWebContext.class), anyString(), anyObject());
 
-        webContext = new TestWebContext(executionContext, sessionStore);
+        webContext = new TestWebContext(asynchronousComputationAdapter, sessionStore);
     }
 
     @Test(timeout = 1000)
@@ -100,12 +101,12 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     private static class TestWebContext implements AsyncWebContext {
 
         private final AsyncSessionStore sessionStore;
-        private AsyncPac4jExecutionContext executionContext;
+        private final VertxAsynchronousComputationAdapter asyncComputationAdapter;
 
         private TestWebContext(
-                final AsyncPac4jExecutionContext executionConext,
+                final VertxAsynchronousComputationAdapter asyncComputationAdapter,
                 final AsyncSessionStore sessionStore) {
-            this.executionContext = executionConext;
+            this.asyncComputationAdapter = asyncComputationAdapter;
             this.sessionStore = sessionStore;
         }
 
@@ -115,8 +116,8 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
         }
 
         @Override
-        public AsyncPac4jExecutionContext getExecutionContext() {
-            return executionContext;
+        public AsynchronousComputation getAsyncComputationAdapter() {
+            return asyncComputationAdapter;
         }
 
         @Override

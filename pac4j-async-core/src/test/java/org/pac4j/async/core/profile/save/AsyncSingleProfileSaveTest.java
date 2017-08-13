@@ -148,7 +148,7 @@ public class AsyncSingleProfileSaveTest extends VertxAsyncTestBase {
     }
 
     private AsyncProfileManager asyncProfileManager() {
-        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
         return new AsyncProfileManager(asyncWebContext);
     }
 

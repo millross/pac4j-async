@@ -5,8 +5,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pac4j.async.core.AsynchronousComputation;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
-import org.pac4j.async.core.VertxContextRunner;
+import org.pac4j.async.core.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -39,8 +40,9 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
+        final AsynchronousComputation asyncComputationAdapter = new VertxAsynchronousComputationAdapter(vertx, vertx.getOrCreateContext());
         final CompletableFuture<Void> setSessionAttributeFuture;
-        webContext = MockAsyncWebContextBuilder.from(vertx, new VertxContextRunner(vertx.getOrCreateContext())).build();
+        webContext = MockAsyncWebContextBuilder.from(vertx, asyncComputationAdapter).build();
     }
 
     @After

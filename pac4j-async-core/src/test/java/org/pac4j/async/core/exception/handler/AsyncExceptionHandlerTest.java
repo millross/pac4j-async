@@ -60,7 +60,7 @@ public class AsyncExceptionHandlerTest extends VertxAsyncTestBase {
     public void testExtractionHttpActionOnSuccess(final TestContext testContext) {
 
         final Async async = testContext.async();
-        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
         final HttpAction okAction = HttpAction.ok("No op", asyncWebContext);
         final CompletableFuture<HttpAction> okFuture = delayedResult(() -> okAction)
                 .handle(softenBiFunction(AsyncExceptionHandler::extractAsyncHttpAction));
@@ -73,7 +73,7 @@ public class AsyncExceptionHandlerTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testExtractHttpActionOnHttpActionExceptionalCompletion(final TestContext testContext) {
         final Async async = testContext.async();
-        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
         final HttpAction forbiddenAction = HttpAction.forbidden("Forbidden", asyncWebContext);
         final CompletableFuture<HttpAction> okFuture = this.<HttpAction>delayedException(100, forbiddenAction)
                 .handle(softenBiFunction(AsyncExceptionHandler::extractAsyncHttpAction));
@@ -113,7 +113,7 @@ public class AsyncExceptionHandlerTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testOtherExceptionThrownDuringResultTransformation(final TestContext testContext) {
         final Async async = testContext.async();
-        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), executionContext).build();
+        final AsyncWebContext asyncWebContext = MockAsyncWebContextBuilder.from(rule.vertx(), asynchronousComputationAdapter).build();
         final HttpAction forbiddenAction = HttpAction.forbidden("Forbidden", asyncWebContext);
         final CompletableFuture<HttpAction> okFuture = this.<Integer>delayedResult(100, () -> 2)
                 .<HttpAction>thenApply(v -> {

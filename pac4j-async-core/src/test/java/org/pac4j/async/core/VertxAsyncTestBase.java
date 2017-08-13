@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 public abstract class VertxAsyncTestBase {
 
     protected static final long DEFAULT_DELAY = 250;
+    protected VertxAsynchronousComputationAdapter asynchronousComputationAdapter = null;
     protected AsyncPac4jExecutionContext executionContext = null;
 
     @Rule
@@ -34,7 +35,8 @@ public abstract class VertxAsyncTestBase {
     @Before
     public final void applyExceptionHandling(final TestContext context) {
         rule.vertx().exceptionHandler(context.exceptionHandler());
-        executionContext = new VertxContextRunner(rule.vertx().getOrCreateContext());
+        this.asynchronousComputationAdapter = new VertxAsynchronousComputationAdapter(rule.vertx(), rule.vertx().getOrCreateContext());
+        this.executionContext = asynchronousComputationAdapter.getExecutionContext();
     }
 
     protected  <T> CompletableFuture<T> delayedResult(final Supplier<T> supplier) {
@@ -48,8 +50,21 @@ public abstract class VertxAsyncTestBase {
     }
 
     protected <T> CompletableFuture<T> delayedException (final long delay, final Exception e) {
+//        final CompletableFuture<T> future = new CompletableFuture<>();
+//        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> {
+//            System.out.println("Exceptional completion");
+//            future.completeExceptionally(e);
+//        }));
+//        return future;
+        return delayedException(delay, () -> e);
+    }
+
+    protected <T> CompletableFuture<T> delayedException (final long delay, final Supplier<Exception> exceptionSupplier) {
         final CompletableFuture<T> future = new CompletableFuture<>();
-        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> future.completeExceptionally(e)));
+        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> {
+            System.out.println("Exceptional completion");
+            future.completeExceptionally(exceptionSupplier.get());
+        }));
         return future;
     }
 
@@ -57,15 +72,15 @@ public abstract class VertxAsyncTestBase {
                                                                       final Consumer<T> assertions,
                                                                       final Async async){
         return future.handle((v, t) -> {
-            if (v != null) {
-                    executionContext.runOnContext(() -> {
-                        assertions.accept(v);
-                        async.complete();
-                    });
-            } else {
+            if (t != null) {
                 executionContext.runOnContext(ExceptionSoftener.softenRunnable(() -> {
                     throw t.getCause();
                 }));
+            } else {
+                executionContext.runOnContext(() -> {
+                    assertions.accept(v);
+                    async.complete();
+                });
             }
             return null;
         });
