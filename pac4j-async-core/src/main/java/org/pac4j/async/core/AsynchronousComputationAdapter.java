@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * implemented on a per-network basis. It _may_ be that we ofer some standard ones which can be reused across
  * frameworks.
  */
-public interface AsynchronousComputation {
+public interface AsynchronousComputationAdapter {
 
     static <T> CompletableFuture<T> fromNonBlocking(final Supplier<T> syncComputation) {
         return CompletableFuture.completedFuture(syncComputation.get());
@@ -31,11 +31,11 @@ public interface AsynchronousComputation {
 
     /**
      * Return a completableFuture obtained by running the specified non-blocking computation on the context associated
-     * with this AsynchronousComputation. This is important where a computation must occur on a specific context
+     * with this AsynchronousComputationAdapter. This is important where a computation must occur on a specific context
      * (usually used to ensure it will occur on the correct thread in asynchronous frameworks such as vert.x).
      *
      * Note that in general a context will be associated with only one thread, therefore it is sensible to offer an
-     * AsynchronousComputation per context-related thread. The "OnContext" converters are to be used when a computation
+     * AsynchronousComputationAdapter per context-related thread. The "OnContext" converters are to be used when a computation
      * will mutate state on that context, the aim being to preserve thread-safety.
      *
      * @param syncComputation computation which will return the value with which to complete the future
@@ -50,12 +50,12 @@ public interface AsynchronousComputation {
 
     /**
      * Return a completableFuture obtained by running the specified void-returning non-blocking computation on the
-     * context associated with this AsynchronousComputation. This is important where a computation must occur on
+     * context associated with this AsynchronousComputationAdapter. This is important where a computation must occur on
      * a specific context (usually used to ensure it will occur on the correct thread in asynchronous frameworks such
      * as vert.x).
      *
      * Note that in general a context will be associated with only one thread, therefore it is sensible to offer an
-     * AsynchronousComputation per context-related thread. The "OnContext" converters are to be used when a computation
+     * AsynchronousComputationAdapter per context-related thread. The "OnContext" converters are to be used when a computation
      * will mutate state on that context, the aim being to preserve thread-safety.
      *
      * param syncComputation computation which will return the value with which to complete the future

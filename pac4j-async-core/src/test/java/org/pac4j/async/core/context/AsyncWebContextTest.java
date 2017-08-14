@@ -4,7 +4,7 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import org.junit.Before;
 import org.junit.Test;
-import org.pac4j.async.core.AsynchronousComputation;
+import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.core.session.AsyncSessionStore;
@@ -116,7 +116,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
         }
 
         @Override
-        public AsynchronousComputation getAsyncComputationAdapter() {
+        public AsynchronousComputationAdapter getAsyncComputationAdapter() {
             return asyncComputationAdapter;
         }
 

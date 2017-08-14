@@ -1,7 +1,7 @@
 package org.pac4j.async.core.matching;
 
 import com.aol.cyclops.invokedynamic.ExceptionSoftener;
-import org.pac4j.async.core.AsynchronousComputation;
+import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.matching.Matcher;
@@ -19,7 +19,7 @@ public interface AsyncMatcher {
      * one
      */
     static <U extends CommonProfile> AsyncMatcher fromNonBlockingMatcher(final Matcher<WebContextBase<?>> syncMatcher) {
-        return context -> AsynchronousComputation.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncMatcher.matches(context)));
+        return context -> AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncMatcher.matches(context)));
     }
 
     /**

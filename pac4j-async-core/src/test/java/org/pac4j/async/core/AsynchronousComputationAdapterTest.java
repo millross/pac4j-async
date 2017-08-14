@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * Simple tests around converting synchronous computations into asynchronous computations. We use vertx-unit test
  * classes to create our asynchronous environment
  */
-public class AsynchronousComputationTest extends VertxAsyncTestBase {
+public class AsynchronousComputationAdapterTest extends VertxAsyncTestBase {
 
     /*
     Test that a completable future around a non-blocking piece of code will complete immediately on-thread as if it
@@ -31,7 +31,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final int input = 1;
 
-        AsynchronousComputation.fromNonBlocking(() -> incrementNow(input))
+        AsynchronousComputationAdapter.fromNonBlocking(() -> incrementNow(input))
             .thenAccept(i -> context.runOnContext(x -> {
                 assertThat(i, is(input + 1));
                 async.complete();
@@ -45,7 +45,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final AtomicInteger mutable = new AtomicInteger(1);
 
-        AsynchronousComputation.fromNonBlocking(() -> mutable.set(10))
+        AsynchronousComputationAdapter.fromNonBlocking(() -> mutable.set(10))
             .thenRun(() -> context.runOnContext(v -> {
                 assertThat(mutable.get(), is(10));
                 async.complete();
@@ -63,7 +63,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final int input = 1;
 
-        AsynchronousComputation.fromNonBlocking(() -> IntentionalException.throwException(input))
+        AsynchronousComputationAdapter.fromNonBlocking(() -> IntentionalException.throwException(input))
                 .thenAccept(i -> {
                     context.runOnContext(x -> {
                         assertThat(i, is(input + 1));
@@ -84,7 +84,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final int input = 1;
 
-        AsynchronousComputation.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> CheckedIntentionalException.throwException()))
+        AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> CheckedIntentionalException.throwException()))
                 .thenAccept(i -> {
                     context.runOnContext(x -> {
                         assertThat(i, is(input + 1));
@@ -106,7 +106,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
         final int input = 1;
 
-        new AsynchronousVertxComputation(rule.vertx(), context)
+        new VertxAsynchronousComputationAdapter(rule.vertx(), context)
                 .fromBlocking(() -> {
                     try {
                         Thread.sleep(500);
@@ -133,7 +133,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         final Async async = testContext.async();
         final AtomicInteger mutable = new AtomicInteger(1);
 
-        new AsynchronousVertxComputation(rule.vertx(), context)
+        new VertxAsynchronousComputationAdapter(rule.vertx(), context)
                 .fromBlocking(() -> {
                     try {
                         Thread.sleep(500);
@@ -159,7 +159,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
         final int input = 1;
 
-        new AsynchronousVertxComputation(rule.vertx(), context)
+        new VertxAsynchronousComputationAdapter(rule.vertx(), context)
                 .fromBlocking(() -> {
                     try {
                         Thread.sleep(500);
@@ -228,7 +228,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
 
         final List<Integer> ints = Arrays.asList(1);
-        final CompletableFuture<Void> future = new AsynchronousVertxComputation(rule.vertx(), context)
+        final CompletableFuture<Void> future = new VertxAsynchronousComputationAdapter(rule.vertx(), context)
                 .fromNonBlockingOnContext(() -> {
                     ints.set(0, 2);
                 });
@@ -244,7 +244,7 @@ public class AsynchronousComputationTest extends VertxAsyncTestBase {
         Async async = testContext.async();
 
         final List<Integer> ints = Arrays.asList(1);
-        final CompletableFuture<Integer> future = new AsynchronousVertxComputation(rule.vertx(), context)
+        final CompletableFuture<Integer> future = new VertxAsynchronousComputationAdapter(rule.vertx(), context)
                 .fromNonBlockingOnContext(() -> {
                     ints.set(0, 2);
                     return 1;

@@ -1,7 +1,7 @@
 package org.pac4j.async.core.credentials.extractor;
 
 import com.aol.cyclops.invokedynamic.ExceptionSoftener;
-import org.pac4j.async.core.AsynchronousComputation;
+import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.credentials.Credentials;
@@ -19,7 +19,7 @@ public interface AsyncCredentialsExtractor<C extends Credentials> {
      * one
      */
     static <C extends Credentials> AsyncCredentialsExtractor<C> fromNonBlockingExtractor(final CredentialsExtractor<C, WebContextBase<?>> syncExtractor) {
-        return context -> AsynchronousComputation.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncExtractor.extract(context)));
+        return context -> AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncExtractor.extract(context)));
     }
     /**
      * Extract the right credentials, using asynchronouse methods.

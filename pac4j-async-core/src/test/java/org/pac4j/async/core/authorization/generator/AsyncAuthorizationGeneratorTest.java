@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
+import org.pac4j.async.core.VertxAsynchronousComputationAdapter;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.context.WebContextBase;
 
@@ -37,7 +38,7 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
     public void testFromBlocking(final TestContext testContext) throws Exception {
         final Context context = rule.vertx().getOrCreateContext();
         runAsyncAuthGeneratorTest(testContext, monitor -> AsyncAuthorizationGenerator.fromBlockingAuthorizationGenerator(
-                blockingAuthGenerator(monitor), new AsynchronousVertxComputation(rule.vertx(), context)
+                blockingAuthGenerator(monitor), new VertxAsynchronousComputationAdapter(rule.vertx(), context)
         ));
     }
 

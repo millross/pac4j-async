@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  *
  */
-public class VertxAsynchronousComputationAdapter implements AsynchronousComputation {
+public class VertxAsynchronousComputationAdapter implements AsynchronousComputationAdapter {
 
     private final Vertx vertx;
     private final VertxContextRunner vertxContextRunner;

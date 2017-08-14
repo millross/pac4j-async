@@ -50,19 +50,12 @@ public abstract class VertxAsyncTestBase {
     }
 
     protected <T> CompletableFuture<T> delayedException (final long delay, final Exception e) {
-//        final CompletableFuture<T> future = new CompletableFuture<>();
-//        rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> {
-//            System.out.println("Exceptional completion");
-//            future.completeExceptionally(e);
-//        }));
-//        return future;
         return delayedException(delay, () -> e);
     }
 
     protected <T> CompletableFuture<T> delayedException (final long delay, final Supplier<Exception> exceptionSupplier) {
         final CompletableFuture<T> future = new CompletableFuture<>();
         rule.vertx().setTimer(delay, l -> rule.vertx().runOnContext(v -> {
-            System.out.println("Exceptional completion");
             future.completeExceptionally(exceptionSupplier.get());
         }));
         return future;
@@ -86,7 +79,7 @@ public abstract class VertxAsyncTestBase {
         });
     }
 
-    protected static class AsynchronousVertxComputation implements AsynchronousComputation {
+    protected static class AsynchronousVertxComputation implements AsynchronousComputationAdapter {
 
         final Vertx vertx;
         final VertxContextRunner vertxContextRunner;

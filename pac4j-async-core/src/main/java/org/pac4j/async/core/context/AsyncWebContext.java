@@ -1,6 +1,6 @@
 package org.pac4j.async.core.context;
 
-import org.pac4j.async.core.AsynchronousComputation;
+import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.context.WebContextBase;
@@ -78,5 +78,5 @@ public interface AsyncWebContext extends WebContextBase<AsyncSessionStore> {
      * This is primarily used for converting blocking sync code into code which will run correctly in an async manner
      * on the context.
      */
-    AsynchronousComputation getAsyncComputationAdapter();
+    AsynchronousComputationAdapter getAsyncComputationAdapter();
 }
