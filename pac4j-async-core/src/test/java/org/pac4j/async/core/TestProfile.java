@@ -14,4 +14,11 @@ public class TestProfile extends CommonProfile {
     private TestProfile(String name) {
         this.setId(name);
     }
+
+    @Override
+    public boolean equals(Object that) {
+        if (!(that instanceof TestProfile)) return false;
+        final TestProfile other = (TestProfile) that;
+        return this.getId() == other.getId();
+    }
 }

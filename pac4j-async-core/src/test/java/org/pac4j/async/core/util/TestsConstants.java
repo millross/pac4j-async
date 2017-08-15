@@ -1,5 +1,7 @@
 package org.pac4j.async.core.util;
 
+import org.pac4j.async.core.TestCredentials;
+
 /**
  *
  */
@@ -51,4 +53,6 @@ public interface TestsConstants {
     String PAC4J_URL = PAC4J_BASE_URL + "test.html";
     String TEST_CLIENT_1 = "testClient1";
     String TEST_CLIENT_2 = "testClient2";
+
+    TestCredentials TEST_CREDENTIALS = new TestCredentials(GOOD_USERNAME, PASSWORD);
 }
