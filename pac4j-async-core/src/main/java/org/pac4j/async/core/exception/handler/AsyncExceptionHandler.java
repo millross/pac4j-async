@@ -3,6 +3,8 @@ package org.pac4j.async.core.exception.handler;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -13,6 +15,8 @@ import java.util.function.Consumer;
  * CompletionStage may be involved.
  */
 public interface AsyncExceptionHandler<T> {
+
+    Logger LOGGER = LoggerFactory.getLogger(AsyncExceptionHandler.class);
 
     static void handleException(final Throwable t, final Consumer<Throwable> unwrappedThrowableHandler) {
         unwrappedThrowableHandler.accept(unwrapAsyncException(t));
@@ -28,17 +32,18 @@ public interface AsyncExceptionHandler<T> {
     }
 
     static <T> T wrapUnexpectedException(final T result, final Throwable t) {
-        if (result != null) {
-            return result;
-        } else {
+        if (t != null) {
             // Http actions should be thrown outwards as is
             if (t instanceof HttpAction) {
                 throw (HttpAction) t;
             } else {
                 // All other exceptions should be wrapped in TechnicalExceptions, if not already wrapped
                 final TechnicalException wrapped = (t instanceof TechnicalException) ? (TechnicalException) t : new TechnicalException(t);
+                LOGGER.error("Wrapping exception " + t);
                 throw wrapped;
             }
+        } else {
+            return result;
         }
     }
 

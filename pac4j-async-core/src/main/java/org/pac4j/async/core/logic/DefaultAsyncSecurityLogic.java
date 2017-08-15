@@ -54,6 +54,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
 
     private final AsyncProfileSaveStrategy saveStrategy;
     private final AsyncConfig<R, U, C> config;
+    private final Clients configClients;
     private final HttpActionAdapter<R, C> httpActionAdapter;
     private final AsyncLoadProfileFromSessionDecision<C> loadFromSessionDecision = new AsyncLoadProfileFromSessionDecision<>();
     private final AsyncDirectClientAuthenticator directClientAuthenticator; // to attempt direct client authentication initially
@@ -66,7 +67,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
     public DefaultAsyncSecurityLogic(final boolean saveProfileInSession,
                                      final boolean multiProfile,
                                      final AsyncConfig<R, U, C> config,
-                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Throwable {
+                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Exception {
         this(saveProfileInSession, multiProfile, config, new DefaultAsyncExceptionHandler<>(), httpActionAdapter);
     }
 
@@ -74,7 +75,12 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
                                      final boolean multiProfile,
                                      final AsyncConfig<R, U, C> config,
                                      final AsyncExceptionHandler<R> exceptionHandler,
-                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Throwable {
+                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Exception {
+
+        assertNotNull("config", config);
+        assertNotNull("httpActionAdapter", httpActionAdapter);
+        this.configClients = config.getClients();
+        assertNotNull("configClients", config.getClients());
 
         this.saveStrategy = multiProfile ? MULTI_PROFILE_SAVE : SINGLE_PROFILE_SAVE;
         this.config = config;
@@ -95,13 +101,6 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
 
         // checks
         assertNotNull("context", context);
-        assertNotNull("config", config);
-        assertNotNull("httpActionAdapter", httpActionAdapter);
-        assertNotNull("clientFinder", clientFinder);
-        assertNotNull("authorizationChecker", authorizationChecker);
-        assertNotNull("matchingChecker", matchingChecker);
-        final Clients configClients = config.getClients();
-        assertNotNull("configClients", configClients);
 
         // logic
         HttpAction action;
