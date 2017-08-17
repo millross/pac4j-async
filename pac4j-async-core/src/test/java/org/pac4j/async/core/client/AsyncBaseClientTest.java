@@ -217,6 +217,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
 
     private AsyncBaseClient<TestCredentials, TestProfile> happyPathClient() {
+
         return new AsyncBaseClient<TestCredentials, TestProfile>() {
 
             @Override
