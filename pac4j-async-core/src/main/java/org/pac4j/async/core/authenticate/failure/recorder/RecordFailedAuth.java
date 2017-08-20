@@ -15,26 +15,27 @@ public enum RecordFailedAuth implements RecordFailedAuthenticationStrategy {
 
     DO_NOT_RECORD {
         @Override
-        public CompletableFuture<Credentials> recordFailedAuthentication(final AsyncClient client, final Credentials credentials, final AsyncWebContext webContext) {
+        public <C extends Credentials> CompletableFuture<C> recordFailedAuthentication(final AsyncClient client, final C credentials, final AsyncWebContext webContext) {
             return CompletableFuture.completedFuture(credentials);
         }
 
         @Override
-        public CompletableFuture<Void> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
+        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
             return CompletableFuture.completedFuture(null);
         }
 
     },
     RECORD_IN_SESSION {
         @Override
-        public CompletableFuture<Credentials> recordFailedAuthentication(final AsyncClient client, final Credentials credentials, final AsyncWebContext webContext) {
+        public <C extends Credentials> CompletableFuture<C> recordFailedAuthentication(final AsyncClient client, final C credentials, final AsyncWebContext webContext) {
             return webContext.setSessionAttribute(client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX, "true")
                     .thenApply(v -> credentials);
         }
 
         @Override
-        public CompletableFuture<Void> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
-            return webContext.setSessionAttribute(client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX, "");        }
+        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
+            return webContext.setSessionAttribute(client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX, "")
+                    .thenApply(v -> null);        }
     }
 
 }

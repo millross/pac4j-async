@@ -12,6 +12,6 @@ import java.util.concurrent.CompletableFuture;
  * RECORD_IN_SESSION strategy more client code can be made common.
  */
 public interface RecordFailedAuthenticationStrategy {
-    CompletableFuture<Credentials> recordFailedAuthentication(final AsyncClient client, final Credentials credentials, final AsyncWebContext webContext);
-    CompletableFuture<Void> clearFailedAuthentication(final AsyncClient client, final AsyncWebContext webContext);
+    <C extends Credentials> CompletableFuture<C> recordFailedAuthentication(final AsyncClient client, final C credentials, final AsyncWebContext webContext);
+    <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(final AsyncClient client, final AsyncWebContext webContext);
 }
