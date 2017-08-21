@@ -42,24 +42,34 @@ public class DefaultAsyncCallbackLogic<R, U extends CommonProfile, WC extends As
     protected final AsyncSessionRenewalStrategy sessionRenewalStrategy;
     protected final AsyncIndirectAuthenticationFlow<WC> indirectAuthenticationFlow;
     protected final AsyncClientAuthenticator<U, WC> perClientAuthenticator = new AsyncClientAuthenticator<>();
+    protected final AsyncConfig<R, U, WC> config;
+    protected final HttpActionAdapter<R, WC> httpActionAdapter;
 
-    public DefaultAsyncCallbackLogic(final boolean multiProfile, final boolean renewSession) {
+    public DefaultAsyncCallbackLogic(final boolean multiProfile,
+                                     final boolean renewSession,
+                                     final AsyncConfig<R, U, WC> config,
+                                     final HttpActionAdapter<R, WC> httpActionAdapter) {
+        assertNotNull("config", config);
+        assertNotNull("httpActionAdapter", httpActionAdapter);
+
         // it doesn't make sense to mix and match single and multi profile saving for an instance of the logic
         this.saveStrategy = multiProfile ? MULTI_PROFILE_SAVE : SINGLE_PROFILE_SAVE;
         this.sessionRenewalStrategy = renewSession ? AsyncSessionRenewal.ALWAYS_RENEW : NEVER_RENEW;
+        this.config = config;
+        this.httpActionAdapter = httpActionAdapter;
         this.indirectAuthenticationFlow = new AsyncIndirectAuthenticationFlow<>();
     }
 
-    public CompletableFuture<R> perform(WC context, AsyncConfig<R, U, WC> config, HttpActionAdapter<R, WC> httpActionAdapter,
-                                 String inputDefaultUrl, Boolean renewSession) {
+    public CompletableFuture<R> perform(final WC context,
+                                        final AsyncConfig<R, U, WC> config,
+                                        final HttpActionAdapter<R, WC> httpActionAdapter,
+                                        final String inputDefaultUrl) {
 
         logger.debug("=== CALLBACK ===");
         final String defaultUrl = Optional.ofNullable(inputDefaultUrl).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
 
         // checks
         assertNotNull("context", context);
-        assertNotNull("config", config);
-        assertNotNull("httpActionAdapter", httpActionAdapter);
         assertNotBlank(Pac4jConstants.DEFAULT_URL, defaultUrl);
         final Clients<AsyncClient<? extends Credentials, ? extends U>, AsyncAuthorizationGenerator<U>> clients = config.getClients();
         assertNotNull("clients", clients);

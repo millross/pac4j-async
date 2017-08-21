@@ -12,5 +12,5 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface AsyncCallbackLogic<R, U extends CommonProfile, C extends AsyncWebContext> {
     CompletableFuture<R> perform(C context, AsyncConfig<R, U, C> config, HttpActionAdapter<R, C> httpActionAdapter,
-                                 String defaultUrl, Boolean renewSession);
+                                 String defaultUrl);
 }
