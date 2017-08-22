@@ -61,8 +61,6 @@ public class DefaultAsyncCallbackLogic<R, U extends CommonProfile, WC extends As
     }
 
     public CompletableFuture<R> perform(final WC context,
-                                        final AsyncConfig<R, U, WC> config,
-                                        final HttpActionAdapter<R, WC> httpActionAdapter,
                                         final String inputDefaultUrl) {
 
         logger.debug("=== CALLBACK ===");
