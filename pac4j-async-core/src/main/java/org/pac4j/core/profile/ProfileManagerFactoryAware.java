@@ -1,7 +1,7 @@
 package org.pac4j.core.profile;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context   .WebContextBase;
 import org.pac4j.core.util.CommonHelper;
 
 import java.util.function.Function;
