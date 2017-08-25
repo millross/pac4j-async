@@ -9,6 +9,8 @@ import org.pac4j.core.credentials.extractor.CredentialsExtractor;
 
 import java.util.concurrent.CompletableFuture;
 
+import static com.aol.cyclops.invokedynamic.ExceptionSoftener.softenSupplier;
+
 /**
  * Asynchronous credentials extractor to be used by async clients.
  */
@@ -21,6 +23,16 @@ public interface AsyncCredentialsExtractor<C extends Credentials> {
     static <C extends Credentials> AsyncCredentialsExtractor<C> fromNonBlockingExtractor(final CredentialsExtractor<C, WebContextBase<?>> syncExtractor) {
         return context -> AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncExtractor.extract(context)));
     }
+
+    /**
+     * Given an existing blocking and synchronous CredentialsExtractor, convert it into an async
+     * one
+     */
+    static <C extends Credentials> AsyncCredentialsExtractor<C> fromBlocking(final CredentialsExtractor<C, WebContextBase<?>> syncExtractor) {
+        return context -> context.getAsyncComputationAdapter()
+                .fromBlocking(softenSupplier(() -> syncExtractor.extract(context)));
+    }
+
     /**
      * Extract the right credentials, using asynchronouse methods.
      *

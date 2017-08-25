@@ -40,9 +40,8 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      * Given an existing blocking synchronous AuthorizationGenerator, convert it into an async
      * one
      */
-    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen,
-                                                                                                       AsynchronousComputationAdapter asyncComputation) {
-        return (context, profile) -> asyncComputation.fromBlocking(
+    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen) {
+        return (context, profile) -> context.getAsyncComputationAdapter().fromBlocking(
                 () -> {
                     // several of these could run in parallel so we need to synchronize the profile as we don't know
                     // what the generator might do to its state so we need to ensure that only one thread gets to write
