@@ -130,7 +130,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, client);
         when(config.getClients()).thenReturn(clients);
         final Map<String, AsyncMatcher> matchers = new HashMap<>();
-        matchers.put(NAME, AsyncMatcher.fromNonBlockingMatcher(context -> false));
+        matchers.put(NAME, AsyncMatcher.fromNonBlocking(context -> false));
         when(config.getMatchers()).thenReturn(matchers);
         asyncSecurityLogic = new DefaultAsyncSecurityLogic<>(true, false, config, httpActionAdapter);
         final Async async = testContext.async();

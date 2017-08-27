@@ -5,7 +5,6 @@ import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.context.WebContextBase;
 import org.pac4j.core.matching.Matcher;
-import org.pac4j.core.profile.CommonProfile;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,8 +17,16 @@ public interface AsyncMatcher {
      * Given an existing non-blocking but synchronous Matcher, convert it into an async non-blocking
      * one
      */
-    static <U extends CommonProfile> AsyncMatcher fromNonBlockingMatcher(final Matcher<WebContextBase<?>> syncMatcher) {
+    static AsyncMatcher fromNonBlocking(final Matcher<WebContextBase<?>> syncMatcher) {
         return context -> AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncMatcher.matches(context)));
+    }
+
+    /**
+     * Given an existing blocking and synchronous Matcher, convert it into an async matcher
+     * one
+     */
+    static AsyncMatcher fromBlocking(final Matcher<WebContextBase<?>> syncMatcher) {
+        return context -> context.getAsyncComputationAdapter().fromBlocking(ExceptionSoftener.softenSupplier(() -> syncMatcher.matches(context)));
     }
 
     /**

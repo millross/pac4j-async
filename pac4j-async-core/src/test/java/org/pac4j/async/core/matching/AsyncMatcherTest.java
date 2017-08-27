@@ -42,7 +42,7 @@ public class AsyncMatcherTest extends VertxAsyncTestBase{
 
     @Test(timeout=1000)
     public void testFromNonBlockingMatcherSuccessfulTrueEvaluation(final TestContext testContext) throws Exception {
-        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlockingMatcher(matcher);
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlocking(matcher);
         when(matcher.matches(webContext)).thenReturn(true);
         final Async async = testContext.async();
         final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
@@ -51,7 +51,7 @@ public class AsyncMatcherTest extends VertxAsyncTestBase{
 
     @Test(timeout=1000)
     public void testFromNonBlockingMatcherSuccessfulFalseEvaluation(final TestContext testContext) throws Exception {
-        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlockingMatcher(matcher);
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlocking(matcher);
         when(matcher.matches(webContext)).thenReturn(false);
         final Async async = testContext.async();
         final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
@@ -60,7 +60,7 @@ public class AsyncMatcherTest extends VertxAsyncTestBase{
 
     @Test(timeout=1000)
     public void testHttpActionExceptionBehaviour(final TestContext testContext) throws Exception {
-        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlockingMatcher(matcher);
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlocking(matcher);
         doAnswer((Answer<Boolean>) invocation -> {
             final HttpAction action = HttpAction.status("Intentional http action", 200, webContext);
             throw action;
@@ -76,7 +76,7 @@ public class AsyncMatcherTest extends VertxAsyncTestBase{
 
     @Test(timeout=1000)
     public void testUnexpectedExceptionBehaviour(final TestContext testContext) throws Exception {
-        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlockingMatcher(matcher);
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromNonBlocking(matcher);
         doAnswer((Answer<Boolean>) invocation -> {
             throw new IntentionalException();
         }).when(matcher).matches(eq(webContext));
