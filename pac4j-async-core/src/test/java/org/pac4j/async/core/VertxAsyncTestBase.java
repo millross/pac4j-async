@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -67,8 +68,12 @@ public abstract class VertxAsyncTestBase {
         return future.handle((v, t) -> {
             if (t != null) {
                 executionContext.runOnContext(ExceptionSoftener.softenRunnable(() -> {
-                    throw t.getCause();
-                }));
+                            if (t instanceof CompletionException) {
+                                throw t.getCause();
+                            } else {
+                                throw t;
+                            }
+                        }));
             } else {
                 executionContext.runOnContext(() -> {
                     assertions.accept(v);

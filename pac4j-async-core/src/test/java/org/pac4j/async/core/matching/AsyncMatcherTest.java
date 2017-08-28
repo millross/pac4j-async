@@ -86,4 +86,49 @@ public class AsyncMatcherTest extends VertxAsyncTestBase{
         assertSuccessfulEvaluation(authFuture, res   -> {}, async);
     }
 
+    @Test(timeout=1000)
+    public void testFromBlockingMatcherSuccessfulTrueEvaluation(final TestContext testContext) throws Exception {
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromBlocking(matcher);
+        when(matcher.matches(webContext)).thenReturn(true);
+        final Async async = testContext.async();
+        final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
+        assertSuccessfulEvaluation(authFuture, res -> assertThat(res, is(true)), async);
+    }
+
+    @Test(timeout=1000)
+    public void testFromBlockingMatcherSuccessfulFalseEvaluation(final TestContext testContext) throws Exception {
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromBlocking(matcher);
+        when(matcher.matches(webContext)).thenReturn(false);
+        final Async async = testContext.async();
+        final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
+        assertSuccessfulEvaluation(authFuture, res -> assertThat(res, is(false)), async);
+    }
+
+    @Test(timeout=1000)
+    public void testFromBlockingHttpActionExceptionBehaviour(final TestContext testContext) throws Exception {
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromBlocking(matcher);
+        doAnswer((Answer<Boolean>) invocation -> {
+            final HttpAction action = HttpAction.status("Intentional http action", 200, webContext);
+            throw action;
+        }).when(matcher).matches(eq(webContext));
+
+        exception.expect(HttpAction.class);
+        exception.expect(allOf(hasProperty("message", is("Intentional http action")),
+                hasProperty("code", is(200))));
+        final Async async = testContext.async();
+        final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
+        assertSuccessfulEvaluation(authFuture, res   -> {}, async);
+    }
+
+    @Test(timeout=1000)
+    public void testFromBlockingUnexpectedExceptionBehaviour(final TestContext testContext) throws Exception {
+        final AsyncMatcher asyncMatcher = AsyncMatcher.fromBlocking(matcher);
+        doAnswer((Answer<Boolean>) invocation -> {
+            throw new IntentionalException();
+        }).when(matcher).matches(eq(webContext));
+        exception.expect(IntentionalException.class);
+        final Async async = testContext.async();
+        final CompletableFuture<Boolean> authFuture = asyncMatcher.matches(webContext);
+        assertSuccessfulEvaluation(authFuture, res   -> {}, async);
+    }
 }
