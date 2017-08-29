@@ -50,6 +50,7 @@ public class DefaultAsyncCallbackLogic<R, U extends CommonProfile, WC extends As
                                      final AsyncConfig<R, U, WC> config,
                                      final HttpActionAdapter<R, WC> httpActionAdapter) {
         assertNotNull("config", config);
+        assertNotNull("clients", config.getClients());
         assertNotNull("httpActionAdapter", httpActionAdapter);
 
         // it doesn't make sense to mix and match single and multi profile saving for an instance of the logic
@@ -70,7 +71,6 @@ public class DefaultAsyncCallbackLogic<R, U extends CommonProfile, WC extends As
         assertNotNull("context", context);
         assertNotBlank(Pac4jConstants.DEFAULT_URL, defaultUrl);
         final Clients<AsyncClient<? extends Credentials, ? extends U>, AsyncAuthorizationGenerator<U>> clients = config.getClients();
-        assertNotNull("clients", clients);
 
         // logic
         final AsyncClient<? extends Credentials, ? extends U> client = clients.findClient(context);
