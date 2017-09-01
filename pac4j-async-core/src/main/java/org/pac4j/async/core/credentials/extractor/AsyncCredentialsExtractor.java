@@ -21,6 +21,15 @@ public interface AsyncCredentialsExtractor<C extends Credentials> {
     static <C extends Credentials> AsyncCredentialsExtractor<C> fromNonBlockingExtractor(final CredentialsExtractor<C, WebContextBase<?>> syncExtractor) {
         return context -> AsynchronousComputationAdapter.fromNonBlocking(ExceptionSoftener.softenSupplier(() -> syncExtractor.extract(context)));
     }
+
+    /**
+     * Given an existing blocking, synchronous CredentialsExtractor, convert it into an async (still blocking, but blocking i/o happens on another thread)
+     * one
+     */
+    static <C extends Credentials> AsyncCredentialsExtractor<C> fromBlockingExtractor(final CredentialsExtractor<C, WebContextBase<?>> syncExtractor) {
+        return context -> context.getAsyncComputationAdapter().fromBlocking(ExceptionSoftener.softenSupplier(() -> syncExtractor.extract(context)));
+    }
+
     /**
      * Extract the right credentials, using asynchronouse methods.
      *
