@@ -68,9 +68,8 @@ public abstract class VertxAsyncTestBase {
         return future.handle((v, t) -> {
             if (t != null) {
                 executionContext.runOnContext(ExceptionSoftener.softenRunnable(() -> {
-                            if (t instanceof CompletionException) {
-                                throw t.getCause();
-                            } else {
+                    if (t instanceof CompletionException) {throw t.getCause();
+                }else {
                                 throw t;
                             }
                         }));
