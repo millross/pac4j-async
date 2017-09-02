@@ -16,8 +16,6 @@ import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.authorization.authorizer.AsyncAuthorizer;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.client.AsyncClient;
-import org.pac4j.async.core.client.AsyncDirectClient;
-import org.pac4j.async.core.client.AsyncIndirectClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.matching.AsyncMatcher;
@@ -110,7 +108,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
 
     @Test
     public void testNotAuthenticated(final TestContext testContext) throws Exception {
-        final AsyncIndirectClient<TestCredentials, TestProfile> client = getMockIndirectClient(NAME);
+        final AsyncClient<TestCredentials, TestProfile> client = getMockIndirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, client);
         when(config.getClients()).thenReturn(clients);
         final Async async = testContext.async();
@@ -126,7 +124,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
 
     @Test
     public void testNotAuthenticatedButMatcher(final TestContext testContext) throws Exception {
-        final AsyncIndirectClient<TestCredentials, TestProfile> client = getMockIndirectClient(NAME);
+        final AsyncClient<TestCredentials, TestProfile> client = getMockIndirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, client);
         when(config.getClients()).thenReturn(clients);
         final Map<String, AsyncMatcher> matchers = new HashMap<>();
@@ -145,7 +143,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
 
     @Test
     public void testAlreadyAuthenticatedAndAuthorized(final TestContext testContext) throws Exception {
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient);
         when(config.getClients()).thenReturn(clients);
         final String authorizers = NAME;
@@ -164,7 +162,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testAlreadyAuthenticatedNotAuthorized(final TestContext testContext) throws Exception {
         simulatePreviousAuthenticationSuccess();
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient);
         when(config.getClients()).thenReturn(clients);
         final String authorizers = NAME;
@@ -188,7 +186,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testAuthorizerThrowsRequiresHttpAction(final TestContext testContext) throws Exception {
         simulatePreviousAuthenticationSuccess();
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient);
         when(config.getClients()).thenReturn(clients);
         final String authorizers = NAME;
@@ -224,7 +222,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
 
     @Test
     public void testDirectClientThrowsRequiresHttpAction(final TestContext testContext) throws Exception {
-        final AsyncDirectClient directClient = getMockDirectClient(NAME, TEST_CREDENTIALS);
+        final AsyncClient directClient = getMockDirectClient(NAME, TEST_CREDENTIALS);
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, directClient);
         when(config.getClients()).thenReturn(clients);
         final String clientNames = NAME;
@@ -294,7 +292,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     @Test
     public void testRedirectByIndirectClient(final TestContext testContext) throws Exception {
 
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
 
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient);
         when(config.getClients()).thenReturn(clients);
@@ -308,8 +306,8 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     @Test
     public void testDoubleIndirectClientOneChosen(final TestContext testContext) throws Exception {
 
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient2 = getMockIndirectClient(VALUE, PAC4J_BASE_URL);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient2 = getMockIndirectClient(VALUE, PAC4J_BASE_URL);
 
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient, indirectClient2);
 
@@ -324,8 +322,8 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
 
     @Test
     public void testDoubleIndirectClientBadOneChosen(final TestContext testContext) throws Exception {
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
-        final AsyncIndirectClient<TestCredentials, TestProfile> indirectClient2 = getMockIndirectClient(VALUE, PAC4J_BASE_URL);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient = getMockIndirectClient(NAME, PAC4J_URL);
+        final AsyncClient<TestCredentials, TestProfile> indirectClient2 = getMockIndirectClient(VALUE, PAC4J_BASE_URL);
 
         final Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> clients = new Clients<>(CALLBACK_URL, indirectClient, indirectClient2);
 
@@ -377,8 +375,8 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     private Clients<AsyncClient<? extends Credentials, ? extends CommonProfile>, AsyncAuthorizationGenerator<CommonProfile>> doubleDirectClients() {
         final TestCredentials testCredentials2 = new TestCredentials(GOOD_USERNAME2, PASSWORD);
 
-        final AsyncDirectClient directClient = getMockDirectClient(NAME, TEST_CREDENTIALS);
-        final AsyncDirectClient directClient2 = getMockDirectClient(VALUE, testCredentials2);
+        final AsyncClient directClient = getMockDirectClient(NAME, TEST_CREDENTIALS);
+        final AsyncClient directClient2 = getMockDirectClient(VALUE, testCredentials2);
         return new Clients<>(CALLBACK_URL, directClient, directClient2);
     }
 
@@ -394,8 +392,8 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         return webContext.setSessionAttribute(Pac4jConstants.USER_PROFILES, profiles);
     }
 
-    private AsyncIndirectClient<TestCredentials, TestProfile> getMockIndirectClient(final String name, final String redirectUrl) {
-        final AsyncIndirectClient<TestCredentials, TestProfile> client = getMockIndirectClient(name);
+    private AsyncClient<TestCredentials, TestProfile> getMockIndirectClient(final String name, final String redirectUrl) {
+        final AsyncClient<TestCredentials, TestProfile> client = getMockIndirectClient(name);
         Mockito.doAnswer(invodation -> {
             final RedirectAction redirectAction = RedirectAction.redirect(redirectUrl);
             return redirectAction.perform(webContext);
@@ -403,8 +401,8 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         return client;
     }
 
-    private AsyncIndirectClient<TestCredentials, TestProfile> getMockIndirectClient(final String name) {
-        final AsyncIndirectClient<TestCredentials, TestProfile> client = mock(AsyncIndirectClient.class);
+    private AsyncClient<TestCredentials, TestProfile> getMockIndirectClient(final String name) {
+        final AsyncClient<TestCredentials, TestProfile> client = mock(AsyncClient.class);
         when(client.getName()).thenReturn(name);
         when(client.getCredentials(any(AsyncWebContext.class))).thenReturn(delayedResult(() -> TestsConstants.TEST_CREDENTIALS));
         when(client.isIndirect()).thenReturn(true);
@@ -413,9 +411,9 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         return client;
     }
 
-    private AsyncDirectClient<TestCredentials, TestProfile> getMockDirectClient(final String name,
+    private AsyncClient<TestCredentials, TestProfile> getMockDirectClient(final String name,
                                                                                 final TestCredentials credentials) {
-        final AsyncDirectClient<TestCredentials, TestProfile> client = mock(AsyncDirectClient.class);
+        final AsyncClient<TestCredentials, TestProfile> client = mock(AsyncClient.class);
         when(client.getName()).thenReturn(name);
         when(client.getCredentials(any(AsyncWebContext.class))).thenReturn(delayedResult(() -> credentials));
         when(client.getUserProfileFuture(eq(credentials), any(AsyncWebContext.class)))

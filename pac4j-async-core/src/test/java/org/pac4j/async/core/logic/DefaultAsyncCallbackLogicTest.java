@@ -12,8 +12,6 @@ import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.client.AsyncClient;
-import org.pac4j.async.core.client.AsyncDirectClient;
-import org.pac4j.async.core.client.AsyncIndirectClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
@@ -117,7 +115,7 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
     @Test
     public void testDirectClient() throws Exception {
 
-        final AsyncDirectClient directClient = getMockDirectClient(NAME);
+        final AsyncClient directClient = getMockDirectClient(NAME);
         final Clients<AsyncClient<? extends Credentials, ? extends TestProfile>, AsyncAuthorizationGenerator<TestProfile>> clients = new Clients<>(CALLBACK_URL, directClient);
         when(config.getClients()).thenReturn(clients);
         when(webContext.getRequestParameter(eq(Clients.DEFAULT_CLIENT_NAME_PARAMETER))).thenReturn(NAME);
@@ -210,17 +208,17 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
     }
 
 
-    private AsyncDirectClient<TestCredentials, TestProfile> getMockDirectClient(final String name) {
-        final AsyncDirectClient<TestCredentials, TestProfile> client = mock(AsyncDirectClient.class);
+    private AsyncClient<TestCredentials, TestProfile> getMockDirectClient(final String name) {
+        final AsyncClient<TestCredentials, TestProfile> client = mock(AsyncClient.class);
         when(client.getName()).thenReturn(name);
         when(client.isIndirect()).thenReturn(false);
         return client;
     }
 
-    private AsyncIndirectClient<TestCredentials, TestProfile> getMockIndirectClient(final String name) {
-        final AsyncIndirectClient<TestCredentials, TestProfile> client = mock(AsyncIndirectClient.class);
+    private AsyncClient<TestCredentials, TestProfile> getMockIndirectClient(final String name) {
+        final AsyncClient<TestCredentials, TestProfile> client = mock(AsyncClient.class);
         when(client.getName()).thenReturn(name);
-        when(client.getCredentials(any(AsyncWebContext.class))).thenReturn(delayedResult(() -> TestsConstants.TEST_CREDENTIALS));
+        doReturn(delayedResult(() -> TestsConstants.TEST_CREDENTIALS)).when(client).getCredentials(any(AsyncWebContext.class));
         when(client.isIndirect()).thenReturn(true);
         when(client.getUserProfileFuture(eq(TestsConstants.TEST_CREDENTIALS), any(AsyncWebContext.class)))
                 .thenReturn(delayedResult(() -> Optional.of(TestProfile.from(TestsConstants.TEST_CREDENTIALS))));

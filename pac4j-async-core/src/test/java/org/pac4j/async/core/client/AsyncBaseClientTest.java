@@ -243,11 +243,6 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
-                return null;
-            }
-
-            @Override
             public RedirectAction getLogoutAction(AsyncWebContext var1, TestProfile var2, String var3) {
                 return null;
             }
@@ -281,11 +276,6 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
             @Override
             public HttpAction redirect(AsyncWebContext context) throws HttpAction {
-                return null;
-            }
-
-            @Override
-            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
                 return null;
             }
 
@@ -325,11 +315,6 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
 
             @Override
             public HttpAction redirect(AsyncWebContext context) throws HttpAction {
-                return null;
-            }
-
-            @Override
-            public CompletableFuture<TestCredentials> getCredentials(AsyncWebContext context) {
                 return null;
             }
 

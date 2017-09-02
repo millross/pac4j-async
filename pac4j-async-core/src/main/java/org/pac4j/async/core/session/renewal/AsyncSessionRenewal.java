@@ -53,8 +53,7 @@ public enum AsyncSessionRenewal implements AsyncSessionRenewalStrategy {
                             final Clients<AsyncClient<? extends Credentials, ? extends U>, AsyncAuthorizationGenerator<U>> clients = config.getClients();
                             if (clients != null) {
                                 clients.getClients().stream()
-                                        .map(ac -> (AsyncBaseClient<?, ?>) ac)
-                                        .forEach(bc -> bc.notifySessionRenewal(oldSessionId, context));
+                                        .forEach(ac -> ac.notifySessionRenewal(oldSessionId, context));
                             }
                             return null;
                         });

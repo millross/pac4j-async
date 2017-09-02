@@ -94,6 +94,18 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
         }
     }
 
+    @Override
+    public final CompletableFuture<C> getCredentials(AsyncWebContext context) {
+        return retrieveCredentials(context)
+                .thenCompose(c -> {
+                    if (c == null) {
+                        return authFailureRecorder().recordFailedAuthentication(this, c, context);
+                    } else {
+                        return authFailureRecorder().clearFailedAuthentication(this, context);
+                    }
+                });
+    }
+
     public AsyncCredentialsExtractor<C> getCredentialsExtractor() {
         return credentialsExtractor;
     }
