@@ -39,10 +39,10 @@ public class AsyncCredentialsExtractorTest extends VertxAsyncTestBase {
     }
 
     @Test(timeout=1000)
-    public void testFromNonBlockingExtractorSuccessfulEvaluation(final TestContext testContext) throws Exception {
+    public void testfromNonBlockingSuccessfulEvaluation(final TestContext testContext) throws Exception {
         when(extractor.extract(any(WebContextBase.class))).thenReturn(CREDENTIALS);
         final Async async = testContext.async();
-        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlockingExtractor(extractor).extract(webContext);
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlocking(extractor).extract(webContext);
         assertSuccessfulEvaluation(credsFuture, creds -> assertThat(creds, is(CREDENTIALS)), async);
     }
 
@@ -50,7 +50,7 @@ public class AsyncCredentialsExtractorTest extends VertxAsyncTestBase {
     public void testCredentialsExceptionBehaviour(final TestContext testContext) throws Exception {
         when(extractor.extract(any(WebContextBase.class))).thenThrow(new CredentialsException("Intentional credentials exception"));
         final Async async = testContext.async();
-        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlockingExtractor(extractor).extract(webContext);
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlocking(extractor).extract(webContext);
         assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
     }
 
@@ -59,7 +59,7 @@ public class AsyncCredentialsExtractorTest extends VertxAsyncTestBase {
         final HttpAction action = HttpAction.status("Intentional http action", 200, webContext);
         when(extractor.extract(any(WebContextBase.class))).thenThrow(action);
         final Async async = testContext.async();
-        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlockingExtractor(extractor).extract(null);
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlocking(extractor).extract(null);
         assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
     }
 
@@ -67,8 +67,40 @@ public class AsyncCredentialsExtractorTest extends VertxAsyncTestBase {
     public void testUnexpectedExceptionBehaviour(final TestContext testContext) throws Exception {
         when(extractor.extract(any(WebContextBase.class))).thenThrow(new IntentionalException());
         final Async async = testContext.async();
-        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlockingExtractor(extractor).extract(null);
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromNonBlocking(extractor).extract(null);
         assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
     }
 
+    @Test(timeout=1000)
+    public void testfromBlockingSuccessfulEvaluation(final TestContext testContext) throws Exception {
+        when(extractor.extract(any(WebContextBase.class))).thenReturn(CREDENTIALS);
+        final Async async = testContext.async();
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromBlocking(extractor).extract(webContext);
+        assertSuccessfulEvaluation(credsFuture, creds -> assertThat(creds, is(CREDENTIALS)), async);
+    }
+
+    @Test(timeout=1000, expected=CredentialsException.class)
+    public void testFromBlockingCredentialsExceptionBehaviour(final TestContext testContext) throws Exception {
+        when(extractor.extract(any(WebContextBase.class))).thenThrow(new CredentialsException("Intentional credentials exception"));
+        final Async async = testContext.async();
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromBlocking(extractor).extract(webContext);
+        assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
+    }
+
+    @Test(timeout=1000, expected=HttpAction.class)
+    public void testFromBlockingHttpActionExceptionBehaviour(final TestContext testContext) throws Exception {
+        final HttpAction action = HttpAction.status("Intentional http action", 200, webContext);
+        when(extractor.extract(any(WebContextBase.class))).thenThrow(action);
+        final Async async = testContext.async();
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromBlocking(extractor).extract(webContext);
+        assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
+    }
+
+    @Test(timeout=1000, expected= IntentionalException.class)
+    public void testFromBlockingUnexpectedExceptionBehaviour(final TestContext testContext) throws Exception {
+        when(extractor.extract(any(WebContextBase.class))).thenThrow(new IntentionalException());
+        final Async async = testContext.async();
+        final CompletableFuture<TestCredentials> credsFuture = AsyncCredentialsExtractor.fromBlocking(extractor).extract(webContext);
+        assertSuccessfulEvaluation(credsFuture, creds -> {}, async);
+    }
 }
