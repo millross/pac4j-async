@@ -155,11 +155,11 @@ public class Clients<T extends Named & ConfigurableByClientsObject, A> extends I
      * @param name name of the client
      * @return the right client
      */
-    public T findClient(final String name) {
+    public <U extends T> U findClient(final String name) {
         init();
         for (final T client : getClients()) {
             if (CommonHelper.areEqualsIgnoreCaseAndTrim(name, client.getName())) {
-                return client;
+                return (U) client;
             }
         }
         final String message = "No client found for name: " + name;
