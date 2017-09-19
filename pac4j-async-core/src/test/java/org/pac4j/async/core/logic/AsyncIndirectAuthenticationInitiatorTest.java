@@ -74,7 +74,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
                     assertThat(responseHeaders.get(HttpConstants.LOCATION_HEADER), is(AUTH_REDIRECT_URL));
                 })
                 // Now validate session is as we expect
-                .thenCompose(v -> context.getSessionAttribute(Pac4jConstants.REQUESTED_URL))
+                .thenCompose(v -> context.getSessionStore().get(context, Pac4jConstants.REQUESTED_URL))
                 .whenComplete((v, t) -> {
                     assertThat(t, is(nullValue()));
                     assertThat(v, is(MockAsyncWebContextBuilder.DEFAULT_FULL_REQUEST_URL));

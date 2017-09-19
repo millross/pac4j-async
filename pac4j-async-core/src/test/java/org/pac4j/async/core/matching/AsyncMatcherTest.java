@@ -11,7 +11,7 @@ import org.pac4j.async.core.IntentionalException;
 import org.pac4j.async.core.MockAsyncWebContextBuilder;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.matching.Matcher;
 
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class AsyncMatcherTest extends VertxAsyncTestBase{
 
     public AsyncWebContext webContext;
-    public Matcher<WebContextBase<?>> matcher = mock(Matcher.class);
+    public Matcher<WebContext<?>> matcher = mock(Matcher.class);
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

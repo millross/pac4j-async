@@ -2,7 +2,7 @@ package org.pac4j.core.http;
 
 import org.pac4j.core.context.ContextHelper;
 import org.pac4j.core.context.HttpConstants;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 /**
  * The new URL is computed from a relative URL and the current server configuration.
@@ -14,7 +14,7 @@ import org.pac4j.core.context.WebContextBase;
 public class RelativeUrlResolver implements UrlResolver {
 
     @Override
-    public String compute(final String url, WebContextBase<?> context) {
+    public String compute(final String url, WebContext<?> context) {
         if (context != null && url != null && !url.startsWith("http://") && !url.startsWith("https://")) {
             final StringBuilder sb = new StringBuilder();
 

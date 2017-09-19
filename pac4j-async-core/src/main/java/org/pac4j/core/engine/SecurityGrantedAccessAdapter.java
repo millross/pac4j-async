@@ -1,11 +1,11 @@
 package org.pac4j.core.engine;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 /**
  *
  */
-public interface SecurityGrantedAccessAdapter<R, C extends WebContextBase<?>> {
+public interface SecurityGrantedAccessAdapter<R, C extends WebContext<?>> {
 
     /**
      * Adapt the current successful action as the expected result.

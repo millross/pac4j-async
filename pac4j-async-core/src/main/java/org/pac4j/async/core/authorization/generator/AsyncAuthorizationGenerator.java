@@ -3,7 +3,7 @@ package org.pac4j.async.core.authorization.generator;
 import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.CommonProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      * Given an existing non-blocking but synchronous AuthorizationGenerator, convert it into an async non-blocking
      * one
      */
-    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromNonBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen) {
+    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromNonBlockingAuthorizationGenerator(AuthorizationGenerator<WebContext<?>, T> authGen) {
         return (context, profile) -> AsynchronousComputationAdapter.fromNonBlocking(
                 () -> {
                     if (profile != null) {
@@ -40,7 +40,7 @@ public interface AsyncAuthorizationGenerator <U extends CommonProfile> {
      * Given an existing blocking synchronous AuthorizationGenerator, convert it into an async
      * one
      */
-    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<WebContextBase<?>, T> authGen) {
+    static <T extends CommonProfile> AsyncAuthorizationGenerator<T> fromBlockingAuthorizationGenerator(AuthorizationGenerator<WebContext<?>, T> authGen) {
         return (context, profile) -> context.getAsyncComputationAdapter().fromBlocking(
                 () -> {
                     // several of these could run in parallel so we need to synchronize the profile as we don't know

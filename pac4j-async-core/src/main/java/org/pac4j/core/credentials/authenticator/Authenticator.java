@@ -1,6 +1,6 @@
 package org.pac4j.core.credentials.authenticator;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.CredentialsException;
 import org.pac4j.core.exception.HttpAction;
@@ -12,7 +12,7 @@ import org.pac4j.core.exception.HttpAction;
  * @author Jerome Leleu
  * @since 1.7.0
  */
-public interface Authenticator<C extends Credentials, WC extends WebContextBase<?>> {
+public interface Authenticator<C extends Credentials, WC extends WebContext<?>> {
     /**
      * Validate the credentials. It should throw a {@link CredentialsException} in case of failure.
      *

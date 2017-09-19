@@ -3,7 +3,7 @@ package org.pac4j.async.core.credentials.authenticator;
 import org.pac4j.async.core.AsynchronousComputationAdapter;
 import com.aol.cyclops.invokedynamic.ExceptionSoftener;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 
 import org.pac4j.core.credentials.authenticator.Authenticator;
@@ -25,11 +25,11 @@ public interface AsyncAuthenticator<C extends Credentials> {
      */
     CompletableFuture<Void> validate(C credentials, AsyncWebContext context);
 
-    static <T extends Credentials> AsyncAuthenticator<T> fromNonBlocking(final Authenticator<T, WebContextBase<?>> syncAuthenticator) {
+    static <T extends Credentials> AsyncAuthenticator<T> fromNonBlocking(final Authenticator<T, WebContext<?>> syncAuthenticator) {
         return (credentials, context) -> AsynchronousComputationAdapter.fromNonBlocking(softenRunnable(() -> syncAuthenticator.validate(credentials, context)));
     }
 
-    static <C extends Credentials> AsyncAuthenticator<C> fromBlocking(Authenticator<C, WebContextBase<?>> blockingAuth) {
+    static <C extends Credentials> AsyncAuthenticator<C> fromBlocking(Authenticator<C, WebContext<?>> blockingAuth) {
         return (credentials, context) -> context.getAsyncComputationAdapter()
                 .fromBlocking(ExceptionSoftener.softenRunnable(() -> blockingAuth.validate(credentials, context)));
     }

@@ -1,6 +1,6 @@
 package org.pac4j.core.http;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 /**
  * Default URL resolver: uses the provided URL as is.
@@ -11,7 +11,7 @@ import org.pac4j.core.context.WebContextBase;
 public class DefaultUrlResolver implements UrlResolver {
 
     @Override
-    public String compute(final String url, WebContextBase<?> context) {
+    public String compute(final String url, WebContext<?> context) {
         return url;
     }
 }

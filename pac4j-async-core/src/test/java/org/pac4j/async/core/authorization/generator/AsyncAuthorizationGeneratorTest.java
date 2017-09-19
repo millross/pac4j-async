@@ -11,7 +11,7 @@ import org.pac4j.async.core.TestProfile;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,14 +74,14 @@ public class AsyncAuthorizationGeneratorTest extends VertxAsyncTestBase {
         }));
     }
 
-    AuthorizationGenerator<WebContextBase<?>, TestProfile> nonBlockingAuthGenerator(final AtomicInteger output) {
+    AuthorizationGenerator<WebContext<?>, TestProfile> nonBlockingAuthGenerator(final AtomicInteger output) {
         return (context, profile) -> {
             output.set(1);
             return profile;
         };
     }
 
-    AuthorizationGenerator<WebContextBase<?>, TestProfile> blockingAuthGenerator(final AtomicInteger output) {
+    AuthorizationGenerator<WebContext<?>, TestProfile> blockingAuthGenerator(final AtomicInteger output) {
         return (context,profile)  -> {
             try {
                 Thread.sleep(250);

@@ -3,7 +3,7 @@ package org.pac4j.core.config;
 import org.pac4j.async.core.Named;
 import org.pac4j.async.core.client.ConfigurableByClientsObject;
 import org.pac4j.core.client.Clients;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.HttpActionAdapter;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
@@ -16,7 +16,7 @@ import java.util.function.Function;
 /**
  *
  */
-public class Config<T extends Named & ConfigurableByClientsObject, C extends WebContextBase<?>, A, M, SL, CL, LL, S, PM, U extends CommonProfile, AG>  {
+public class Config<T extends Named & ConfigurableByClientsObject, C extends WebContext<?>, A, M, SL, CL, LL, S, PM, U extends CommonProfile, AG>  {
 
     protected Clients<T, AG> clients;
 

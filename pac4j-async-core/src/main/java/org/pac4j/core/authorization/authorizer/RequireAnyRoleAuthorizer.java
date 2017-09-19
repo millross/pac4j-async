@@ -1,6 +1,6 @@
 package org.pac4j.core.authorization.authorizer;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 
@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  *
  */
-public class RequireAnyRoleAuthorizer <C extends WebContextBase<?>, U extends CommonProfile> extends AbstractRequireAnyAuthorizer<C, String, U>{
+public class RequireAnyRoleAuthorizer <C extends WebContext<?>, U extends CommonProfile> extends AbstractRequireAnyAuthorizer<C, String, U>{
 
     public RequireAnyRoleAuthorizer() { }
 

@@ -3,21 +3,19 @@ package org.pac4j.async.core.context;
 import org.pac4j.async.core.AsynchronousComputationAdapter;
 import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
-import org.pac4j.core.context.WebContextBase;
-
-import java.util.concurrent.CompletableFuture;
+import org.pac4j.core.context.WebContext;
 
 /**
  *
  */
-public interface AsyncWebContext extends WebContextBase<AsyncSessionStore> {
+public interface AsyncWebContext extends WebContext<AsyncSessionStore> {
 
     /**
      * Get the session store.
      *
      * @return the session store
      */
-    default AsyncSessionStore getSessionStore() {
+    default <T extends AsyncSessionStore>  T getSessionStore() {
         throw new UnsupportedOperationException("To be implemented");
     }
 
@@ -26,37 +24,8 @@ public interface AsyncWebContext extends WebContextBase<AsyncSessionStore> {
      *
      * @param sessionStore the session store
      */
-    default void setSessionStore(AsyncSessionStore sessionStore) {
+    default <T extends AsyncSessionStore> void setSessionStore(T sessionStore) {
         throw new UnsupportedOperationException("To be implemented");
-    }
-
-    /**
-     * Save an attribute in session.
-     *
-     * @param name name of the session attribute
-     * @param value value of the session attribute
-     */
-    default <T> CompletableFuture<Void> setSessionAttribute(String name, T value) {
-        return getSessionStore().set(this, name, value);
-    }
-
-    /**
-     * Get an attribute from session.
-     *
-     * @param name name of the session attribute
-     * @return the session attribute
-     */
-    default <T> CompletableFuture<T> getSessionAttribute(String name) {
-        return getSessionStore().get(this, name);
-    }
-
-    /**
-     * Gets the session id for this context.
-     *
-     * @return the session identifier
-     */
-    default CompletableFuture<String> getSessionIdentifier() {
-        return getSessionStore().getOrCreateSessionId(this);
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.pac4j.core.profile.creator;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
@@ -12,7 +12,7 @@ import org.pac4j.core.profile.CommonProfile;
  * @author Jerome Leleu
  * @since 1.7.0
  */
-public interface ProfileCreator<C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>> {
+public interface ProfileCreator<C extends Credentials, U extends CommonProfile, WC extends WebContext<?>> {
 
     /**
      * Create a profile from a credentials.

@@ -37,7 +37,7 @@ public final class ContextHelper implements HttpConstants {
      * @param name the name of the cookie
      * @return the cookie
      */
-    public static Cookie getCookie(final WebContextBase context, final String name) {
+    public static Cookie getCookie(final WebContext context, final String name) {
         return getCookie(context.getRequestCookies(), name);
     }
 
@@ -47,7 +47,7 @@ public final class ContextHelper implements HttpConstants {
      * @param context the web context
      * @return whether it is a GET request
      */
-    public static boolean isGet(final WebContextBase context) {
+    public static boolean isGet(final WebContext context) {
         return HttpConstants.HTTP_METHOD.GET.name().equalsIgnoreCase(context.getRequestMethod());
     }
 
@@ -57,7 +57,7 @@ public final class ContextHelper implements HttpConstants {
      * @param context the web context
      * @return whether it is a POST request
      */
-    public static boolean isPost(final WebContextBase context) {
+    public static boolean isPost(final WebContext context) {
         return HttpConstants.HTTP_METHOD.POST.name().equalsIgnoreCase(context.getRequestMethod());
     }
 
@@ -67,7 +67,7 @@ public final class ContextHelper implements HttpConstants {
      * @param context the current web context
      * @return whether the request is HTTPS or secure
      */
-    public static boolean isHttpsOrSecure(final WebContextBase context) {
+    public static boolean isHttpsOrSecure(final WebContext context) {
         return SCHEME_HTTPS.equalsIgnoreCase(context.getScheme()) || context.isSecure();
     }
 
@@ -77,7 +77,7 @@ public final class ContextHelper implements HttpConstants {
      * @param context the current web context
      * @return whether the request is HTTP
      */
-    public static boolean isHttp(final WebContextBase context) {
+    public static boolean isHttp(final WebContext context) {
         return SCHEME_HTTP.equalsIgnoreCase(context.getScheme());
     }
 
@@ -87,7 +87,7 @@ public final class ContextHelper implements HttpConstants {
      * @param context the current web context
      * @return whether the request is HTTPS
      */
-    public static boolean isHttps(final WebContextBase context) {
+    public static boolean isHttps(final WebContext context) {
         return SCHEME_HTTPS.equalsIgnoreCase(context.getScheme());
     }
 }

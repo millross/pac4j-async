@@ -1,6 +1,6 @@
 package org.pac4j.core.authorization.generator;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.CommonProfile;
 
 /**
@@ -8,7 +8,7 @@ import org.pac4j.core.profile.CommonProfile;
  * does non-blocking i/o can be safely converted to an async generator via an automatic
  * conversion
  */
-public interface AuthorizationGenerator<C extends WebContextBase<?>, U extends CommonProfile> {
+public interface AuthorizationGenerator<C extends WebContext<?>, U extends CommonProfile> {
 
     /**
      * Generate the authorization information from and for the user profile.

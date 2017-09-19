@@ -62,9 +62,9 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
                 .withStatusRecording(status)
                 .withRecordedResponseHeaders(responseHeaders)
                 .build();
-        sessionStore = mock(AsyncSessionStore.class);
+        sessionStore = webContext.getSessionStore();
         when(sessionStore.renewSession(webContext)).thenReturn(CompletableFuture.completedFuture(true));
-        when(webContext.getSessionStore()).thenReturn(sessionStore);
+//        when(webContext.getSessionStore()).thenReturn(sessionStore);
     }
 
 
@@ -139,7 +139,7 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
             assertThat(status.get(), is(302));
             assertThat(responseHeaders.get(LOCATION_HEADER), is(Pac4jConstants.DEFAULT_URL_VALUE));
             verify(sessionStore, never()).renewSession(any(AsyncWebContext.class));
-        }).thenCompose((Void v) ->  webContext.getSessionAttribute(Pac4jConstants.USER_PROFILES));
+        }).thenCompose((Void v) ->  webContext.getSessionStore().get(webContext, Pac4jConstants.USER_PROFILES));
 
         assertSuccessfulEvaluation(profilesFuture, profiles -> {
             assertThat(profiles.containsValue(expectedProfile), is(true));
@@ -157,7 +157,7 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
         when(webContext.getRequestParameter(Clients.DEFAULT_CLIENT_NAME_PARAMETER)).thenReturn(NAME);
         asyncCallbackLogic = new DefaultAsyncCallbackLogic<>(false, false, config, httpActionAdapter);
         final Async async = testContext.async();
-        final CompletableFuture<Object> future = webContext.setSessionAttribute(Pac4jConstants.REQUESTED_URL, PAC4J_URL)
+        final CompletableFuture<Object> future = webContext.getSessionStore().set(webContext, Pac4jConstants.REQUESTED_URL, PAC4J_URL)
                 .thenCompose(v -> asyncCallbackLogic.perform(webContext, null));
 
         final CompletableFuture<Map<String, TestProfile>> profilesFuture = future.thenAccept(o -> {
@@ -165,7 +165,7 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
             assertThat(status.get(), is(302));
             assertThat(responseHeaders.get(LOCATION_HEADER), is(PAC4J_URL));
             verify(sessionStore, never()).renewSession(any(AsyncWebContext.class));
-        }).thenCompose((Void v) ->  webContext.getSessionAttribute(Pac4jConstants.USER_PROFILES));
+        }).thenCompose((Void v) ->  webContext.getSessionStore().get(webContext, Pac4jConstants.USER_PROFILES));
 
         assertSuccessfulEvaluation(profilesFuture, profiles -> {
             assertThat(profiles.containsValue(expectedProfile), is(true));
@@ -192,7 +192,7 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
             assertThat(status.get(), is(302));
             assertThat(responseHeaders.get(LOCATION_HEADER), is(Pac4jConstants.DEFAULT_URL_VALUE));
             verify(sessionStore, times(1)).renewSession(any(AsyncWebContext.class));
-        }).thenCompose((Void v) ->  webContext.getSessionAttribute(Pac4jConstants.USER_PROFILES));
+        }).thenCompose((Void v) ->  webContext.getSessionStore().get(webContext, Pac4jConstants.USER_PROFILES));
 
         assertSuccessfulEvaluation(profilesFuture, profiles -> {
             assertThat(profiles.containsValue(expectedProfile), is(true));

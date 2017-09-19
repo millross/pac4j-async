@@ -9,7 +9,7 @@ import org.pac4j.async.core.MockAsyncWebContextBuilder;
 import org.pac4j.async.core.TestCredentials;
 import org.pac4j.async.core.VertxAsyncTestBase;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.core.exception.CredentialsException;
 import org.pac4j.core.exception.HttpAction;
@@ -31,7 +31,7 @@ import static org.pac4j.async.core.util.TestsConstants.TEST_CREDENTIALS;
 public class AsyncAuthenticatorFromBlockingTest extends VertxAsyncTestBase {
 
     public AsyncWebContext webContext;
-    public Authenticator<TestCredentials, WebContextBase<?>> authenticator = mock(Authenticator.class);
+    public Authenticator<TestCredentials, WebContext<?>> authenticator = mock(Authenticator.class);
     public AsyncAuthenticator<TestCredentials> asyncAuthenticator = AsyncAuthenticator.fromBlocking(authenticator);
 
     @Before

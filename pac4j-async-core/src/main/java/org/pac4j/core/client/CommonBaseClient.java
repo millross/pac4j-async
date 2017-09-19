@@ -1,7 +1,7 @@
 package org.pac4j.core.client;
 
 import org.pac4j.async.core.profile.definition.ProfileDefinitionAware;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
@@ -20,7 +20,7 @@ import java.util.List;
  * WC = web context implementor (typically WebContext or AsyncWebContext)
  * AG = authorization generator implementor (typically AuthorizationGenerator or AsyncAuthorizationGenerator)
  */
-public abstract class CommonBaseClient<C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>, AG>
+public abstract class CommonBaseClient<C extends Credentials, U extends CommonProfile, WC extends WebContext<?>, AG>
         extends ProfileDefinitionAware <U>{
 
     private static final Logger logger = LoggerFactory.getLogger(CommonBaseClient.class);

@@ -4,7 +4,7 @@ import org.pac4j.async.core.Named;
 import org.pac4j.async.core.client.ConfigurableByClientsObject;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.Pac4jConstants;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.CommonHelper;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class DefaultClientFinder<C extends Named & ConfigurableByClientsObject> implements ClientFinder<C> {
     @Override
-    public List<C> find(Clients<C, ?> clients, WebContextBase<?> context, String clientNames) {
+    public List<C> find(Clients<C, ?> clients, WebContext<?> context, String clientNames) {
         final List<C> result = new ArrayList<>();
 
         if (CommonHelper.isNotBlank(clientNames)) {

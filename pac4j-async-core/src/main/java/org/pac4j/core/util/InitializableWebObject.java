@@ -1,12 +1,12 @@
 package org.pac4j.core.util;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 /**
  * Mirroring the sync version for now to allow delayed initialization, though we expect to move away from this
  * sooner rather than later
  */
-public abstract class InitializableWebObject<T extends WebContextBase<?>> {
+public abstract class InitializableWebObject<T extends WebContext<?>> {
     private volatile boolean initialized = false;
 
     /**

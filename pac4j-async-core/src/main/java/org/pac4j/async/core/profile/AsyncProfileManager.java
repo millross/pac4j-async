@@ -3,7 +3,7 @@ package org.pac4j.async.core.profile;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.profile.AnonymousProfile;
@@ -23,7 +23,7 @@ import static org.pac4j.core.context.Pac4jConstants.USER_PROFILES;
  * This version allows for asynchronous session storage
  */
 public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebContext> {
-    private final Authorizer<WebContextBase<?>, U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
+    private final Authorizer<WebContext<?>, U> IS_AUTHENTICATED_AUTHORIZER = new IsAuthenticatedAuthorizer<>();
 
     protected final AsyncWebContext context;
 
@@ -63,7 +63,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
         this.context.setRequestAttribute(USER_PROFILES, new LinkedHashMap<String, U>());
 
         if (removeFromSession) {
-            return this.context.setSessionAttribute(USER_PROFILES, new LinkedHashMap<String, U>());
+            return this.context.getSessionStore().set(context, USER_PROFILES, new LinkedHashMap<String, U>());
         } else {
             // We've done all we need to
             return completedFuture(null);
@@ -98,7 +98,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
 
         return updatedProfilesFuture.thenCompose(profiles -> {
             CompletableFuture<Void> saveFuture = (saveInSession ?
-                    this.context.setSessionAttribute(USER_PROFILES, profiles) :
+                    this.context.getSessionStore().set(context, USER_PROFILES, profiles) :
                     completedFuture(null))
                         .thenAccept(v -> this.context.setRequestAttribute(USER_PROFILES, profiles));
                     return saveFuture;
@@ -147,7 +147,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
             }
         }
         if (readFromSession) {
-            final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionAttribute(USER_PROFILES);
+            final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionStore().get(context, USER_PROFILES);
             return sessionAttributeFuture.thenCompose(sessionAttribute -> {
                 final CompletableFuture<LinkedHashMap<String, U>> future = new CompletableFuture<>();
                 this.context.getExecutionContext().runOnContext(() -> {

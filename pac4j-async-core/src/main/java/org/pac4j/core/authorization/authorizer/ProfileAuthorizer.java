@@ -1,6 +1,6 @@
 package org.pac4j.core.authorization.authorizer;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Implementation of a profile authorizer where we know i/o will be non-blocking (i.e where we can use either an
  * AsyncWebContext or a sync WebContext).
  */
-public abstract class ProfileAuthorizer<C extends WebContextBase<?>, U extends CommonProfile> implements Authorizer<C, U> {
+public abstract class ProfileAuthorizer<C extends WebContext<?>, U extends CommonProfile> implements Authorizer<C, U> {
     /**
      * If all profiles are authorized.
      *

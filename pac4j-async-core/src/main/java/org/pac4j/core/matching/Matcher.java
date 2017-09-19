@@ -1,6 +1,6 @@
 package org.pac4j.core.matching;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 
 /**
@@ -9,7 +9,7 @@ import org.pac4j.core.exception.HttpAction;
  * @author Jerome Leleu
  * @since 1.8.1
  */
-public interface Matcher<C extends WebContextBase<?>> {
+public interface Matcher<C extends WebContext<?>> {
 
     /**
      * Check if the web context matches.

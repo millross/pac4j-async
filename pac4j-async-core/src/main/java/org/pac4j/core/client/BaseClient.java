@@ -1,7 +1,7 @@
 package org.pac4j.core.client;
 
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.credentials.authenticator.Authenticator;
 import org.pac4j.core.credentials.extractor.CredentialsExtractor;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public abstract class BaseClient <C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>, AG extends AuthorizationGenerator<WC, U>> extends CommonBaseClient<C, U, WC, AG>
+public abstract class BaseClient <C extends Credentials, U extends CommonProfile, WC extends WebContext<?>, AG extends AuthorizationGenerator<WC, U>> extends CommonBaseClient<C, U, WC, AG>
         implements Client<C, U, WC> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

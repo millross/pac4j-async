@@ -39,7 +39,7 @@ public class AsyncCsrfAuthorizer implements AsyncAuthorizer<CommonProfile> {
         if (checkRequest) {
             final String parameterToken = context.getRequestParameter(parameterName);
             final String headerToken = context.getRequestHeader(headerName);
-            return context.getSessionAttribute(Pac4jConstants.CSRF_TOKEN)
+            return context.getSessionStore().get(context, Pac4jConstants.CSRF_TOKEN)
                     .thenApply(s -> s != null && (s.equals(parameterToken) || s.equals(headerToken)));
         } else {
             return CompletableFuture.completedFuture(true);

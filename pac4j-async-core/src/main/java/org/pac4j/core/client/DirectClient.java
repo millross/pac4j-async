@@ -1,7 +1,7 @@
 package org.pac4j.core.client;
 
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.exception.TechnicalException;
@@ -12,7 +12,7 @@ import org.pac4j.core.util.CommonHelper;
 /**
  *
  */
-public abstract class DirectClient<C extends Credentials, U extends CommonProfile, WC extends WebContextBase<?>, AG extends AuthorizationGenerator<WC, U>>
+public abstract class DirectClient<C extends Credentials, U extends CommonProfile, WC extends WebContext<?>, AG extends AuthorizationGenerator<WC, U>>
         extends BaseClient<C, U , WC , AG> {
 
     @Override

@@ -3,7 +3,7 @@ package org.pac4j.core.client.finder;
 import org.pac4j.async.core.Named;
 import org.pac4j.async.core.client.ConfigurableByClientsObject;
 import org.pac4j.core.client.Clients;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import java.util.List;
  */
 
 public interface ClientFinder<C extends Named & ConfigurableByClientsObject> {
-    List<C> find(Clients<C, ?> clients, WebContextBase<?> context, String clientNames);
+    List<C> find(Clients<C, ?> clients, WebContext<?> context, String clientNames);
 }

@@ -1,6 +1,7 @@
 package org.pac4j.async.core.session;
 
 import org.pac4j.async.core.context.AsyncWebContext;
+import org.pac4j.core.context.WebContext;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +27,7 @@ public interface AsyncSessionStore {
      * @param key the key of the object
      * @return the object in store
      */
-    <T> CompletableFuture<T> get(AsyncWebContext context, String key);
+    <T> CompletableFuture<T> get(WebContext<AsyncSessionStore> context, String key);
 
     /**
      * Save an object in the store by its key.
@@ -35,7 +36,7 @@ public interface AsyncSessionStore {
      * @param key the key of the object
      * @param value the value to save in store
      */
-    <T> CompletableFuture<Void> set(AsyncWebContext context, String key, T value);
+    <T> CompletableFuture<Void> set(WebContext<AsyncSessionStore> context, String key, T value);
 
     /**
      * Destroy the web session.

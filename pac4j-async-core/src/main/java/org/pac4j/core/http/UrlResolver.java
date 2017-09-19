@@ -1,6 +1,6 @@
 package org.pac4j.core.http;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 
 /**
  * Async-friendly version of the UrlResolver interface
@@ -18,5 +18,5 @@ public interface UrlResolver {
      * @param context the web context
      * @return the computed URL
      */
-    String compute(String url, WebContextBase<?> context);
+    String compute(String url, WebContext<?> context);
 }

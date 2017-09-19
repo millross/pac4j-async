@@ -13,11 +13,11 @@ public class DefaultAsyncCsrfTokenGenerator implements AsyncCsrfTokenGenerator {
     @Override
     public CompletableFuture<String> get(AsyncWebContext context) {
 
-        return withFallback(context.getSessionAttribute(Pac4jConstants.CSRF_TOKEN),
+        return withFallback(context.getSessionStore().get(context, Pac4jConstants.CSRF_TOKEN),
                 () -> {
                     final String token = UUID.randomUUID().toString();
                     final CompletableFuture<String> tokenFuture = new CompletableFuture<>();
-                    context.setSessionAttribute(Pac4jConstants.CSRF_TOKEN, token)
+                    context.getSessionStore().set(context, Pac4jConstants.CSRF_TOKEN, token)
                             .thenAccept(v -> {
                                 tokenFuture.complete(token);
                             });

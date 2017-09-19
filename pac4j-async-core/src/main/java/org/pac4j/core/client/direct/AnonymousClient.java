@@ -2,7 +2,7 @@ package org.pac4j.core.client.direct;
 
 import org.pac4j.core.authorization.generator.AuthorizationGenerator;
 import org.pac4j.core.client.DirectClient;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.AnonymousCredentials;
 import org.pac4j.core.profile.AnonymousProfile;
 
@@ -12,7 +12,7 @@ import org.pac4j.core.profile.AnonymousProfile;
  * @author Jerome Leleu
  * @since 1.8.1
  */
-public final class AnonymousClient extends DirectClient<AnonymousCredentials, AnonymousProfile, WebContextBase<?>, AuthorizationGenerator<WebContextBase<?>, AnonymousProfile>> {
+public final class AnonymousClient extends DirectClient<AnonymousCredentials, AnonymousProfile, WebContext<?>, AuthorizationGenerator<WebContext<?>, AnonymousProfile>> {
 
     public final static AnonymousClient INSTANCE = new AnonymousClient();
 

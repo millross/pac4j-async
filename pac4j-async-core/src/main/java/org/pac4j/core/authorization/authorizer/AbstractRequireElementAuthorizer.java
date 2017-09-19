@@ -1,6 +1,6 @@
 package org.pac4j.core.authorization.authorizer;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 
@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  *
  */
-public abstract class AbstractRequireElementAuthorizer <C extends WebContextBase<?>,E,  U extends CommonProfile> extends ProfileAuthorizer<C, U> {
+public abstract class AbstractRequireElementAuthorizer <C extends WebContext<?>,E,  U extends CommonProfile> extends ProfileAuthorizer<C, U> {
 
     protected Set<E> elements;
 

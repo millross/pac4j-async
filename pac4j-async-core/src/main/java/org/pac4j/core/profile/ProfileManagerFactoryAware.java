@@ -1,7 +1,7 @@
 package org.pac4j.core.profile;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context   .WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.CommonHelper;
 
 import java.util.function.Function;
@@ -12,7 +12,7 @@ import java.util.function.Function;
  * @author Jerome Leleu
  * @since 2.0.0
  */
-public abstract class ProfileManagerFactoryAware<C extends WebContextBase<?>, PM, CFG extends Config<?, C, ?, ?, ?,  ?, ?, ?, PM, ? extends CommonProfile, ?>> {
+public abstract class ProfileManagerFactoryAware<C extends WebContext<?>, PM, CFG extends Config<?, C, ?, ?, ?,  ?, ?, ?, PM, ? extends CommonProfile, ?>> {
 
         protected abstract Function<C, PM> defaultProfileManagerFactory();
 

@@ -61,7 +61,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
     @Test(timeout = 1000)
     public void testGetNoProfile(final TestContext testContext) {
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                .thenRun(() -> executeAsyncGetTest(testContext, true, assertNoProfileReturned()));
     }
 
@@ -69,7 +69,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     public void testGetOneProfileFromSession(final TestContext testContext) {
 
         profiles.put(CLIENT1, PROFILE1);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() -> executeAsyncGetTest(testContext, true,
                         assertAuthenticatedWithProfile(PROFILE1)));
 
@@ -80,7 +80,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
         profiles.put("first", new AnonymousProfile());
         profiles.put(CLIENT1, PROFILE1);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
             .thenRun(() -> executeAsyncGetTest(testContext, true,
                 assertAuthenticatedWithProfile(PROFILE1)));
     }
@@ -89,7 +89,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     public void testGetOneTwoProfilesFromSession(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
         profiles.put(CLIENT2, PROFILE2);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetTest(testContext, true,
                 assertAuthenticatedWithProfile(PROFILE1)));
     }
@@ -97,7 +97,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     @Test(timeout = 1000)
     public void testGetOneProfileFromRequest(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetTest(testContext, false,
                 assertNoProfileReturned()));
     }
@@ -105,7 +105,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     @Test(timeout = 1000)
     public void testGetAllNullProfile(final TestContext testContext) {
 
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, true,
                 assertNotAuthenticatedAndEmptyProfileListReturned()));
 
@@ -113,7 +113,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
     @Test(timeout = 1000)
     public void testGetAllNoProfile(final TestContext testContext) {
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, true,
                 assertNotAuthenticatedAndEmptyProfileListReturned()));
 
@@ -122,7 +122,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     @Test(timeout = 1000)
     public void testGetAllOneProfileFromSession(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, true,
                 assertProfileListReturned(PROFILE1)));
     }
@@ -131,7 +131,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     public void testGetAllTwoProfilesFromSession(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
         profiles.put(CLIENT2, PROFILE2);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, true,
                 assertProfileListReturned(PROFILE1, PROFILE2)));
     }
@@ -142,7 +142,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
         webContext.setRequestAttribute(USER_PROFILES, profiles);
         final LinkedHashMap<String, CommonProfile> profiles2 = new LinkedHashMap<>();
         profiles2.put(CLIENT2, PROFILE2);
-        webContext.setSessionAttribute(USER_PROFILES, profiles2)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles2)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, true,
                 assertProfileListReturned(PROFILE1, PROFILE2)));
     }
@@ -150,7 +150,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     @Test(timeout = 1000)
     public void testGetAllOneProfileFromRequest(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
-        webContext.setSessionAttribute(USER_PROFILES, profiles)
+        webContext.getSessionStore().set(webContext, USER_PROFILES, profiles)
                 .thenRun(() ->executeAsyncGetAllTest(testContext, false,
                 assertEmptyProfileListReturned()));
     }
@@ -160,7 +160,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
 
         profiles.put(CLIENT1, PROFILE1);
 
-        testProfileInSessionAfter(webContext.setSessionAttribute(USER_PROFILES, profiles),
+        testProfileInSessionAfter(webContext.getSessionStore().set(webContext, USER_PROFILES, profiles),
                 v -> profileManager.remove(false),
                 assertAuthenticatedWithProfile(PROFILE1),
                 testContext);
@@ -170,7 +170,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     public void testRemoveSessionTrue(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
 
-        testProfileInSessionAfter(webContext.setSessionAttribute(USER_PROFILES, profiles),
+        testProfileInSessionAfter(webContext.getSessionStore().set(webContext, USER_PROFILES, profiles),
                 v -> profileManager.remove(true),
                 assertNoProfileReturned(),
                 testContext);
@@ -180,7 +180,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
     public void testLogoutSession(final TestContext testContext) {
         profiles.put(CLIENT1, PROFILE1);
 
-        testProfileInSessionAfter(webContext.setSessionAttribute(USER_PROFILES, profiles),
+        testProfileInSessionAfter(webContext.getSessionStore().set(webContext, USER_PROFILES, profiles),
                 v -> profileManager.logout(),
                 assertNoProfileReturned(),
                 testContext);
@@ -276,7 +276,7 @@ public class AsyncProfileManagerTest extends VertxAsyncTestBase{
         final CommonProfile profile = new CommonProfile();
         profile.setClientName(CLIENT1);
 
-        testProfilesInSessionAfter(webContext.setSessionAttribute(USER_PROFILES, profile),
+        testProfilesInSessionAfter(webContext.getSessionStore().set(webContext, USER_PROFILES, profile),
                 v -> completedFuture(null),
                 assertProfileListReturned(profile),
                 testContext);

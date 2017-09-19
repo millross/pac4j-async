@@ -53,7 +53,7 @@ public class DefaultAsyncCsrfTokenGeneratorTest {
     @Test
     public void testCorrectBehaviourWhenTokenInSession() throws Exception {
         final CountDownLatch lock = new CountDownLatch(1);
-        webContext.setSessionAttribute(CSRF_TOKEN, SESSION_UUID.toString())
+        webContext.getSessionStore().set(webContext, CSRF_TOKEN, SESSION_UUID.toString())
             .thenRun(() -> lock.countDown());
         lock.await(1, TimeUnit.SECONDS);
         PowerMockito.mockStatic(UUID.class);

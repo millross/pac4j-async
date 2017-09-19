@@ -1,7 +1,7 @@
 package org.pac4j.core.redirect;
 
 import org.pac4j.core.client.Client;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.util.CommonHelper;
 
@@ -77,7 +77,7 @@ public class RedirectAction {
      * @param context the web context
      * @return the performed {@link HttpAction}
      */
-    public HttpAction perform(final WebContextBase context) {
+    public HttpAction perform(final WebContext context) {
         if (type == RedirectType.REDIRECT) {
             return HttpAction.redirect("redirection via 302", context, location);
         } else {

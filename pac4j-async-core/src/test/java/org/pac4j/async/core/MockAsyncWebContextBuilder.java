@@ -2,6 +2,7 @@ package org.pac4j.async.core;
 
 import io.vertx.core.Vertx;
 import org.pac4j.async.core.context.AsyncWebContext;
+import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.core.context.Cookie;
 import org.pac4j.core.context.HttpConstants;
 
@@ -44,26 +45,9 @@ public class MockAsyncWebContextBuilder {
             when(webContext.getExecutionContext()).thenReturn(asynchronousComputationAdapter.getExecutionContext());
             when(webContext.getAsyncComputationAdapter()).thenReturn(asynchronousComputationAdapter);
 
-            // Set up session attributes
-            doAnswer(invocation -> {
-                Object[] args = invocation.getArguments();
-                String key = (String) args[0];
-                Object value = args[1];
-                final CompletableFuture<Void> future = new CompletableFuture<>();
-                vertx.setTimer(300, v -> {
-                    dummySession.put(key, value);
-                    future.complete(null);
-                });
-                return future;
-            }).when(webContext).setSessionAttribute(anyString(), anyObject());
+            final AsyncSessionStore sessionStore = mockSessionStore(vertx);
 
-            doAnswer(invocation -> {
-                Object[] args = invocation.getArguments();
-                String key = (String) args[0];
-                final CompletableFuture<Object> future = new CompletableFuture<>();
-                vertx.setTimer(300, v -> future.complete(dummySession.get(key)));
-                return future;
-            }).when(webContext).getSessionAttribute(anyString());
+            when(webContext.getSessionStore()).thenReturn(sessionStore);
 
             // Set up request attributes
             doAnswer(invocation -> {
@@ -143,5 +127,36 @@ public class MockAsyncWebContextBuilder {
 
         return webContext;
     }
+
+    private final AsyncSessionStore mockSessionStore(final Vertx vertx) {
+
+        final AsyncSessionStore sessionStore = mock(AsyncSessionStore.class);
+
+        // Set up session attributes
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String key = (String) args[1];
+            Object value = args[2];
+            final CompletableFuture<Void> future = new CompletableFuture<>();
+            vertx.setTimer(300, v -> {
+                dummySession.put(key, value);
+                future.complete(null);
+            });
+            return future;
+        }).when(sessionStore).set(anyObject(), anyString(), anyObject());
+
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            String key = (String) args[1];
+            final CompletableFuture<Object> future = new CompletableFuture<>();
+            vertx.setTimer(300, v -> future.complete(dummySession.get(key)));
+            return future;
+        }).when(sessionStore).get(any(AsyncWebContext.class), anyString());
+
+        return sessionStore;
+
+    }
+
+
 
 }

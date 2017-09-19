@@ -1,6 +1,6 @@
 package org.pac4j.core.matching;
 
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
 
 import java.util.Map;
@@ -11,12 +11,12 @@ import java.util.Map;
  * @author Jerome Leleu
  * @since 1.8.1
  */
-public interface MatchingChecker<C extends WebContextBase<?>, M> {
+public interface MatchingChecker<C extends WebContext<?>, M> {
 
     /**
      * Check if the web context matches.
      *
-     * @param context the web context, extender of WebContextBase
+     * @param context the web context, extender of WebContext
      * @param matcherNames the matchers
      * @param matchersMap the map of matchers
      * @return whether the web context matches

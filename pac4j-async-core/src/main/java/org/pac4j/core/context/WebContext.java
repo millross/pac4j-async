@@ -6,17 +6,18 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Common interface for both sync and async web contexts
+ * Common interface for both sync and async web contexts, created by adding Session store type param
+ * to existing WebContext class.
  * Type param: S - base session store type (either SessionStore for sync or AsyncSessionStore for Async)
  */
-public interface WebContextBase<S> {
+public interface WebContext<S> {
 
     /**
      * Get the session store.
      *
      * @return the session store
      */
-    default S getSessionStore() {
+    default <T extends S> T getSessionStore() {
         throw new UnsupportedOperationException("To be implemented");
     }
 
@@ -25,7 +26,7 @@ public interface WebContextBase<S> {
      *
      * @param sessionStore the session store
      */
-    default void setSessionStore(S sessionStore) {
+    default <T extends S>void setSessionStore(T sessionStore) {
         throw new UnsupportedOperationException("To be implemented");
     }
 

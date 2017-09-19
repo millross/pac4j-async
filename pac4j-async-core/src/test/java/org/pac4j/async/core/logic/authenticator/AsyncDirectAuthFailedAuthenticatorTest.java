@@ -59,7 +59,7 @@ public class AsyncDirectAuthFailedAuthenticatorTest extends VertxAsyncTestBase {
             assertThat(a, is(notNullValue()));
             assertThat(a.getCode(), is(HttpConstants.TEMP_REDIRECT));
             assertThat(responseHeaders.get(HttpConstants.LOCATION_HEADER), is(AUTH_REDIRECT_URL));
-            return webContext.getSessionAttribute(Pac4jConstants.REQUESTED_URL);
+            return webContext.getSessionStore().get(webContext, Pac4jConstants.REQUESTED_URL);
         });
         assertSuccessfulEvaluation(requestedUrlFuture, s -> {
             assertThat(s, is(MockAsyncWebContextBuilder.DEFAULT_FULL_REQUEST_URL));

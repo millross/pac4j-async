@@ -32,7 +32,7 @@ public class AsyncIndirectAuthenticationFlow<C extends AsyncWebContext> {
         logger.debug("requestedUrl: {}", requestedUrl);
 
         // Save redirect url then trigger redirect
-        return context.setSessionAttribute(Pac4jConstants.REQUESTED_URL, requestedUrl)
+        return context.getSessionStore().set(context, Pac4jConstants.REQUESTED_URL, requestedUrl)
                 .thenApply(v -> currentClients.stream().filter(AsyncClient::isIndirect)
                     // No need to cast, redirect override takes care of this.
                     .findFirst()
@@ -41,10 +41,10 @@ public class AsyncIndirectAuthenticationFlow<C extends AsyncWebContext> {
     }
 
     public final CompletableFuture<HttpAction> redirectToOriginallyRequestedUrl(final C context, final String defaultUrl) {
-        return context.<String>getSessionAttribute(Pac4jConstants.REQUESTED_URL)
+        return context.getSessionStore().<String>get(context, Pac4jConstants.REQUESTED_URL)
                 .thenApply(Optional::ofNullable)
                 .thenApply(o -> o.orElse(defaultUrl))
-                .thenCompose(v -> context.setSessionAttribute(Pac4jConstants.REQUESTED_URL, null)
+                .thenCompose(v -> context.getSessionStore().set(context, Pac4jConstants.REQUESTED_URL, null)
                         .thenApply(voidResult -> {
                             logger.debug("redirectUrl: {}", v);
                             return HttpAction.redirect("redirect", context, v);

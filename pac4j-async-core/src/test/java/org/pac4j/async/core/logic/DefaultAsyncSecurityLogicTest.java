@@ -23,7 +23,7 @@ import org.pac4j.async.core.util.TestsConstants;
 import org.pac4j.core.authorization.authorizer.Authorizer;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.Pac4jConstants;
-import org.pac4j.core.context.WebContextBase;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.exception.HttpAction;
@@ -380,7 +380,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         return new Clients<>(CALLBACK_URL, directClient, directClient2);
     }
 
-    private void addSingleAuthorizerToConfig(Authorizer<WebContextBase, CommonProfile> syncAuthorizer) {
+    private void addSingleAuthorizerToConfig(Authorizer<WebContext, CommonProfile> syncAuthorizer) {
         final Map<String, AsyncAuthorizer<CommonProfile>> authorizersMap = new HashMap<>();
         authorizersMap.put(NAME, AsyncAuthorizer.fromNonBlockingAuthorizer(syncAuthorizer));
         when(config.getAuthorizers()).thenReturn(authorizersMap);
@@ -389,7 +389,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
     private CompletableFuture<Void> simulatePreviousAuthenticationSuccess() {
         final LinkedHashMap<String, CommonProfile> profiles = new LinkedHashMap<>();
         profiles.put(NAME, TestProfile.from(TEST_CREDENTIALS));
-        return webContext.setSessionAttribute(Pac4jConstants.USER_PROFILES, profiles);
+        return webContext.getSessionStore().set(webContext, Pac4jConstants.USER_PROFILES, profiles);
     }
 
     private AsyncClient<TestCredentials, TestProfile> getMockIndirectClient(final String name, final String redirectUrl) {

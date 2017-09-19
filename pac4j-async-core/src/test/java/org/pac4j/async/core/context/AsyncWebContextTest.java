@@ -68,7 +68,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
 
         final Async async = testContext.async();
 
-        webContext.getSessionIdentifier()
+        webContext.getSessionStore().getOrCreateSessionId(webContext)
                 .thenAccept(sid -> executionContext.runOnContext(() -> {
                     assertThat(sid, is(SESSION_ID));
                     async.complete();
@@ -78,8 +78,8 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testGetAndRetrieveSessionAttribute(final TestContext testContext) {
         final Async async = testContext.async();
-        webContext.setSessionAttribute(WRITE_KEY, WRITE_VALUE)
-                .thenCompose(v -> webContext.getSessionAttribute(WRITE_KEY))
+        webContext.getSessionStore().set(webContext, WRITE_KEY, WRITE_VALUE)
+                .thenCompose(v -> webContext.getSessionStore().get(webContext, WRITE_KEY))
                 .thenAccept(val -> {
                    executionContext.runOnContext(() -> {
                        assertThat(val, is(WRITE_VALUE));
@@ -91,7 +91,7 @@ public class AsyncWebContextTest extends VertxAsyncTestBase {
     @Test(timeout = 1000)
     public void testGetNonexistentSessionAttributeReturnsNull(final TestContext testContext) {
         final Async async = testContext.async();
-        webContext.getSessionAttribute(NO_SUCH_KEY)
+        webContext.getSessionStore().get(webContext, NO_SUCH_KEY)
                 .thenAccept(val -> executionContext.runOnContext(() -> {
                     assertThat(val, is(nullValue()));
                     async.complete();
