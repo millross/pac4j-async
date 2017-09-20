@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>pac4j-async-core</module>
+        <module>pac4j-async-oauth</module>
     </modules>
 
     <parent>
@@ -19,7 +20,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <pac4j.version>2.0.0</pac4j.version>
+        <pac4j.version>3.0.0-SNAPSHOT</pac4j.version>
         <java.version>1.8</java.version>
         <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
         <slf4j-version>1.7.22</slf4j-version>
