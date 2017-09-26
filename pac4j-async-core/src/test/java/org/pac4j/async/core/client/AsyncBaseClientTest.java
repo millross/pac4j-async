@@ -248,7 +248,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected void internalInit() {
+            protected void internalInit(AsyncWebContext context) {
 
             }
         };
@@ -285,7 +285,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected void internalInit() {
+            protected void internalInit(final AsyncWebContext context) {
 
             }
         };
@@ -324,7 +324,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            protected void internalInit() {
+            protected void internalInit(final AsyncWebContext context) {
 
             }
         };

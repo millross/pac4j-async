@@ -53,7 +53,7 @@ public abstract class BaseClient <C extends Credentials, U extends CommonProfile
 
     @Override
     public final U getUserProfile(final C credentials, final WC context) throws HttpAction {
-        init();
+        init(context);
         logger.debug("credentials : {}", credentials);
         if (credentials == null) {
             return null;

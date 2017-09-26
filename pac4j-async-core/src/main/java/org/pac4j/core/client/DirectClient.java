@@ -16,8 +16,8 @@ public abstract class DirectClient<C extends Credentials, U extends CommonProfil
         extends BaseClient<C, U , WC , AG> {
 
     @Override
-    protected void internalInit() {
-        clientInit();
+    protected void internalInit(final WC context) {
+        clientInit(context);
 
         // ensures components have been properly initialized
         CommonHelper.assertNotNull("credentialsExtractor", getCredentialsExtractor());
@@ -29,7 +29,7 @@ public abstract class DirectClient<C extends Credentials, U extends CommonProfil
      * Initialize the client.
      *
      */
-    protected abstract void clientInit();
+    protected abstract void clientInit(final WC context);
 
     @Override
     public final HttpAction redirect(final WC context) throws HttpAction {
@@ -38,7 +38,7 @@ public abstract class DirectClient<C extends Credentials, U extends CommonProfil
 
     @Override
     public final C getCredentials(final WC context) throws HttpAction {
-        init();
+        init(context);
         return retrieveCredentials(context);
     }
 

@@ -21,7 +21,7 @@ import java.util.List;
  * AG = authorization generator implementor (typically AuthorizationGenerator or AsyncAuthorizationGenerator)
  */
 public abstract class CommonBaseClient<C extends Credentials, U extends CommonProfile, WC extends WebContext<?>, AG>
-        extends ProfileDefinitionAware <U>{
+        extends ProfileDefinitionAware <U, WC>{
 
     private static final Logger logger = LoggerFactory.getLogger(CommonBaseClient.class);
 

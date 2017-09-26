@@ -37,7 +37,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     @Override
     public CompletableFuture<Optional<U>> getUserProfileFuture(final C credentials, final AsyncWebContext context) {
-        init();
+        init(context);
 
         logger.debug("credentials : {}", credentials);
         if (credentials == null) {
