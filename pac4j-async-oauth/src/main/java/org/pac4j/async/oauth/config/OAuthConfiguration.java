@@ -46,6 +46,7 @@ public class OAuthConfiguration<S extends OAuthService<?>, T extends Token> exte
     private OAuthProfileDefinition profileDefinition;
 
     protected S service;
+    private String clientName;
 
     @Override
     protected void internalInit(final WebContext<?> context) {
@@ -185,4 +186,27 @@ public class OAuthConfiguration<S extends OAuthService<?>, T extends Token> exte
                 "hasBeenCancelledFactory", hasBeenCancelledFactory, "profileDefinition", profileDefinition);
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public UrlResolver getUrlResolver() {
+        return urlResolver;
+    }
+
+    public void setUrlResolver(UrlResolver urlResolver) {
+        this.urlResolver = urlResolver;
+    }
+
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
+
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
 }

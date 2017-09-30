@@ -23,7 +23,6 @@ public class OAuth20Configuration extends OAuthConfiguration<OAuth20Service, OAu
     private boolean withState;
 
     private String stateData;
-    private String clientName;
 
     public String getStateSessionAttributeName() {
         return getClientName() + STATE_SESSION_PARAMETER;
@@ -51,14 +50,6 @@ public class OAuth20Configuration extends OAuthConfiguration<OAuth20Service, OAu
 
     public void setStateData(final String stateData) {
         this.stateData = stateData;
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
     }
 
 
