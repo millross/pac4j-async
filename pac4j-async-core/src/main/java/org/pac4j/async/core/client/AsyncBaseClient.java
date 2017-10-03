@@ -6,12 +6,14 @@ import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.credentials.authenticator.AsyncAuthenticator;
 import org.pac4j.async.core.credentials.extractor.AsyncCredentialsExtractor;
+import org.pac4j.async.core.profile.creator.AsyncProfileCreator;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.client.CommonBaseClient;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.CredentialsException;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.creator.AuthenticatorProfileCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     private AsyncCredentialsExtractor<C> credentialsExtractor;
     private AsyncAuthenticator<C> authenticator;
+    private AsyncProfileCreator<C, U> profileCreator;
 
     @Override
     public CompletableFuture<Optional<U>> getUserProfileFuture(final C credentials, final AsyncWebContext context) {
@@ -118,6 +121,20 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     public void setCredentialsExtractor(final AsyncCredentialsExtractor<C> credentialsExtractor) {
         this.credentialsExtractor = credentialsExtractor;
+    }
+
+    public AsyncProfileCreator<C, U> getProfileCreator() {
+        return profileCreator;
+    }
+
+    public void setProfileCreator(AsyncProfileCreator<C, U> profileCreator) {
+        this.profileCreator = profileCreator;
+    }
+
+    protected void defaultProfileCreator(final AsyncProfileCreator<C, U> profileCreator) {
+        if (this.profileCreator == null || this.profileCreator == AuthenticatorProfileCreator.INSTANCE) {
+            this.profileCreator = profileCreator;
+        }
     }
 
     /**
