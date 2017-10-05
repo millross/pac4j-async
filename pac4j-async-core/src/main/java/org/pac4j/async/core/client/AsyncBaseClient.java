@@ -137,6 +137,22 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
         }
     }
 
+    public AsyncAuthenticator<C> getAuthenticator() {
+        return authenticator;
+    }
+
+    public void setAuthenticator(AsyncAuthenticator<C> authenticator) {
+        this.authenticator = authenticator;
+    }
+
+    protected void defaultAuthenticator(final AsyncAuthenticator<C> authenticator) {
+        if (this.authenticator == null) {
+            this.authenticator = authenticator;
+        }
+    }
+
+
+
     /**
      * Retrieve the credentials.
      *
