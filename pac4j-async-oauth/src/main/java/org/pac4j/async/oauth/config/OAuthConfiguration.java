@@ -5,19 +5,19 @@ import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.SignatureType;
 import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.oauth.OAuthService;
+import org.pac4j.async.oauth.profile.definition.OAuthProfileDefinition;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.UrlResolver;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.HttpUtils;
 import org.pac4j.core.util.InitializableWebObject;
-import org.pac4j.oauth.profile.definition.OAuthProfileDefinition;
 
 import java.util.function.Function;
 
 /**
  *
  */
-public class OAuthConfiguration<S extends OAuthService<?>, T extends Token> extends InitializableWebObject<WebContext<?>> {
+public class OAuthConfiguration<S extends OAuthService<? extends T>, T extends Token> extends InitializableWebObject<WebContext<?>> {
 
     public static final String OAUTH_TOKEN = "oauth_token";
 
