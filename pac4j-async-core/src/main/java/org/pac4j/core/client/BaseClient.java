@@ -26,7 +26,7 @@ public abstract class BaseClient <C extends Credentials, U extends CommonProfile
 
     private Authenticator<C, WC> authenticator;
 
-    private ProfileCreator<C, U, WC> profileCreator = AuthenticatorProfileCreator.INSTANCE;
+    private ProfileCreator<C, U> profileCreator = AuthenticatorProfileCreator.INSTANCE;
 
     /**
      * Retrieve the credentials.
@@ -105,11 +105,11 @@ public abstract class BaseClient <C extends Credentials, U extends CommonProfile
         }
     }
 
-    public ProfileCreator<C, U, WC> getProfileCreator() {
+    public ProfileCreator<C, U> getProfileCreator() {
         return profileCreator;
     }
 
-    protected void defaultProfileCreator(final ProfileCreator<C, U, WC> profileCreator) {
+    protected void defaultProfileCreator(final ProfileCreator<C, U> profileCreator) {
         if (this.profileCreator == null || this.profileCreator == AuthenticatorProfileCreator.INSTANCE) {
             this.profileCreator = profileCreator;
         }
@@ -123,7 +123,7 @@ public abstract class BaseClient <C extends Credentials, U extends CommonProfile
         this.authenticator = authenticator;
     }
 
-    public void setProfileCreator(final ProfileCreator<C, U, WC> profileCreator) {
+    public void setProfileCreator(final ProfileCreator<C, U> profileCreator) {
         this.profileCreator = profileCreator;
     }
 

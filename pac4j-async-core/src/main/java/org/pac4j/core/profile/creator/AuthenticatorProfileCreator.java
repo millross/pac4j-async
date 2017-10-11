@@ -8,7 +8,7 @@ import org.pac4j.core.profile.CommonProfile;
 /**
  *
  */
-public class AuthenticatorProfileCreator<C extends Credentials, P extends CommonProfile> implements ProfileCreator<C, P, WebContext<?>> {
+public class AuthenticatorProfileCreator<C extends Credentials, P extends CommonProfile> implements ProfileCreator<C, P> {
 
     public final static AuthenticatorProfileCreator INSTANCE = new AuthenticatorProfileCreator<>();
 

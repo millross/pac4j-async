@@ -151,8 +151,6 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
         }
     }
 
-
-
     /**
      * Retrieve the credentials.
      *
