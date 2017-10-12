@@ -3,10 +3,9 @@ package org.pac4j.async.core.authenticate.failure.recorder;
 import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.core.credentials.Credentials;
+import org.pac4j.core.util.CommonHelper;
 
 import java.util.concurrent.CompletableFuture;
-
-import static org.pac4j.core.client.IndirectClient.ATTEMPTED_AUTHENTICATION_SUFFIX;
 
 /**
  * Enum for strategies to record authentication failure
@@ -24,6 +23,12 @@ public enum RecordFailedAuth implements RecordFailedAuthenticationStrategy {
             return CompletableFuture.completedFuture(null);
         }
 
+        @Override
+        public CompletableFuture<Boolean> isFailedAuthenticationPresent(AsyncClient client, AsyncWebContext webContext) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+
     },
     RECORD_IN_SESSION {
         @Override
@@ -35,7 +40,14 @@ public enum RecordFailedAuth implements RecordFailedAuthenticationStrategy {
         @Override
         public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
             return webContext.getSessionStore().set(webContext, client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX, "")
-                    .thenApply(v -> null);        }
+                    .thenApply(v -> null);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> isFailedAuthenticationPresent(AsyncClient client, AsyncWebContext webContext) {
+            return webContext.getSessionStore().<String>get(webContext, client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX)
+                    .thenApply(CommonHelper::isNotBlank);
+        }
     }
 
 }
