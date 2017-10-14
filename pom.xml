@@ -6,6 +6,7 @@
     <modules>
         <module>pac4j-async-core</module>
         <module>pac4j-async-oauth</module>
+        <module>vertx-pac4j-async-demo</module>
     </modules>
 
     <parent>
