@@ -1,8 +1,8 @@
 package org.pac4j.async.oauth.credentials.authenticator;
 
 import com.github.scribejava.core.model.OAuth2AccessToken;
+import org.pac4j.async.oauth.config.OAuth20Configuration;
 import org.pac4j.async.oauth.scribe.ScribeCallbackAdapter;
-import org.pac4j.oauth.config.OAuth20Configuration;
 import org.pac4j.oauth.credentials.OAuth20Credentials;
 import org.pac4j.oauth.credentials.OAuthCredentials;
 

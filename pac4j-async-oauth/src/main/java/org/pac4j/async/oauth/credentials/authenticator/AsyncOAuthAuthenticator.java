@@ -2,9 +2,9 @@ package org.pac4j.async.oauth.credentials.authenticator;
 
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.credentials.authenticator.AsyncAuthenticator;
+import org.pac4j.async.oauth.config.OAuthConfiguration;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.InitializableWebObject;
-import org.pac4j.oauth.config.OAuthConfiguration;
 import org.pac4j.oauth.credentials.OAuthCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
