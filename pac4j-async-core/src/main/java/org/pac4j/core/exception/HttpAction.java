@@ -29,7 +29,7 @@ public class HttpAction extends RuntimeException {
      * @param context context
      * @return an HTTP response
      */
-    public static HttpAction status(final String message, final int status, final WebContext context) {
+    public static HttpAction status(final String message, final int status, final WebContext<?> context) {
         context.setResponseStatus(status);
         return new HttpAction(message, status);
     }
@@ -42,7 +42,7 @@ public class HttpAction extends RuntimeException {
      * @param url url
      * @return an HTTP redirection
      */
-    public static HttpAction redirect(final String message, final WebContext context, final String url) {
+    public static HttpAction redirect(final String message, final WebContext<?> context, final String url) {
         context.setResponseHeader(HttpConstants.LOCATION_HEADER, url);
         context.setResponseStatus(HttpConstants.TEMP_REDIRECT);
         return new HttpAction(message, HttpConstants.TEMP_REDIRECT);
@@ -55,7 +55,7 @@ public class HttpAction extends RuntimeException {
      * @param context context
      * @return an HTTP ok
      */
-    public static HttpAction ok(final String message, final WebContext context) {
+    public static HttpAction ok(final String message, final WebContext<?> context) {
         return ok(message, context, "");
     }
 
@@ -67,7 +67,7 @@ public class HttpAction extends RuntimeException {
      * @param content content
      * @return an HTTP ok
      */
-    public static HttpAction ok(final String message, final WebContext context, String content) {
+    public static HttpAction ok(final String message, final WebContext<?> context, String content) {
         context.setResponseStatus(HttpConstants.OK);
         context.writeResponseContent(content);
         return new HttpAction(message, HttpConstants.OK);
@@ -81,7 +81,7 @@ public class HttpAction extends RuntimeException {
      * @param realmName realm name
      * @return a basic auth popup credentials
      */
-    public static HttpAction unauthorized(final String message, final WebContext context, final String realmName) {
+    public static HttpAction unauthorized(final String message, final WebContext<?> context, final String realmName) {
         if (CommonHelper.isNotBlank(realmName)) {
             context.setResponseHeader(HttpConstants.AUTHENTICATE_HEADER, "Basic realm=\"" + realmName + "\"");
         }
@@ -99,7 +99,7 @@ public class HttpAction extends RuntimeException {
      * @param nonce nonce
      * @return a digest auth popup credentials
      */
-    public static HttpAction unauthorizedDigest(final String message, final WebContext context, final String realmName, final String qop, final String nonce) {
+    public static HttpAction unauthorizedDigest(final String message, final WebContext<?> context, final String realmName, final String qop, final String nonce) {
         if (CommonHelper.isNotBlank(realmName)) {
             context.setResponseHeader(HttpConstants.AUTHENTICATE_HEADER, "Digest realm=\"" + realmName + "\", qop=\"" + qop + "\", nonce=\"" + nonce + "\"");
         }
@@ -114,7 +114,7 @@ public class HttpAction extends RuntimeException {
      * @param context context
      * @return a forbidden response
      */
-    public static HttpAction forbidden(final String message, final WebContext context) {
+    public static HttpAction forbidden(final String message, final WebContext<?> context) {
         context.setResponseStatus(HttpConstants.FORBIDDEN);
         return new HttpAction(message, HttpConstants.FORBIDDEN);
     }

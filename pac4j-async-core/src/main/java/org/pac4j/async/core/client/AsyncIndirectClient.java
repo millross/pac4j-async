@@ -3,7 +3,8 @@ package org.pac4j.async.core.client;
 import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuth;
 import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuthenticationStrategy;
 import org.pac4j.async.core.context.AsyncWebContext;
-import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.http.AjaxRequestResolver;
@@ -16,6 +17,8 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.redirect.RedirectAction;
 import org.pac4j.core.redirect.RedirectActionBuilder;
 import org.pac4j.core.util.CommonHelper;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  *
@@ -31,8 +34,36 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
     private AjaxRequestResolver ajaxRequestResolver = new DefaultAjaxRequestResolver();
     private LogoutActionBuilder<U> logoutActionBuilder = NoLogoutActionBuilder.INSTANCE;
 
-    public RedirectAction getRedirectAction(final AsyncWebContext context) throws HttpAction {
-        return null;
+    public CompletableFuture<RedirectAction> getRedirectAction(final AsyncWebContext context) throws HttpAction {
+        init(context);
+        // it's an AJAX request -> unauthorized (with redirection url in header)
+        if (ajaxRequestResolver.isAjax(context)) {
+            logger.info("AJAX request detected -> returning 401");
+            final RedirectAction action = redirectActionBuilder.redirect(context);
+            return cleanRequestedUrl(context)
+                    .thenApply(v -> {
+                        final String url = action.getLocation();
+                        if (CommonHelper.isNotBlank(url)) {
+                            context.setResponseHeader(HttpConstants.LOCATION_HEADER, url);
+                        }
+                        throw HttpAction.unauthorized("AJAX request -> 401", context, null);
+                    });
+        }
+
+        // authentication has already been tried -> unauthorized
+        return authFailureRecorder().isFailedAuthenticationPresent(this, context)
+                .thenCompose(authAttempted -> {
+                   if (authAttempted) {
+                       return authFailureRecorder().clearFailedAuthentication(this, context)
+                               .thenCompose(v -> cleanRequestedUrl(context))
+                               .thenApply(v -> {
+                                   throw HttpAction.unauthorized("authentication already tried -> forbidden", context, null);
+                               });
+                   } else {
+                       return CompletableFuture.completedFuture(redirectActionBuilder.redirect(context));
+                   }
+                });
+
     }
 
     @Override
@@ -59,11 +90,15 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
      *
      * @param context the web context
      */
-    protected abstract void clientInit(WebContext context);
+    protected abstract void clientInit(AsyncWebContext context);
 
     @Override
     protected final RecordFailedAuthenticationStrategy authFailureRecorder() {
         return RecordFailedAuth.RECORD_IN_SESSION;
+    }
+
+    private CompletableFuture<Void> cleanRequestedUrl(final AsyncWebContext context) {
+        return context.getSessionStore().set(context, Pac4jConstants.REQUESTED_URL, "");
     }
 
     public String getCallbackUrl() {
