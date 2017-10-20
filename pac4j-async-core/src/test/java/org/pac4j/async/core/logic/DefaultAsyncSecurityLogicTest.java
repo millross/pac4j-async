@@ -396,7 +396,7 @@ public class DefaultAsyncSecurityLogicTest extends VertxAsyncTestBase {
         final AsyncClient<TestCredentials, TestProfile> client = getMockIndirectClient(name);
         Mockito.doAnswer(invodation -> {
             final RedirectAction redirectAction = RedirectAction.redirect(redirectUrl);
-            return redirectAction.perform(webContext);
+            return CompletableFuture.completedFuture(redirectAction.perform(webContext));
         }).when(client).redirect(eq(webContext));
         return client;
     }

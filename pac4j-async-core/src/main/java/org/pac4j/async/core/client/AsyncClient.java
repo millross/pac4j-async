@@ -33,10 +33,9 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      * <p>Redirect to the authentication provider for an indirect client.</p>
      *
      * @param context the current web context
-     * @return the performed redirection
-     * @throws HttpAction whether an additional HTTP action is required
+     * @return the performed redirection, will complete exceptionally with HttpAction if an additional HTTP action is required
      */
-    HttpAction redirect(AsyncWebContext context) throws HttpAction;
+    CompletableFuture<HttpAction> redirect(AsyncWebContext context);
 
     /**
      * <p>Get the credentials from the web context. If no validation was made remotely (direct client), credentials must be validated at this step.</p>

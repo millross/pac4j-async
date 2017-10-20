@@ -33,7 +33,7 @@ public class AsyncIndirectAuthenticationFlow<C extends AsyncWebContext> {
 
         // Save redirect url then trigger redirect
         return context.getSessionStore().set(context, Pac4jConstants.REQUESTED_URL, requestedUrl)
-                .thenApply(v -> currentClients.stream().filter(AsyncClient::isIndirect)
+                .thenCompose(v -> currentClients.stream().filter(AsyncClient::isIndirect)
                     // No need to cast, redirect override takes care of this.
                     .findFirst()
                     .map(ExceptionSoftener.softenFunction(c -> c.redirect(context)))

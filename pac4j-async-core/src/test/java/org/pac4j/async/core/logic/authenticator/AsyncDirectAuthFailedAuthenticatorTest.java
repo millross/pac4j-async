@@ -94,7 +94,7 @@ public class AsyncDirectAuthFailedAuthenticatorTest extends VertxAsyncTestBase {
         when(mockClient.isIndirect()).thenReturn(true);
         doAnswer(invocation -> {
             final AsyncWebContext context = invocation.getArgumentAt(0, AsyncWebContext.class);
-            return REDIRECT_ACTION.perform(context);
+            return CompletableFuture.completedFuture(REDIRECT_ACTION.perform(context));
         }).when(mockClient).redirect(Matchers.any(AsyncWebContext.class));
         return mockClient;
     }

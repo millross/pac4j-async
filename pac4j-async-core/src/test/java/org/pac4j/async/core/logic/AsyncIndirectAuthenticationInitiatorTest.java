@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -94,7 +95,7 @@ public class AsyncIndirectAuthenticationInitiatorTest extends VertxAsyncTestBase
         when(mockClient.isIndirect()).thenReturn(true);
         doAnswer(invocation -> {
             final AsyncWebContext context = invocation.getArgumentAt(0, AsyncWebContext.class);
-            return REDIRECT_ACTION.perform(context);
+            return CompletableFuture.completedFuture(REDIRECT_ACTION.perform(context));
         }).when(mockClient).redirect(Matchers.any(AsyncWebContext.class));
         return mockClient;
     }

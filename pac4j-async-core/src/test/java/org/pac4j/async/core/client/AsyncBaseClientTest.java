@@ -238,7 +238,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
+            public CompletableFuture<HttpAction> redirect(AsyncWebContext context) {
                 return null;
             }
 
@@ -275,7 +275,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
+            public CompletableFuture<HttpAction> redirect(AsyncWebContext context) {
                 return null;
             }
 
@@ -314,7 +314,7 @@ public class AsyncBaseClientTest  extends VertxAsyncTestBase {
             }
 
             @Override
-            public HttpAction redirect(AsyncWebContext context) throws HttpAction {
+            public CompletableFuture<HttpAction> redirect(AsyncWebContext context) {
                 return null;
             }
 
