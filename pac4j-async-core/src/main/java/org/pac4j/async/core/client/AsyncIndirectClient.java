@@ -67,6 +67,11 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
     }
 
     @Override
+    public CompletableFuture<HttpAction> redirect(AsyncWebContext context) {
+        return getRedirectAction(context).thenApply(action -> action.perform(context));
+    }
+
+    @Override
     protected void internalInit(AsyncWebContext context) {
 
         CommonHelper.assertNotBlank("callbackUrl", this.callbackUrl,
