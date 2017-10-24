@@ -159,5 +159,10 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
     public void setLogoutActionBuilder(LogoutActionBuilder<U> logoutActionBuilder) {
         this.logoutActionBuilder = logoutActionBuilder;
     }
+
+    @Override
+    public final boolean isIndirect() {
+        return true;
+    }
 }
 
