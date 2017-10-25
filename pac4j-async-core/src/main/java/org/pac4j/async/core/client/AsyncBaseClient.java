@@ -81,7 +81,16 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
      * Note that unlike the sync version this won't throw HttpAction as that's a job for the underlying computation,
      * rather than the future wrapper
      */
-    protected abstract CompletableFuture<Optional<U>> retrieveUserProfileFuture(final C credentials, final AsyncWebContext context);
+    protected CompletableFuture<Optional<U>> retrieveUserProfileFuture(final C credentials, final AsyncWebContext context) {
+        final CompletableFuture<U> profileFuture = this.profileCreator.create(credentials, context);
+        return profileFuture.handle((profile, failure) -> {
+            if (failure == null) {
+                logger.debug("profile: {}", profile);
+            }
+            return Optional.ofNullable(profile);
+        });
+    }
+
 
     /**
      * Retrieve the strategy for recording failed authentication attempts. This lets us define getCredentials in the same
