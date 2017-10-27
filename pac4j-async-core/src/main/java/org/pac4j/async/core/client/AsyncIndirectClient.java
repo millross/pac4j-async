@@ -102,6 +102,12 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
         return RecordFailedAuth.RECORD_IN_SESSION;
     }
 
+    @Override
+    public final RedirectAction getLogoutAction(final AsyncWebContext context, final U currentProfile, final String targetUrl) {
+        init(context);
+        return logoutActionBuilder.getLogoutAction(context, currentProfile, targetUrl);
+    }
+
     private CompletableFuture<Void> cleanRequestedUrl(final AsyncWebContext context) {
         return context.getSessionStore().set(context, Pac4jConstants.REQUESTED_URL, "");
     }
