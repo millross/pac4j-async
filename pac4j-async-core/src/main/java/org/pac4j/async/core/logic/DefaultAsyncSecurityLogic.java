@@ -67,7 +67,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
     public DefaultAsyncSecurityLogic(final boolean saveProfileInSession,
                                      final boolean multiProfile,
                                      final AsyncConfig<R, U, C> config,
-                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Exception {
+                                     final HttpActionAdapter<R, C> httpActionAdapter)  {
         this(saveProfileInSession, multiProfile, config, new DefaultAsyncExceptionHandler<>(), httpActionAdapter);
     }
 
@@ -75,7 +75,7 @@ public class DefaultAsyncSecurityLogic<R, U extends CommonProfile, C extends Asy
                                      final boolean multiProfile,
                                      final AsyncConfig<R, U, C> config,
                                      final AsyncExceptionHandler<R> exceptionHandler,
-                                     final HttpActionAdapter<R, C> httpActionAdapter) throws Exception {
+                                     final HttpActionAdapter<R, C> httpActionAdapter) {
 
         assertNotNull("config", config);
         assertNotNull("httpActionAdapter", httpActionAdapter);
