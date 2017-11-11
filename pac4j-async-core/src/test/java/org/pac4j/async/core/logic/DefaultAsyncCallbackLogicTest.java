@@ -64,7 +64,6 @@ public class DefaultAsyncCallbackLogicTest extends VertxAsyncTestBase {
                 .build();
         sessionStore = webContext.getSessionStore();
         when(sessionStore.renewSession(webContext)).thenReturn(CompletableFuture.completedFuture(true));
-//        when(webContext.getSessionStore()).thenReturn(sessionStore);
     }
 
 

@@ -77,6 +77,7 @@ public class MockAsyncWebContextBuilder {
     }
 
     public MockAsyncWebContextBuilder withRecordedResponseHeaders(final Map<String, String> writtenHeaders) {
+        Objects.requireNonNull(writtenHeaders);
         constructor = constructor.andThen(webContext -> {
             doAnswer(invocation -> {
                 final String headerName = invocation.getArgumentAt(0, String.class);
@@ -112,6 +113,17 @@ public class MockAsyncWebContextBuilder {
                 status.set(newStatus);
                 return null;
             }).when(webContext).setResponseStatus(anyInt());
+        });
+        return this;
+    }
+
+    public MockAsyncWebContextBuilder withResponseContentRecording(final StringBuffer stringBuffer) {
+        constructor = constructor.andThen(webContext -> {
+            doAnswer(invocation -> {
+                final String contentToAppend = invocation.getArgumentAt(0, String.class);
+                stringBuffer.append(contentToAppend);
+                return null;
+            }).when(webContext).writeResponseContent(anyString());
         });
         return this;
     }

@@ -12,6 +12,7 @@ import org.pac4j.core.profile.ProfileHelper;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,7 +39,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
      * @return the user profile
      */
     public CompletableFuture<Optional<U>> get(final boolean readFromSession) {
-        final CompletableFuture<LinkedHashMap<String, U>> allProfilesFuture = retrieveAll(readFromSession);
+        final CompletableFuture<Map<String, U>> allProfilesFuture = retrieveAll(readFromSession);
         return allProfilesFuture.thenApply(ProfileHelper::flatIntoOneProfile);
     }
 
@@ -49,8 +50,9 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
      * @return the user profiles
      */
     public CompletableFuture<List<U>> getAll(final boolean readFromSession) {
-        final CompletableFuture<LinkedHashMap<String, U>> profilesFuture = retrieveAll(readFromSession);
-        return profilesFuture.thenApply(ProfileHelper::flatIntoAProfileList);
+        final CompletableFuture<Map<String, U>> profilesFuture = retrieveAll(readFromSession);
+        return profilesFuture
+                .thenApply(ProfileHelper::flatIntoAProfileList);
     }
 
     /**
@@ -81,7 +83,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
 
         final String clientName = retrieveClientName(profile);
 
-        final CompletableFuture<LinkedHashMap<String, U>> profilesFuture;
+        final CompletableFuture<Map<String, U>> profilesFuture;
         if (multiProfile) {
             profilesFuture = retrieveAll(saveInSession).thenApply(profiles -> {
                 profiles.remove(clientName);
@@ -91,7 +93,7 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
             profilesFuture = completedFuture(new LinkedHashMap<String, U>());
         }
 
-        final CompletableFuture<LinkedHashMap<String, U>> updatedProfilesFuture = profilesFuture.thenApply(profiles -> {
+        final CompletableFuture<Map<String, U>> updatedProfilesFuture = profilesFuture.thenApply(profiles -> {
             profiles.put(clientName, profile);
             return profiles;
         });
@@ -135,12 +137,12 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
      * @param readFromSession if the user profiles must be read from session
      * @return the map of profiles
      */
-    protected CompletableFuture<LinkedHashMap<String, U>> retrieveAll(final boolean readFromSession) {
-        final LinkedHashMap<String, U> profiles = new LinkedHashMap<>();
+    protected CompletableFuture<Map<String, U>> retrieveAll(final boolean readFromSession) {
+        final Map<String, U> profiles = new LinkedHashMap<>();
         final Object request = this.context.getRequestAttribute(USER_PROFILES);
         if (request != null) {
-            if  (request instanceof LinkedHashMap) {
-                profiles.putAll((LinkedHashMap<String, U>) request);
+            if  (request instanceof Map) {
+                profiles.putAll((Map<String, U>) request);
             }
             if (request instanceof CommonProfile) {
                 profiles.put(retrieveClientName((U) request), (U) request);
@@ -149,10 +151,10 @@ public class AsyncProfileManager<U extends CommonProfile, C extends AsyncWebCont
         if (readFromSession) {
             final CompletableFuture<Object> sessionAttributeFuture = this.context.getSessionStore().get(context, USER_PROFILES);
             return sessionAttributeFuture.thenCompose(sessionAttribute -> {
-                final CompletableFuture<LinkedHashMap<String, U>> future = new CompletableFuture<>();
+                final CompletableFuture<Map<String, U>> future = new CompletableFuture<>();
                 this.context.getExecutionContext().runOnContext(() -> {
-                    if  (sessionAttribute instanceof LinkedHashMap) {
-                        profiles.putAll((LinkedHashMap<String, U>) sessionAttribute);
+                    if  (sessionAttribute instanceof Map) {
+                        profiles.putAll((Map<String, U>) sessionAttribute);
                     }
                     if (sessionAttribute instanceof CommonProfile) {
                         profiles.put(retrieveClientName((U) sessionAttribute), (U) sessionAttribute);

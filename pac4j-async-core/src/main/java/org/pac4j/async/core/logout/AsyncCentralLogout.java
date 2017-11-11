@@ -67,7 +67,7 @@ public enum AsyncCentralLogout implements AsyncCentralLogoutStrategy {
         return client.getLogoutAction(webContext, profile, targetUrl);
     }
 
-    private static <T extends CommonProfile, C extends Credentials>  Optional<String> getTargetUrl(final String redirectUrl) {
+    private static Optional<String> getTargetUrl(final String redirectUrl) {
         return Optional.ofNullable(redirectUrl).flatMap(url -> {
             if (url.startsWith(HttpConstants.SCHEME_HTTP) || url.startsWith(HttpConstants.SCHEME_HTTPS)) {
                 return Optional.of(url);
