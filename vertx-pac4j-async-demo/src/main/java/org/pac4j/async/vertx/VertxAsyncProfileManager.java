@@ -6,23 +6,26 @@ import org.pac4j.async.vertx.context.VertxAsyncWebContext;
 import org.pac4j.core.profile.CommonProfile;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
  *
  */
-public class VertxAsyncProfileManager extends AsyncProfileManager {
-    private static final String SESSION_USER_HOLDER_KEY = "__vertx.userHolder";
-    private final VertxAsyncWebContext vertxWebContext;
+public class VertxAsyncProfileManager<C extends VertxAsyncWebContext> extends AsyncProfileManager<CommonProfile, C> {
 
-    public VertxAsyncProfileManager(VertxAsyncWebContext context) {
+    private static final String SESSION_USER_HOLDER_KEY = "__vertx.userHolder";
+    private final C vertxWebContext;
+
+    public VertxAsyncProfileManager(C context) {
         super(context);
         this.vertxWebContext = context;
     }
 
-    protected CompletableFuture<LinkedHashMap<String, CommonProfile>> retrieveAll(boolean readFromSession) {
-        LinkedHashMap<String, CommonProfile> profiles = new LinkedHashMap();
+    @Override
+    protected CompletableFuture<Map<String, CommonProfile>> retrieveAll(boolean readFromSession) {
+        LinkedHashMap<String, CommonProfile> profiles = new LinkedHashMap<>();
         Pac4jUser user = this.vertxWebContext.getVertxUser();
         Optional.ofNullable(user).map(Pac4jUser::pac4jUserProfiles).ifPresent(profiles::putAll);
         return CompletableFuture.completedFuture(profiles);
@@ -34,6 +37,7 @@ public class VertxAsyncProfileManager extends AsyncProfileManager {
     }
 
     public CompletableFuture<Void> save(boolean saveInSession, CommonProfile profile, boolean multiProfile) {
+
         String clientName = this.retrieveClientName(profile);
         Pac4jUser vertxUser = Optional.ofNullable(this.vertxWebContext.getVertxUser()).orElse(new Pac4jUser());
         vertxUser.setUserProfile(clientName, profile, multiProfile);
