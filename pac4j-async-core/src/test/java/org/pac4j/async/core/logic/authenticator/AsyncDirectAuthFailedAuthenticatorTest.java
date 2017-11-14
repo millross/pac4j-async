@@ -100,7 +100,6 @@ public class AsyncDirectAuthFailedAuthenticatorTest extends VertxAsyncTestBase {
 
     private AsyncDirectClient<TestCredentials, CommonProfile> getDirectClient() {
         final AsyncDirectClient<TestCredentials, CommonProfile> mockClient = mock(AsyncDirectClient.class);
-        when(mockClient.isIndirect()).thenReturn(false);
         return mockClient;
     }
 

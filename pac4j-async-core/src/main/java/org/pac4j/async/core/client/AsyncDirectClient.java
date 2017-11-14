@@ -13,4 +13,9 @@ public abstract class AsyncDirectClient<C extends Credentials, U extends CommonP
     protected final RecordFailedAuthenticationStrategy authFailureRecorder() {
         return RecordFailedAuth.DO_NOT_RECORD;
     }
+
+    @Override
+    public final boolean isIndirect() {
+        return false;
+    }
 }
