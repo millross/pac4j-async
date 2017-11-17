@@ -75,7 +75,7 @@ public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U ext
      * @return the user profile
      * @throws HttpAction whether an additional HTTP action is required
      */
-    protected CompletableFuture<U> retrieveUserProfileFromToken(final T accessToken) throws HttpAction {
+    protected CompletableFuture<U> retrieveUserProfileFromToken(final T accessToken) {
         final OAuthProfileDefinition<U, T, O> profileDefinition = configuration.getProfileDefinition();
         final String profileUrl = profileDefinition.getProfileUrl(accessToken, configuration);
         final CompletableFuture<String> bodyFuture = sendRequestForData(accessToken, profileUrl, profileDefinition.getProfileVerb());
