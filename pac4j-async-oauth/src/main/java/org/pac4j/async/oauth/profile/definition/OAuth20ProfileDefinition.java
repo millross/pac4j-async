@@ -1,7 +1,5 @@
 package org.pac4j.async.oauth.profile.definition;
 
-import com.github.scribejava.core.model.OAuth2AccessToken;
-import org.pac4j.async.oauth.config.OAuth20Configuration;
 import org.pac4j.oauth.profile.OAuth20Profile;
 
 import java.util.function.Function;
@@ -12,7 +10,7 @@ import java.util.function.Function;
  * @author Jerome Leleu
  * @since 2.0.0
  */
-public abstract class OAuth20ProfileDefinition<P extends OAuth20Profile, C extends OAuth20Configuration> extends OAuthProfileDefinition<P, OAuth2AccessToken, C> {
+public abstract class OAuth20ProfileDefinition<P extends OAuth20Profile> extends OAuthProfileDefinition<P> {
 
     public OAuth20ProfileDefinition() {
         super();

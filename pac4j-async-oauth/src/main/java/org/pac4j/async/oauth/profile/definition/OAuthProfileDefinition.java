@@ -1,8 +1,6 @@
 package org.pac4j.async.oauth.profile.definition;
 
-import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.model.Verb;
-import org.pac4j.async.oauth.config.OAuthConfiguration;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.definition.CommonProfileDefinition;
@@ -15,7 +13,7 @@ import java.util.function.Function;
  * @author Jerome Leleu
  * @since 2.0.0
  */
-public abstract class OAuthProfileDefinition<P extends CommonProfile, T extends Token, O extends OAuthConfiguration> extends CommonProfileDefinition<P> {
+public abstract class OAuthProfileDefinition<P extends CommonProfile> extends CommonProfileDefinition<P> {
 
     public OAuthProfileDefinition() {
         super();
@@ -33,15 +31,6 @@ public abstract class OAuthProfileDefinition<P extends CommonProfile, T extends 
     public Verb getProfileVerb() {
         return Verb.GET;
     }
-
-    /**
-     * Retrieve the url of the profile of the authenticated user for the provider.
-     *
-     * @param accessToken only used when constructing dynamic urls from data in the token
-     * @param configuration the current configuration
-     * @return the url of the user profile given by the provider
-     */
-    public abstract String getProfileUrl(T accessToken, O configuration);
 
     /**
      * Extract the user profile from the response (JSON, XML...) of the profile url.

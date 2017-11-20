@@ -4,6 +4,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequestAsync;
 import com.github.scribejava.core.model.Verb;
 import org.pac4j.async.oauth.config.OAuth20Configuration;
+import org.pac4j.async.oauth.profile.url.OAuthProfileUrlCalculator;
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.exception.HttpAction;
 import org.pac4j.oauth.config.OAuthConfiguration;
@@ -13,10 +14,10 @@ import org.pac4j.oauth.profile.OAuth20Profile;
 /**
  *
  */
-public class AsyncOAuth20ProfileCreator<U extends OAuth20Profile> extends AsyncOAuthProfileCreator<OAuth20Credentials, U, OAuth20Configuration, OAuth2AccessToken> {
+public class AsyncOAuth20ProfileCreator<U extends OAuth20Profile, C extends OAuth20Configuration> extends AsyncOAuthProfileCreator<OAuth20Credentials, U, C, OAuth2AccessToken> {
 
-    public AsyncOAuth20ProfileCreator(OAuth20Configuration configuration) {
-        super(configuration);
+    public AsyncOAuth20ProfileCreator(C configuration, OAuthProfileUrlCalculator<OAuth2AccessToken, C> profileUrlCalculator) {
+        super(configuration, profileUrlCalculator);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.profile.creator.AsyncProfileCreator;
 import org.pac4j.async.oauth.config.OAuthConfiguration;
 import org.pac4j.async.oauth.profile.definition.OAuthProfileDefinition;
+import org.pac4j.async.oauth.profile.url.OAuthProfileUrlCalculator;
 import org.pac4j.async.oauth.scribe.ScribeCallbackAdapter;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.exception.HttpAction;
@@ -42,9 +43,11 @@ public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U ext
     }
 
     protected final O configuration;
+    protected final OAuthProfileUrlCalculator<T, O> oAuthProfileUrlCalculator;
 
-    protected AsyncOAuthProfileCreator(final O configuration) {
+    protected AsyncOAuthProfileCreator(final O configuration, final OAuthProfileUrlCalculator<T, O> profileUrlCalculator) {
         this.configuration = configuration;
+        this.oAuthProfileUrlCalculator = profileUrlCalculator;
     }
 
     @Override
@@ -76,8 +79,8 @@ public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U ext
      * @throws HttpAction whether an additional HTTP action is required
      */
     protected CompletableFuture<U> retrieveUserProfileFromToken(final T accessToken) {
-        final OAuthProfileDefinition<U, T, O> profileDefinition = configuration.getProfileDefinition();
-        final String profileUrl = profileDefinition.getProfileUrl(accessToken, configuration);
+        final OAuthProfileDefinition<U> profileDefinition = configuration.getProfileDefinition();
+        final String profileUrl = oAuthProfileUrlCalculator.getProfileUrl(accessToken, configuration);
         final CompletableFuture<String> bodyFuture = sendRequestForData(accessToken, profileUrl, profileDefinition.getProfileVerb());
         return bodyFuture.thenApply(body -> {
             logger.info("UserProfile: " + body);
