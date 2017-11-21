@@ -8,6 +8,7 @@ import com.github.scribejava.core.oauth.OAuthService;
 import org.pac4j.async.oauth.profile.definition.OAuthProfileDefinition;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.UrlResolver;
+import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;
 import org.pac4j.core.util.HttpUtils;
 import org.pac4j.core.util.InitializableWebObject;
@@ -17,7 +18,8 @@ import java.util.function.Function;
 /**
  *
  */
-public class OAuthConfiguration<S extends OAuthService<? extends T>, T extends Token> extends InitializableWebObject<WebContext<?>> {
+public class OAuthConfiguration<U extends CommonProfile, P extends OAuthProfileDefinition<U>,
+        S extends OAuthService<T>, T extends Token> extends InitializableWebObject<WebContext<?>> {
 
     public static final String OAUTH_TOKEN = "oauth_token";
 
@@ -43,7 +45,7 @@ public class OAuthConfiguration<S extends OAuthService<? extends T>, T extends T
 
     private Function<WebContext<?>, Boolean> hasBeenCancelledFactory = ctx -> false;
 
-    private OAuthProfileDefinition profileDefinition;
+    private P profileDefinition;
 
     protected S service;
     private String clientName;
@@ -170,11 +172,11 @@ public class OAuthConfiguration<S extends OAuthService<? extends T>, T extends T
         this.hasBeenCancelledFactory = hasBeenCancelledFactory;
     }
 
-    public OAuthProfileDefinition getProfileDefinition() {
+    public P getProfileDefinition() {
         return profileDefinition;
     }
 
-    public void setProfileDefinition(final OAuthProfileDefinition profileDefinition) {
+    public void setProfileDefinition(final P profileDefinition) {
         this.profileDefinition = profileDefinition;
     }
 

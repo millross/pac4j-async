@@ -48,7 +48,7 @@ public class AsyncOauth20RedirectActionBuilder extends InitializableWebObject<We
         return serviceFuture.thenApply(service -> service.getAuthorizationUrl(this.configuration.getCustomParams()))
                 .thenApply(authUrl -> {
                     logger.debug("authorizationUrl: {}", authUrl);
-                    return RedirectAction.redirect(authUrl);
+                    return RedirectAction.redirect((String) authUrl);
                 });
 
 

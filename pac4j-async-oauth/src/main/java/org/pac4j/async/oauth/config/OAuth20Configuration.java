@@ -2,6 +2,9 @@ package org.pac4j.async.oauth.config;
 
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import org.pac4j.async.oauth.profile.definition.OAuthProfileDefinition;
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.profile.CommonProfile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +12,8 @@ import java.util.Map;
 /**
  *
  */
-public class OAuth20Configuration extends OAuthConfiguration<OAuth20Service, OAuth2AccessToken> {
+public class OAuth20Configuration<U extends CommonProfile,
+        P extends OAuthProfileDefinition<U>> extends OAuthConfiguration<U, P, OAuth20Service, OAuth2AccessToken> {
 
     public static final String OAUTH_CODE = "code";
 
@@ -52,5 +56,13 @@ public class OAuth20Configuration extends OAuthConfiguration<OAuth20Service, OAu
         this.stateData = stateData;
     }
 
+    @Override
+    public OAuth20Service getService() {
+        return super.getService();
+    }
 
+    @Override
+    public OAuth20Service buildService(WebContext<?> context, String state) {
+        return super.buildService(context, state);
+    }
 }
