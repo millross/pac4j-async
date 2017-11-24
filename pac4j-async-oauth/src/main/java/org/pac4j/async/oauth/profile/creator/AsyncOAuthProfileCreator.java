@@ -30,7 +30,8 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Async version of OAuthProfileCreator
  */
-public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U extends CommonProfile, O extends OAuthConfiguration, T extends Token>
+public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U extends CommonProfile, O extends OAuthConfiguration, T extends Token,
+        PC extends OAuthProfileUrlCalculator<T, O>>
         extends InitializableWebObject<WebContext<?>> implements AsyncProfileCreator<C, U> {
 
     protected final static Logger logger = LoggerFactory.getLogger(AsyncOAuthProfileCreator.class);
@@ -43,9 +44,9 @@ public abstract class AsyncOAuthProfileCreator<C extends OAuthCredentials, U ext
     }
 
     protected final O configuration;
-    protected final OAuthProfileUrlCalculator<T, O> oAuthProfileUrlCalculator;
+    protected final PC oAuthProfileUrlCalculator;
 
-    protected AsyncOAuthProfileCreator(final O configuration, final OAuthProfileUrlCalculator<T, O> profileUrlCalculator) {
+    protected AsyncOAuthProfileCreator(final O configuration, final PC profileUrlCalculator) {
         this.configuration = configuration;
         this.oAuthProfileUrlCalculator = profileUrlCalculator;
     }

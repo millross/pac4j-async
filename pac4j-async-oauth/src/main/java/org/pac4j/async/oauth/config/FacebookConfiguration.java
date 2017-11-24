@@ -1,11 +1,13 @@
 package org.pac4j.async.oauth.config;
 
 import org.pac4j.async.oauth.facebook.FacebookConstants;
+import org.pac4j.async.oauth.profile.definition.FacebookProfileDefinition;
+import org.pac4j.oauth.profile.facebook.FacebookProfile;
 
 /**
  *
  */
-public class FacebookConfiguration extends OAuth20Configuration {
+public class FacebookConfiguration extends OAuth20Configuration<FacebookProfile, FacebookProfileDefinition> {
 
     public final static String DEFAULT_FIELDS = "id,name,first_name,middle_name,last_name,gender,locale,languages,link,third_party_id,"
             + "timezone,updated_time,verified,about,birthday,education,email,hometown,interested_in,location,political,favorite_athletes,"
