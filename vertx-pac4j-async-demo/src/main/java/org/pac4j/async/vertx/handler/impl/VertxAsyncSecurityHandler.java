@@ -77,7 +77,7 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
 
         final DefaultAsyncSecurityLogic<Void, U , VertxAsyncWebContext> securityLogic = new DefaultAsyncSecurityLogic<Void, U, VertxAsyncWebContext>(options.isSaveProfileInSession(),
                 options.isMultiProfile(), config, httpActionAdapter);
-        securityLogic.setProfileManagerFactory(VertxAsyncProfileManager::new);
+        securityLogic.setProfileManagerFactory(c -> new VertxAsyncProfileManager(c));
         this.securityLogic = securityLogic;
     }
 
