@@ -27,8 +27,6 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
     protected final VertxAsynchronousComputationAdapter asynchronousComputationAdapter;
 
     // Config elements which are all optional
-//    private final Boolean multiProfile;
-//    private final Boolean renewSession;
     private final String defaultUrl;
 
 
