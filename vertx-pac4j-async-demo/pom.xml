@@ -134,6 +134,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-client</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>pac4j-async-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
