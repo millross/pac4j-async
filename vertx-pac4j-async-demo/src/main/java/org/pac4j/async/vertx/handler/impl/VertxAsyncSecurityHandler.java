@@ -12,7 +12,6 @@ import io.vertx.ext.web.handler.impl.AuthHandlerImpl;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.logic.AsyncSecurityLogic;
 import org.pac4j.async.core.logic.DefaultAsyncSecurityLogic;
-import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.async.vertx.VertxAsyncProfileManager;
 import org.pac4j.async.vertx.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.vertx.auth.Pac4jAuthProvider;
@@ -45,7 +44,6 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
     protected final Context context;
     protected final VertxAsynchronousComputationAdapter asynchronousComputationAdapter;
     protected final Vertx vertx;
-    private final AsyncSessionStore sessionStore;
 
     protected final HttpActionAdapter<Void, VertxAsyncWebContext> httpActionAdapter = new DefaultHttpActionAdapter();
 
@@ -53,13 +51,11 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
 
     public VertxAsyncSecurityHandler(final Vertx vertx,
                                      final Context context,
-                                     final AsyncSessionStore sessionStore,
                                      final AsyncConfig config, final Pac4jAuthProvider authProvider,
                                      final SecurityHandlerOptions options) {
         super(authProvider);
         CommonHelper.assertNotNull("vertx", vertx);
         CommonHelper.assertNotNull("context", context);
-        CommonHelper.assertNotNull("sessionStore", sessionStore);
         CommonHelper.assertNotNull("config", config);
         CommonHelper.assertNotNull("config.getClients()", config.getClients());
         CommonHelper.assertNotNull("authProvider", authProvider);
@@ -72,7 +68,6 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
         this.vertx = vertx;
         this.asynchronousComputationAdapter = new VertxAsynchronousComputationAdapter(vertx, context);
         this.context = context;
-        this.sessionStore = sessionStore;
         this.config = config;
 
         final DefaultAsyncSecurityLogic<Void, U , VertxAsyncWebContext> securityLogic = new DefaultAsyncSecurityLogic<Void, U, VertxAsyncWebContext>(options.isSaveProfileInSession(),
@@ -83,7 +78,7 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
 
     @Override
     public void handle(RoutingContext routingContext) {
-        VertxAsyncWebContext webContext = new VertxAsyncWebContext(routingContext, asynchronousComputationAdapter, this.sessionStore);
+        VertxAsyncWebContext webContext = new VertxAsyncWebContext(routingContext, asynchronousComputationAdapter);
         Pac4jUser pac4jUser = (Pac4jUser)routingContext.user();
         if (pac4jUser != null) {
             Map<String, CommonProfile> indirectProfiles = (Map)pac4jUser.pac4jUserProfiles().entrySet().stream().filter((e) -> {

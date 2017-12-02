@@ -11,6 +11,7 @@ import org.pac4j.async.core.execution.context.AsyncPac4jExecutionContext;
 import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.async.vertx.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.vertx.auth.Pac4jUser;
+import org.pac4j.async.vertx.core.session.VertxAsyncSessionStore;
 import org.pac4j.core.context.Cookie;
 
 import java.net.URI;
@@ -40,13 +41,12 @@ public class VertxAsyncWebContext implements AsyncWebContext {
     private boolean contentHasBeenWritten = false; // Need to set chunked before first write of any content
 
     public VertxAsyncWebContext(final RoutingContext routingContext,
-                                final VertxAsynchronousComputationAdapter computationAdapter,
-                                final AsyncSessionStore asyncSessionStore) {
+                                final VertxAsynchronousComputationAdapter computationAdapter) {
         Objects.requireNonNull(routingContext);
         Objects.requireNonNull(computationAdapter);
         this.routingContext = routingContext;
         this.computationAdapter = computationAdapter;
-        this.sessionStore = asyncSessionStore;
+        this.sessionStore = new VertxAsyncSessionStore(routingContext.session());
 
         final HttpServerRequest request = routingContext.request();
         this.method = request.method().toString();

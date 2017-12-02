@@ -9,7 +9,6 @@ import io.vertx.ext.web.RoutingContext;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.logic.AsyncCallbackLogic;
 import org.pac4j.async.core.logic.DefaultAsyncCallbackLogic;
-import org.pac4j.async.core.session.AsyncSessionStore;
 import org.pac4j.async.vertx.VertxAsynchronousComputationAdapter;
 import org.pac4j.async.vertx.context.VertxAsyncWebContext;
 import org.pac4j.async.vertx.http.DefaultHttpActionAdapter;
@@ -23,7 +22,6 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
     protected static final Logger LOG = LoggerFactory.getLogger(VertxAsyncCallbackHandler.class);
 
     private final AsyncCallbackLogic<Void, CommonProfile, VertxAsyncWebContext> callbackLogic;
-    private final AsyncSessionStore sessionStore;
     protected final VertxAsynchronousComputationAdapter asynchronousComputationAdapter;
 
     // Config elements which are all optional
@@ -32,7 +30,6 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
 
     public  VertxAsyncCallbackHandler(final Vertx vertx,
                                      final Context context,
-                                     final AsyncSessionStore sessionStore,
                                      final Boolean multiProfile,
                                      final Boolean renewSession,
                                      final AsyncConfig<Void, CommonProfile, VertxAsyncWebContext> config,
@@ -43,7 +40,6 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
                 config,
                 new DefaultHttpActionAdapter());
         this.defaultUrl = defaultUrl;
-        this.sessionStore = sessionStore;
         this.asynchronousComputationAdapter = new VertxAsynchronousComputationAdapter(vertx, context);
 
     }
@@ -51,7 +47,7 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
     @Override
     public void handle(RoutingContext event) {
 
-        final VertxAsyncWebContext webContext = new VertxAsyncWebContext(event, asynchronousComputationAdapter, sessionStore);
+        final VertxAsyncWebContext webContext = new VertxAsyncWebContext(event, asynchronousComputationAdapter);
 
         callbackLogic.perform(webContext, defaultUrl)
                 .whenComplete((result, failure) -> {
