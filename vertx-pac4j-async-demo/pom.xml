@@ -22,7 +22,7 @@
         <junit.version>5.0.1</junit.version>
         <vertx.version>3.5.0</vertx.version>
         <lombok.version>1.16.12</lombok.version>
-        <kotlin.version>1.1.50</kotlin.version>
+        <kotlin.version>1.2.0</kotlin.version>
         <slf4j.version>1.7.22</slf4j.version>
         <mockito-kotlin.version>1.5.0</mockito-kotlin.version>
 
@@ -174,20 +174,10 @@
                                 <source>src/test/java</source>
                                 <source>src/test/kotlin</source>
                             </sourceDirs>
+                            <jvmTarget>1.8</jvmTarget>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
             </plugin>
 
             <!-- Shade plugin to assemble a runnable fat jar -->
