@@ -72,7 +72,7 @@
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-async-core</artifactId>
+            <artifactId>pac4j-async-oauth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
