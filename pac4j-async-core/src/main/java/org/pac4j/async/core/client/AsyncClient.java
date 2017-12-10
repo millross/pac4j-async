@@ -79,7 +79,7 @@ public interface AsyncClient<C extends Credentials, U extends CommonProfile> ext
      */
     boolean isIndirect();
 
-    <T extends AsyncWebContext> void notifySessionRenewal(final String oldSessionId, final T context);
+    void notifySessionRenewal(final String oldSessionId, final AsyncWebContext context);
 
 
 }
