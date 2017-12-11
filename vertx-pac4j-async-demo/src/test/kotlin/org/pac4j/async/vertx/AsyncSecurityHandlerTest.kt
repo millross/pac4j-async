@@ -33,7 +33,7 @@ class AsyncSecurityHandlerTest {
         val vertx = rule.vertx()
         launch {
             startServer(vertx)
-            val client = TestClient(WebClient.create(vertx))
+            val client = TestClient(WebClient.  create(vertx))
             client.spoofLogin()
             async.complete()
         }
