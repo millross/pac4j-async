@@ -11,8 +11,11 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import io.vertx.kotlin.coroutines.awaitResult
+import org.pac4j.async.core.config.AsyncConfig
+import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.vertx.auth.Pac4jAuthProvider
 import org.pac4j.async.vertx.context.VertxAsyncWebContext
+import org.pac4j.core.profile.CommonProfile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -48,6 +51,12 @@ class TestServer(val vertx: Vertx) {
         }
     }
 
+    var pac4jConfiguration: AsyncConfig<Void, CommonProfile, AsyncWebContext>? = null
+
+    fun withPac4jConfiguration(config: AsyncConfig<Void, CommonProfile, AsyncWebContext>): TestServer {
+        pac4jConfiguration = config
+        return this
+    }
 
     suspend fun start() {
 
