@@ -28,4 +28,8 @@ class TestClient(val client: WebClient) {
         LOG.info("spoofLogin succeeded")
     }
 
+    suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {
+        return awaitResult {client.get(8080, "localhost", "/profile").send(it) }
+    }
+
 }
