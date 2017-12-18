@@ -9,6 +9,7 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.AuthHandlerImpl;
+import org.pac4j.async.core.client.AsyncClient;
 import org.pac4j.async.core.config.AsyncConfig;
 import org.pac4j.async.core.logic.AsyncSecurityLogic;
 import org.pac4j.async.core.logic.DefaultAsyncSecurityLogic;
@@ -18,7 +19,6 @@ import org.pac4j.async.vertx.auth.Pac4jAuthProvider;
 import org.pac4j.async.vertx.auth.Pac4jUser;
 import org.pac4j.async.vertx.context.VertxAsyncWebContext;
 import org.pac4j.async.vertx.http.DefaultHttpActionAdapter;
-import org.pac4j.core.client.IndirectClient;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.http.HttpActionAdapter;
@@ -83,7 +83,7 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
         if (pac4jUser != null) {
             Map<String, CommonProfile> indirectProfiles = (Map)pac4jUser.pac4jUserProfiles().entrySet().stream().filter((e) -> {
                 String clientName = ((CommonProfile)e.getValue()).getClientName();
-                return this.config.getClients().findClient(clientName) instanceof IndirectClient;
+                return ((AsyncClient)this.config.getClients().findClient(clientName)).isIndirect();
             }).collect(Collectors.toMap((e) -> (String)e.getKey(), (e) -> (CommonProfile)e.getValue()));
             if (!indirectProfiles.isEmpty()) {
                 pac4jUser.pac4jUserProfiles().clear();
@@ -99,9 +99,12 @@ public class VertxAsyncSecurityHandler<U extends CommonProfile> extends AuthHand
             return null;
         }, clientNames, authorizerName, matcherName)
         .whenComplete((result, failure) -> {
-            vertx.runOnContext(v -> {
-                this.unexpectedFailure(routingContext, failure);
-            });
+            if (failure != null) {
+                vertx.runOnContext(v -> {
+                    this.unexpectedFailure(routingContext, failure);
+                });
+
+            }
         });
 
     }
