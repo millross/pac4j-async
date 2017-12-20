@@ -2,8 +2,10 @@ package org.pac4j.async.core.client;
 
 import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuth;
 import org.pac4j.async.core.authenticate.failure.recorder.RecordFailedAuthenticationStrategy;
+import org.pac4j.async.core.authorization.generator.AsyncAuthorizationGenerator;
 import org.pac4j.async.core.context.AsyncWebContext;
 import org.pac4j.async.core.redirect.AsyncRedirectActionBuilder;
+import org.pac4j.core.client.Clients;
 import org.pac4j.core.context.HttpConstants;
 import org.pac4j.core.context.Pac4jConstants;
 import org.pac4j.core.credentials.Credentials;
@@ -67,6 +69,38 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
     }
 
     @Override
+    public void configureFromClientsObject(Clients<AsyncClient<C, U>, AsyncAuthorizationGenerator<U>> toConfigureFrom) {
+        super.configureFromClientsObject(toConfigureFrom);
+        updateCallback(toConfigureFrom);
+    }
+
+    private void updateCallback(Clients<AsyncClient<C, U>, AsyncAuthorizationGenerator<U>> toConfigureFrom) {
+        String callbackUrl = getCallbackUrl();
+        Clients clients = null;
+        if (toConfigureFrom instanceof Clients) {
+            clients = toConfigureFrom;
+        }
+        // no callback url defined for the client but a group callback one -> set it with the group callback url
+        if (CommonHelper.isNotBlank(clients.getCallbackUrl()) && callbackUrl == null) {
+            setCallbackUrl(clients.getCallbackUrl());
+            callbackUrl = this.callbackUrl;
+        }
+
+        // if the "client_name" parameter is not already part of the client callback url, add it unless the client has indicated to not include it.
+        if (isIncludeClientNameInCallbackUrl() && callbackUrl != null && !callbackUrl.contains(clients.getClientNameParameter() + "=")) {
+            setCallbackUrl(CommonHelper.addParameter(callbackUrl, clients.getClientNameParameter(), getName()));
+        }
+        final AjaxRequestResolver clientAjaxRequestResolver = getAjaxRequestResolver();
+        if (ajaxRequestResolver != null && (clientAjaxRequestResolver == null || clientAjaxRequestResolver instanceof DefaultAjaxRequestResolver)) {
+            setAjaxRequestResolver(ajaxRequestResolver);
+        }
+        final UrlResolver clientUrlResolver = getUrlResolver();
+        if (urlResolver != null && (clientUrlResolver == null || clientUrlResolver instanceof DefaultUrlResolver)) {
+            setUrlResolver(this.urlResolver);
+        }
+    }
+
+    @Override
     public CompletableFuture<HttpAction> redirect(AsyncWebContext context) {
         return getRedirectAction(context).thenApply(action -> action.perform(context));
     }
@@ -75,7 +109,7 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
     protected void internalInit(AsyncWebContext context) {
 
         CommonHelper.assertNotBlank("callbackUrl", this.callbackUrl,
-                "set it up either on this IndirectClient or the global Config");
+                "set it up either on this client or the global Config");
         CommonHelper.assertNotNull("urlResolver", this.urlResolver);
         CommonHelper.assertNotNull("ajaxRequestResolver", this.ajaxRequestResolver);
 
