@@ -4,6 +4,8 @@ import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.client.HttpRequest
 import io.vertx.ext.web.client.HttpResponse
 import io.vertx.ext.web.client.WebClient
+import io.vertx.core.Vertx
+import io.vertx.ext.web.client.WebClientOptions
 import io.vertx.kotlin.coroutines.awaitResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,9 +14,10 @@ import org.slf4j.LoggerFactory
  * Test client to wrap a set of http calls to our test server. We will also record any state (such as session cookies)
  * within this client for reuse
  */
-class TestClient(val client: WebClient) {
+class TestClient(val vertx: Vertx) {
 
     val cookieHolder: SessionCookieHolder = SessionCookieHolder()
+    val client: WebClient = WebClient.create(vertx, WebClientOptions().setFollowRedirects(false))
 
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(TestClient.javaClass)

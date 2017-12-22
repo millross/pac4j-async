@@ -4,8 +4,6 @@ import io.vertx.core.Vertx
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.RunTestOnContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import io.vertx.ext.web.client.WebClient
-import io.vertx.kotlin.coroutines.dispatcher
 import kotlinx.coroutines.experimental.launch
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
@@ -43,7 +41,7 @@ class AsyncSecurityHandlerTest {
         val vertx = rule.vertx()
         launch {
             startServer(vertx, configFactory.indirectClientConfig())
-            val client = TestClient(WebClient.create(vertx))
+            val client = TestClient(vertx)
             client.spoofLogin()
             // Now retrieve the private endpoint
             val response = client.getSecuredEndpoint()
