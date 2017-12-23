@@ -16,19 +16,25 @@
     <properties>
         <!--Shaded jar properties -->
         <main.class>io.vertx.core.Launcher</main.class>
-        <demo.server.verticle>org.pac4j.async.vertx.MainVerticle</demo.server.verticle>
-
+        <demo.server.verticle>org.pac4j.async.vertx.demo.DemoServerVerticle</demo.server.verticle>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.0.1</junit.version>
         <vertx.version>3.5.0</vertx.version>
         <lombok.version>1.16.12</lombok.version>
         <kotlin.version>1.2.0</kotlin.version>
         <slf4j.version>1.7.22</slf4j.version>
+        <apache.http.components.version>4.5.4</apache.http.components.version>
         <mockito-kotlin.version>1.5.0</mockito-kotlin.version>
 
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-async-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>
@@ -144,12 +150,13 @@
             <version>${vertx.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-async-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.http.components.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

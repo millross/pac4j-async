@@ -1,4 +1,4 @@
-package org.pac4j.async.vertx;
+package org.pac4j.async.vertx.demo;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
@@ -6,11 +6,11 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 
 /**
- * Starter verticle for the demo.
+ *
  */
-public class MainVerticle extends AbstractVerticle {
+public class DemoServerVerticle extends AbstractVerticle {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DemoServerVerticle.class);
 
     @Override
     public void start() throws Exception {
