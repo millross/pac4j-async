@@ -14,6 +14,7 @@ import org.junit.runner.RunWith
 import org.pac4j.async.core.config.AsyncConfig
 import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.vertx.config.TestPac4jConfigFactory
+import org.pac4j.async.vertx.handler.SpoofLoginHandler
 import org.pac4j.core.profile.CommonProfile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -58,6 +59,10 @@ class AsyncSecurityHandlerTest {
     }
 
     suspend fun startServer(vertx: Vertx, configuration: AsyncConfig<Void, CommonProfile, AsyncWebContext>) {
-        TestServer(vertx).withPac4jConfiguration(configuration).start()
+        val context = vertx.orCreateContext
+        TestServer(vertx)
+                .withPac4jConfiguration(configuration)
+                .withRoutingCustomization { router -> router.post("/spoofLogin").handler(SpoofLoginHandler(vertx, context)) }
+                .start()
     }
 }

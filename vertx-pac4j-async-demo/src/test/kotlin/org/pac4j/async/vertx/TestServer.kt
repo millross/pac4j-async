@@ -34,31 +34,6 @@ class TestServer(val vertx: Vertx) {
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(TestServer.javaClass)
 
-        fun getProfileManager(rc: RoutingContext,
-                              asynchronousComputationAdapter: VertxAsynchronousComputationAdapter): VertxAsyncProfileManager<VertxAsyncWebContext> {
-            val webContext = VertxAsyncWebContext(rc, asynchronousComputationAdapter)
-            return VertxAsyncProfileManager(webContext)
-
-        }
-
-        fun spoofLoginHandler(vertx: Vertx, context: Context): Handler<RoutingContext> {
-            return Handler { rc: RoutingContext ->
-                AsyncSecurityHandlerTest.LOG.info("Spoof login endpoint called")
-                AsyncSecurityHandlerTest.LOG.info("Session id = " + rc.session().id())
-
-                // Set up a pac4j user and save into the session, we can interrogate later
-                val asynchronousComputationAdapter = VertxAsynchronousComputationAdapter(vertx, context)
-                val profileManager = getProfileManager(rc, asynchronousComputationAdapter)
-                val profile = TestOAuth20Profile.from(TEST_CREDENTIALS)
-                profile.addAttribute(EMAIL_KEY, TEST_EMAIL)
-                profile.clientName = TEST_CLIENT_NAME
-                profileManager.save(true, profile, false)
-
-                LOG.info("Spoof login endpoint completing")
-                rc.response().setStatusCode(204).end()
-            }
-        }
-
         fun getProfileHandler(vertx: Vertx): Handler<RoutingContext> {
             return Handler { rc: RoutingContext ->
                 launch {
@@ -95,10 +70,17 @@ class TestServer(val vertx: Vertx) {
         }
     }
 
-    var pac4jConfiguration: AsyncConfig<Void, CommonProfile, AsyncWebContext>? = null
+    lateinit var pac4jConfiguration: AsyncConfig<Void, CommonProfile, AsyncWebContext>
+
+    var routingCustomization: ((Router) -> Unit) = {}
 
     fun withPac4jConfiguration(config: AsyncConfig<Void, CommonProfile, AsyncWebContext>): TestServer {
         pac4jConfiguration = config
+        return this
+    }
+
+    fun withRoutingCustomization(customization: ((Router) -> Unit)): TestServer {
+        routingCustomization = customization
         return this
     }
 
@@ -108,7 +90,6 @@ class TestServer(val vertx: Vertx) {
         val sessionStore = LocalSessionStore.create(vertx)
         val authProvider = Pac4jAuthProvider()
         val context = vertx.orCreateContext
-
         with(router) {
 
             route().handler(CookieHandler.create())
@@ -116,13 +97,12 @@ class TestServer(val vertx: Vertx) {
             route().handler(UserSessionHandler.create(authProvider))
             route().handler(BodyHandler.create())
 
-            post("/spoofLogin").handler(spoofLoginHandler(vertx, context))
-            if (pac4jConfiguration != null) {
-                val config = pac4jConfiguration!!
-                val pac4jAuthProvider = Pac4jAuthProvider()
-                val securityHandlerOptions = SecurityHandlerOptions()
-                get("/profile").handler(securityHandler(vertx, context, config, pac4jAuthProvider, securityHandlerOptions))
-            }
+            routingCustomization(router)
+
+//            post("/spoofLogin").handler(spoofLoginHandler(vertx, context))
+            val pac4jAuthProvider = Pac4jAuthProvider()
+            val securityHandlerOptions = SecurityHandlerOptions()
+            get("/profile").handler(securityHandler(vertx, context, pac4jConfiguration, pac4jAuthProvider, securityHandlerOptions))
             get("/profile").handler(getProfileHandler(vertx))
         }
         AsyncSecurityHandlerTest.LOG.info("Starting server")
