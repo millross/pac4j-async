@@ -19,6 +19,12 @@ class TestClient(val vertx: Vertx) {
     val cookieHolder: SessionCookieHolder = SessionCookieHolder()
     val client: WebClient = WebClient.create(vertx, WebClientOptions().setFollowRedirects(false))
 
+    /**
+     * Decorator for requests to secured endpoint. Aim being to enable intentional authentication success or
+     * failure on the test direct client, for known test scenarios.
+     */
+    var requestDecorator: (HttpRequest<Buffer>) -> HttpRequest<Buffer> = { request: HttpRequest<Buffer> -> request }
+
     companion object {
         val LOG: Logger = LoggerFactory.getLogger(TestClient.javaClass)
     }
@@ -55,8 +61,16 @@ class TestClient(val vertx: Vertx) {
 
     suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {
         LOG.info("Retrieving secured endpoint§")
-        val request = usingSessionCookie { client.get(8080, "localhost", "/profile")}
+        val request = usingSessionCookie { requestDecorator(client.get(8080, "localhost", "/profile")) }
+        requestDecorator = { request -> request }
         return awaitResult { request.send(it) }
+    }
+
+    suspend fun withRequestDecorator(decorator: ((HttpRequest<Buffer>) -> Unit)) {
+        requestDecorator = { request ->
+            decorator(request)
+            request
+        }
     }
 
 }
