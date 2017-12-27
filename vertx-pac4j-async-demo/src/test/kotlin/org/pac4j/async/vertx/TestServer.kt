@@ -99,9 +99,8 @@ class TestServer(val vertx: Vertx) {
 
             routingCustomization(router)
 
-//            post("/spoofLogin").handler(spoofLoginHandler(vertx, context))
             val pac4jAuthProvider = Pac4jAuthProvider()
-            val securityHandlerOptions = SecurityHandlerOptions()
+            val securityHandlerOptions = SecurityHandlerOptions().setClients(TEST_CLIENT_NAME)
             get("/profile").handler(securityHandler(vertx, context, pac4jConfiguration, pac4jAuthProvider, securityHandlerOptions))
             get("/profile").handler(getProfileHandler(vertx))
         }
