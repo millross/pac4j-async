@@ -1,9 +1,14 @@
 package org.pac4j.async.vertx.demo;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
+import org.pac4j.async.vertx.VertxAsynchronousComputationAdapter;
+import org.pac4j.async.vertx.demo.handler.IndexHandler;
+import org.pac4j.async.vertx.demo.handler.SetContentTypeHandler;
 
 /**
  *
@@ -16,12 +21,12 @@ public class DemoServerVerticle extends AbstractVerticle {
     public void start() throws Exception {
         super.start();
         final Router router = Router.router(vertx);
+        final Context context = vertx.getOrCreateContext();
+        final VertxAsynchronousComputationAdapter computationAdapter = new VertxAsynchronousComputationAdapter(vertx, context);
 
-        // Only use the following handlers where we want to use sessions - this is enforced by the regexp
-        router.get("/").handler(rc -> {
-            rc.response().setStatusCode(200);
-            rc.response().end("Hello, world");
-        });
+        router.get("/").handler(new SetContentTypeHandler(HttpHeaders.TEXT_HTML));
+        router.get("/").handler(new IndexHandler(computationAdapter));
+
         vertx.createHttpServer()
                 .requestHandler(router::accept)
                 .listen(8080);

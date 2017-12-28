@@ -18,10 +18,8 @@ import kotlinx.coroutines.experimental.launch
 import org.pac4j.async.core.config.AsyncConfig
 import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.vertx.auth.Pac4jAuthProvider
-import org.pac4j.async.vertx.context.VertxAsyncWebContext
 import org.pac4j.async.vertx.handler.impl.SecurityHandlerOptions
 import org.pac4j.async.vertx.handler.impl.VertxAsyncSecurityHandler
-import org.pac4j.async.vertx.profile.TestOAuth20Profile
 import org.pac4j.core.profile.CommonProfile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
