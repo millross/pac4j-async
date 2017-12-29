@@ -16,7 +16,7 @@
     <properties>
         <!--Shaded jar properties -->
         <main.class>io.vertx.core.Launcher</main.class>
-        <demo.server.verticle>org.pac4j.async.vertx.demo.DemoServerVerticle</demo.server.verticle>
+        <demo.server.verticle>org.pac4j.async.vertx.demo.MainVerticle</demo.server.verticle>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.0.1</junit.version>
         <vertx.version>3.5.0</vertx.version>
@@ -40,6 +40,12 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java</artifactId>
             <version>${vertx.version}</version>
         </dependency>
 
