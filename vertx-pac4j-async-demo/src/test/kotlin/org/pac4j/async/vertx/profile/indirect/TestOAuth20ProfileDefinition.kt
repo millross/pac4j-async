@@ -1,4 +1,4 @@
-package org.pac4j.async.vertx.profile
+package org.pac4j.async.vertx.profile.indirect
 
 import org.pac4j.async.oauth.profile.definition.OAuth20ProfileDefinition
 import org.pac4j.async.vertx.TEST_CREDENTIALS

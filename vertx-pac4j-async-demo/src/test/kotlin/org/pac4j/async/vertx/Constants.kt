@@ -1,5 +1,6 @@
 package org.pac4j.async.vertx
 
+import org.pac4j.async.vertx.profile.indirect.TestOAuthCredentials
 import org.pac4j.core.context.HttpConstants.SCHEME_HTTP
 import java.util.*
 
@@ -8,7 +9,7 @@ import java.util.*
  */
 const val GOOD_USERNAME = "jle"
 const val PASSWORD = "password"
-val TEST_CREDENTIALS = TestCredentials(GOOD_USERNAME, PASSWORD)
+val TEST_CREDENTIALS = TestOAuthCredentials(GOOD_USERNAME, PASSWORD)
 const val USER_ID_KEY = "userId"
 const val EMAIL_KEY = "email"
 const val SESSION_ID_KEY = "session_id"
@@ -29,3 +30,8 @@ const val AUTH_SERVER_PATH = "/auth"
 const val AUTH_BASE_URL = "$SCHEME_HTTP://$AUTH_SERVER_HOST:$AUTH_SERVER_PORT$AUTH_SERVER_PATH"
 val TEST_CLIENT_ID = UUID.randomUUID().toString()
 val TEST_CLIENT_SECRET = UUID.randomUUID().toString()
+const val FIELD_EMAIL = "email"
+const val FIELD_USER_ID = "userId"
+const val HEADER_USER_ID = "userId"
+const val HEADER_EMAIL = "email"
+

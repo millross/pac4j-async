@@ -6,9 +6,9 @@ import org.pac4j.async.oauth.config.OAuth20Configuration
 import org.pac4j.async.vertx.AUTH_BASE_URL
 import org.pac4j.async.vertx.TEST_CLIENT_ID
 import org.pac4j.async.vertx.TEST_CLIENT_SECRET
-import org.pac4j.async.vertx.profile.TestOAuth20Profile
-import org.pac4j.async.vertx.profile.TestOAuth20ProfileDefinition
-import org.pac4j.async.vertx.profile.TestUrlProfileCalculator
+import org.pac4j.async.vertx.profile.indirect.TestOAuth20Profile
+import org.pac4j.async.vertx.profile.indirect.TestOAuth20ProfileDefinition
+import org.pac4j.async.vertx.profile.indirect.TestUrlProfileCalculator
 
 /**
  *

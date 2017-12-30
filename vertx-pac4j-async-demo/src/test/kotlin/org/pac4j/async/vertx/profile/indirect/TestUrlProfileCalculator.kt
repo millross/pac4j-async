@@ -1,4 +1,4 @@
-package org.pac4j.async.vertx.profile
+package org.pac4j.async.vertx.profile.indirect
 
 import com.github.scribejava.core.model.OAuth2AccessToken
 import org.pac4j.async.oauth.config.OAuth20Configuration

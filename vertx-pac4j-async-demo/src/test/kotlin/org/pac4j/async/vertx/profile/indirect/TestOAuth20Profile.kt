@@ -1,6 +1,5 @@
-package org.pac4j.async.vertx.profile
+package org.pac4j.async.vertx.profile.indirect
 
-import org.pac4j.async.vertx.TestCredentials
 import org.pac4j.oauth.profile.OAuth20Profile
 
 /**
@@ -9,7 +8,7 @@ import org.pac4j.oauth.profile.OAuth20Profile
 class TestOAuth20Profile(name: String): OAuth20Profile() {
 
     companion object {
-        fun from(credentials: TestCredentials): TestOAuth20Profile {
+        fun from(credentials: TestOAuthCredentials): TestOAuth20Profile {
             return TestOAuth20Profile(credentials.name)
         }
     }

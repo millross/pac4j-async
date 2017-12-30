@@ -5,7 +5,7 @@ import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.ext.web.RoutingContext
 import org.pac4j.async.vertx.*
-import org.pac4j.async.vertx.profile.TestOAuth20Profile
+import org.pac4j.async.vertx.profile.indirect.TestOAuth20Profile
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
