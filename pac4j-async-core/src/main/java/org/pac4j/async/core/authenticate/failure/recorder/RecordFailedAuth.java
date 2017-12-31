@@ -19,8 +19,8 @@ public enum RecordFailedAuth implements RecordFailedAuthenticationStrategy {
         }
 
         @Override
-        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
-            return CompletableFuture.completedFuture(null);
+        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, final C credentials, AsyncWebContext webContext) {
+            return CompletableFuture.completedFuture(credentials);
         }
 
         @Override
@@ -38,9 +38,9 @@ public enum RecordFailedAuth implements RecordFailedAuthenticationStrategy {
         }
 
         @Override
-        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, AsyncWebContext webContext) {
+        public <C extends Credentials> CompletableFuture<C> clearFailedAuthentication(AsyncClient client, final C credentials, AsyncWebContext webContext) {
             return webContext.getSessionStore().set(webContext, client.getName() + ATTEMPTED_AUTHENTICATION_SUFFIX, "")
-                    .thenApply(v -> null);
+                    .thenApply(v -> credentials);
         }
 
         @Override

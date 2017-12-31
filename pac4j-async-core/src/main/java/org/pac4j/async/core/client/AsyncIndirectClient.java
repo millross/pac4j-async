@@ -56,7 +56,7 @@ public abstract class AsyncIndirectClient<C extends Credentials, U extends Commo
         return authFailureRecorder().isFailedAuthenticationPresent(this, context)
                 .thenCompose(authAttempted -> {
                    if (authAttempted) {
-                       return authFailureRecorder().clearFailedAuthentication(this, context)
+                       return authFailureRecorder().clearFailedAuthentication(this, null, context)
                                .thenCompose(v -> cleanRequestedUrl(context))
                                .thenApply(v -> {
                                    throw HttpAction.unauthorized("authentication already tried -> forbidden", context, null);

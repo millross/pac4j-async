@@ -113,7 +113,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
                     if (c == null) {
                         return authFailureRecorder().recordFailedAuthentication(this, c, context);
                     } else {
-                        return authFailureRecorder().clearFailedAuthentication(this, context);
+                        return authFailureRecorder().clearFailedAuthentication(this, c, context);
                     }
                 });
     }
