@@ -1,7 +1,9 @@
 package org.pac4j.async.vertx
 
 import org.pac4j.async.vertx.profile.indirect.TestOAuthCredentials
+
 import org.pac4j.core.context.HttpConstants.SCHEME_HTTP
+import org.pac4j.core.util.CommonHelper
 import java.util.*
 
 /**
@@ -35,3 +37,7 @@ const val FIELD_USER_ID = "userId"
 const val HEADER_USER_ID = "userId"
 const val HEADER_EMAIL = "email"
 
+
+const val PROTECTED_URL = "http://localhost:8080/profile"
+val STATE_SESSION_PARAMETER = "$TEST_CLIENT_NAME#oauth20StateParameter"
+val STATE_VALUE = CommonHelper.randomString(10)
