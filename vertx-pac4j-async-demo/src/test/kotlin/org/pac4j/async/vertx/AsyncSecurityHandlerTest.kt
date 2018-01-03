@@ -17,6 +17,7 @@ import org.pac4j.async.core.config.AsyncConfig
 import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.oauth.config.OAuthConfiguration.RESPONSE_TYPE_CODE
 import org.pac4j.async.vertx.config.TestPac4jConfigFactory
+import org.pac4j.async.vertx.context.VertxAsyncWebContext
 import org.pac4j.async.vertx.handler.SpoofLoginHandler
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.context.HttpConstants.SCHEME_HTTP
@@ -110,7 +111,7 @@ class AsyncSecurityHandlerTest {
         async.await()
     }
 
-    suspend fun startServer(vertx: Vertx, configuration: AsyncConfig<Void, CommonProfile, AsyncWebContext>) {
+    suspend fun startServer(vertx: Vertx, configuration: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>) {
         val context = vertx.orCreateContext
         TestServer(vertx)
                 .withPac4jConfiguration(configuration)

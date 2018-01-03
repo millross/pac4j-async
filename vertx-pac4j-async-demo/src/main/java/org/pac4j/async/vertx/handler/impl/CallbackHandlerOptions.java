@@ -3,6 +3,7 @@ package org.pac4j.async.vertx.handler.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.pac4j.core.context.Pac4jConstants;
 
 /**
  * Vert.x-style options class for a callback handler
@@ -12,12 +13,12 @@ import lombok.experimental.Accessors;
 public class CallbackHandlerOptions {
 
     @Getter @Setter
-    private String defaultUrl;
+    private String defaultUrl = Pac4jConstants.DEFAULT_URL;
 
     @Getter @Setter
-    private Boolean multiProfile;
+    private Boolean multiProfile = false;
 
     @Getter @Setter
-    private Boolean renewSession;
+    private Boolean renewSession = false;
 
 }

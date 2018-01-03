@@ -30,16 +30,14 @@ public class VertxAsyncCallbackHandler implements Handler<RoutingContext> {
 
     public  VertxAsyncCallbackHandler(final Vertx vertx,
                                      final Context context,
-                                     final Boolean multiProfile,
-                                     final Boolean renewSession,
                                      final AsyncConfig<Void, CommonProfile, VertxAsyncWebContext> config,
-                                     final String defaultUrl) {
+                                     final CallbackHandlerOptions options) {
 
-        callbackLogic = new DefaultAsyncCallbackLogic<>(multiProfile,
-                renewSession,
+        callbackLogic = new DefaultAsyncCallbackLogic<>(options.getMultiProfile(),
+                options.getRenewSession(),
                 config,
                 new DefaultHttpActionAdapter());
-        this.defaultUrl = defaultUrl;
+        this.defaultUrl = options.getDefaultUrl();
         this.asynchronousComputationAdapter = new VertxAsynchronousComputationAdapter(vertx, context);
 
     }
