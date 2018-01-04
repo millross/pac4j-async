@@ -18,7 +18,10 @@ import kotlinx.coroutines.experimental.launch
 import org.pac4j.async.core.config.AsyncConfig
 import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.vertx.auth.Pac4jAuthProvider
+import org.pac4j.async.vertx.context.VertxAsyncWebContext
+import org.pac4j.async.vertx.handler.impl.CallbackHandlerOptions
 import org.pac4j.async.vertx.handler.impl.SecurityHandlerOptions
+import org.pac4j.async.vertx.handler.impl.VertxAsyncCallbackHandler
 import org.pac4j.async.vertx.handler.impl.VertxAsyncSecurityHandler
 import org.pac4j.async.vertx.profile.indirect.TestOAuth20Profile
 import org.pac4j.core.profile.CommonProfile
@@ -62,18 +65,25 @@ class TestServer(val vertx: Vertx) {
 
         fun securityHandler(vertx: Vertx,
                             context: Context,
-                            config: AsyncConfig<Void, CommonProfile, AsyncWebContext>,
+                            config: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>,
                             authProvider: Pac4jAuthProvider,
                             options: SecurityHandlerOptions): VertxAsyncSecurityHandler<CommonProfile> {
             return VertxAsyncSecurityHandler(vertx, context, config, authProvider, options)
         }
+
+        fun callbackHandler(vertx: Vertx,
+                            context: Context,
+                            config: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>): VertxAsyncCallbackHandler {
+            return VertxAsyncCallbackHandler(vertx, context, config, CallbackHandlerOptions())
+        }
+
     }
 
-    lateinit var pac4jConfiguration: AsyncConfig<Void, CommonProfile, AsyncWebContext>
+    lateinit var pac4jConfiguration: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>
 
     var routingCustomization: ((Router) -> Unit) = {}
 
-    fun withPac4jConfiguration(config: AsyncConfig<Void, CommonProfile, AsyncWebContext>): TestServer {
+    fun withPac4jConfiguration(config: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>): TestServer {
         pac4jConfiguration = config
         return this
     }
@@ -102,6 +112,11 @@ class TestServer(val vertx: Vertx) {
             val securityHandlerOptions = SecurityHandlerOptions().setClients(TEST_CLIENT_NAME)
             get("/profile").handler(securityHandler(vertx, context, pac4jConfiguration, pac4jAuthProvider, securityHandlerOptions))
             get("/profile").handler(getProfileHandler(vertx))
+            val callbackHandler = callbackHandler(vertx, context, pac4jConfiguration)
+            router.get("/callback").handler(callbackHandler) // This will deploy the callback handler
+            router.post("/callback").handler(BodyHandler.create().setMergeFormAttributes(true))
+            router.post("/callback").handler(callbackHandler)
+
         }
         AsyncSecurityHandlerTest.LOG.info("Starting server")
         awaitResult<HttpServer> { vertx.createHttpServer().requestHandler(router::accept).listen(8080, it) }
