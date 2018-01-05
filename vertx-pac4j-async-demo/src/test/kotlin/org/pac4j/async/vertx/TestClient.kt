@@ -66,11 +66,12 @@ class TestClient(val vertx: Vertx) {
         return awaitResult { request.send(it) }
     }
 
-    suspend fun withRequestDecorator(decorator: ((HttpRequest<Buffer>) -> Unit)) {
+    suspend fun withRequestDecorator(decorator: ((HttpRequest<Buffer>) -> Unit)): TestClient {
         requestDecorator = { request ->
             decorator(request)
             request
         }
+        return this
     }
 
 }

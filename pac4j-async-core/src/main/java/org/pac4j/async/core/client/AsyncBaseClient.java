@@ -44,7 +44,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
         logger.debug("credentials : {}", credentials);
         if (credentials == null) {
-            return null;
+            return CompletableFuture.completedFuture(Optional.empty());
         }
 
         final CompletableFuture<Optional<U>> profileFuture = retrieveUserProfileFuture(credentials, context);
@@ -177,7 +177,8 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
                 // Now translate a CredentialsException to null
                 .handle(ExceptionSoftener.softenBiFunction((creds, throwable) -> {
                     // throwable being non-null means creds will be null, so we can make this check here
-                    if (creds != null || throwable instanceof CredentialsException) {
+                    logger.info("In handle call");
+                    if (throwable == null || throwable instanceof CredentialsException) {
                         return creds;
                     } else {
                         throw throwable;

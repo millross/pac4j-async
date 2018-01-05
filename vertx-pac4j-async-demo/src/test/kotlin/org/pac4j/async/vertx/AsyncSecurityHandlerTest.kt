@@ -10,11 +10,11 @@ import org.apache.http.client.utils.URIBuilder
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.pac4j.async.core.config.AsyncConfig
-import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.oauth.config.OAuthConfiguration.RESPONSE_TYPE_CODE
 import org.pac4j.async.vertx.config.TestPac4jConfigFactory
 import org.pac4j.async.vertx.context.VertxAsyncWebContext
@@ -43,11 +43,18 @@ class AsyncSecurityHandlerTest {
 
     val configFactory: TestPac4jConfigFactory = TestPac4jConfigFactory()
 
+    lateinit  var vertx: Vertx
+
+    @Before
+    fun setExceptionHandler(testContext: TestContext) {
+        vertx = rule.vertx()
+        vertx.exceptionHandler(testContext.exceptionHandler())
+    }
+
     @Test(timeout = 3000)
     fun testAlreadyLoggedIn(testContext: TestContext) {
 
         val async = testContext.async()
-        val vertx = rule.vertx()
         launch {
             startServer(vertx, configFactory.indirectClientConfig())
             val client = TestClient(vertx)
@@ -70,7 +77,6 @@ class AsyncSecurityHandlerTest {
     fun testRedirectUsingIndirectClient(testContext: TestContext) {
 
         val async = testContext.async()
-        val vertx = rule.vertx()
         launch {
             startServer(vertx, configFactory.indirectClientConfig())
             val client = TestClient(vertx)
@@ -110,6 +116,21 @@ class AsyncSecurityHandlerTest {
         }
         async.await()
     }
+
+    @Test(timeout=3000)
+    fun testDirectClientAuthFailure(testContext: TestContext) {
+        val async = testContext.async()
+        val vertx = rule.vertx()
+        launch {
+            startServer(vertx, configFactory.directClientConfig())
+            val client = TestClient(vertx)
+            // Now retrieve the private endpoint without spoofing login, and without setting the headers up for login
+            val response = client.getSecuredEndpoint()
+            assertThat(response.statusCode(), `is`(401))
+            async.complete()
+        }
+    }
+
 
     suspend fun startServer(vertx: Vertx, configuration: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>) {
         val context = vertx.orCreateContext
