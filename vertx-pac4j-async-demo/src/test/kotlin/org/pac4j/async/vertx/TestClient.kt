@@ -59,6 +59,20 @@ class TestClient(val vertx: Vertx) {
         LOG.info("spoofLogin succeeded")
     }
 
+    suspend fun simulateThirdPartyLoginViaRedirect() {
+        LOG.info("Spoofing successul third party login")
+        val request = usingSessionCookie { client.post(8080, "localhost", "/simulateOAuthLogin") }
+        val response: HttpResponse<Buffer> = retrievingSessionCookie {
+            awaitResult { request.send(it) }
+        }
+        if (response.statusCode() != 204) {
+            // We should fail now
+            LOG.info("statusCode: " + response.statusCode())
+            throw RuntimeException("Failed to simulate third party login")
+        }
+        LOG.info("Third party login simulation succeeded")
+    }
+
     suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {
         LOG.info("Retrieving secured endpoint§")
         val request = usingSessionCookie { requestDecorator(client.get(8080, "localhost", "/profile")) }
