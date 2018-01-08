@@ -73,6 +73,23 @@ class TestClient(val vertx: Vertx) {
         LOG.info("Third party login simulation succeeded")
     }
 
+    suspend fun getCallbackUrl() {
+        LOG.info("Attempting to GET callback url")
+        val request = usingSessionCookie {
+            client.post(8080, "localhost", "/callback?")
+                .addQueryParam("client_name", TEST_CLIENT_NAME)
+        }
+        val response: HttpResponse<Buffer> = retrievingSessionCookie {
+            awaitResult { request.send(it) }
+        }
+        if (response.statusCode() != 302) {
+            // We should fail now
+            LOG.info("statusCode: " + response.statusCode())
+            throw RuntimeException("Failed to GET callback url")
+        }
+        LOG.info("Callback invocation failed")
+    }
+
     suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {
         LOG.info("Retrieving secured endpoint§")
         val request = usingSessionCookie { requestDecorator(client.get(8080, "localhost", "/profile")) }
