@@ -1,11 +1,13 @@
 package org.pac4j.async.vertx.profile.indirect
 
-import org.pac4j.core.credentials.Credentials
+import org.pac4j.async.vertx.TEST_CLIENT_NAME
+import org.pac4j.async.vertx.TEST_CODE
+import org.pac4j.oauth.credentials.OAuth20Credentials
 
 /**
  *
  */
-class TestOAuthCredentials(val name: String, val password: String): Credentials() {
+class TestOAuthCredentials(val name: String, val password: String): OAuth20Credentials(TEST_CODE, TEST_CLIENT_NAME) {
 
     override fun equals(o: Any?): Boolean {
 

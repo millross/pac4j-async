@@ -8,6 +8,7 @@ import org.pac4j.async.vertx.TEST_CLIENT_ID
 import org.pac4j.async.vertx.TEST_CLIENT_SECRET
 import org.pac4j.async.vertx.profile.indirect.TestOAuth20Profile
 import org.pac4j.async.vertx.profile.indirect.TestOAuth20ProfileDefinition
+import org.pac4j.async.vertx.profile.indirect.TestOAuthCredentialsExtractor
 import org.pac4j.async.vertx.profile.indirect.TestUrlProfileCalculator
 
 /**
@@ -31,6 +32,7 @@ class TestIndirectClient: AsyncOAuth20Client<TestOAuth20Profile, OAuth20Configur
         configuration.api = TestOAuth20Api(baseAuthorizationUrl)
         configuration.setProfileDefinition(TestOAuth20ProfileDefinition())
         configuration.isWithState = true
+        defaultCredentialsExtractor(TestOAuthCredentialsExtractor())
         super.clientInit(context)
     }
 }

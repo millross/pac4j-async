@@ -36,6 +36,7 @@ const val FIELD_EMAIL = "email"
 const val FIELD_USER_ID = "userId"
 const val HEADER_USER_ID = "userId"
 const val HEADER_EMAIL = "email"
+const val TEST_CODE = "testCode"
 
 
 const val PROTECTED_URL = "http://localhost:8080/profile"
