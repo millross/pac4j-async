@@ -1,10 +1,13 @@
 package org.pac4j.async.oauth.config;
 
 import com.github.scribejava.core.builder.api.BaseApi;
+import com.github.scribejava.core.model.HttpClient;
 import com.github.scribejava.core.model.OAuthConfig;
 import com.github.scribejava.core.model.SignatureType;
 import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.oauth.OAuthService;
+import com.github.scribejava.httpclient.ahc.AhcHttpClientConfig;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.pac4j.async.oauth.profile.definition.OAuthProfileDefinition;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.http.UrlResolver;
@@ -14,6 +17,7 @@ import org.pac4j.core.util.HttpUtils;
 import org.pac4j.core.util.InitializableWebObject;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  *
@@ -50,6 +54,8 @@ public class OAuthConfiguration<U extends CommonProfile, P extends OAuthProfileD
     protected S service;
     private String clientName;
 
+    private Supplier<HttpClient.Config> configSupplier = () -> new AhcHttpClientConfig(new DefaultAsyncHttpClientConfig.Builder().build());
+
     @Override
     protected void internalInit(final WebContext<?> context) {
         CommonHelper.assertNotNull("urlResolver", this.urlResolver);
@@ -80,7 +86,7 @@ public class OAuthConfiguration<U extends CommonProfile, P extends OAuthProfileD
 
         return new OAuthConfig(this.key, this.secret, finalCallbackUrl, SignatureType.Header, this.scope,
                 null, state, this.responseType, null, HttpUtils.getConnectTimeout(), HttpUtils.getReadTimeout(),
-                null, null);
+                configSupplier.get(), null);
     }
 
     public S getService() {
@@ -211,4 +217,9 @@ public class OAuthConfiguration<U extends CommonProfile, P extends OAuthProfileD
     public void setCallbackUrl(String callbackUrl) {
         this.callbackUrl = callbackUrl;
     }
+
+    public void setConfigSupplier(Supplier<HttpClient.Config> newSupplier) {
+        this.configSupplier = newSupplier;
+    }
+
 }
