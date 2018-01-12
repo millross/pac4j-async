@@ -21,8 +21,24 @@ public class AsyncOAuth20Client<U extends OAuth20Profile, C extends OAuth20Confi
     protected C configuration = null;
     protected OAuthProfileUrlCalculator<OAuth2AccessToken, C> profileUrlCalculator;
 
-    public OAuth20Configuration getConfiguration() {
+    public C getConfiguration() {
         return configuration;
+    }
+
+    public String getKey() {
+        return configuration.getKey();
+    }
+
+    public void setKey(final String key) {
+        configuration.setKey(key);
+    }
+
+    public String getSecret() {
+        return configuration.getSecret();
+    }
+
+    public void setSecret(final String secret) {
+        configuration.setSecret(secret);
     }
 
     public void setConfiguration(final C configuration) {
