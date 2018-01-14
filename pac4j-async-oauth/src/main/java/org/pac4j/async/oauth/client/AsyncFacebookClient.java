@@ -34,6 +34,7 @@ public class AsyncFacebookClient extends AsyncOAuth20Client<FacebookProfile, Fac
     }
 
     public AsyncFacebookClient(final String key, final String secret) {
+        setConfiguration(new FacebookConfiguration());
         setKey(key);
         setSecret(secret);
     }
