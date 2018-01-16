@@ -29,6 +29,8 @@ const val CALLBACK_URL = "http://$CALLBACK_URL_HOST:$CALLBACK_URL_PORT$CALLBACK_
 const val AUTH_SERVER_HOST = "localhost"
 const val AUTH_SERVER_PORT = 9292
 const val AUTH_SERVER_PATH = "/auth"
+const val AUTH_SERVER_TOKEN_ENDPOINT = "/authToken"
+
 const val AUTH_BASE_URL = "$SCHEME_HTTP://$AUTH_SERVER_HOST:$AUTH_SERVER_PORT$AUTH_SERVER_PATH"
 val TEST_CLIENT_ID = UUID.randomUUID().toString()
 val TEST_CLIENT_SECRET = UUID.randomUUID().toString()
