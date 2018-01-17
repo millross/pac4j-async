@@ -53,6 +53,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
         return profileFuture.thenCompose(profileOption -> {
             final Optional<CompletableFuture<Optional<U>>> optionalCompletableFuture = profileOption.map(p -> {
+                p.setClientName(getName());
                 // Frustratingly because we want to use the same set of futures twice (to ensure they will have
                 // completed before we get the result which we will then pul lout via join() we have to process
                 // the stream, collect, then map to the result
@@ -108,6 +109,7 @@ public abstract class AsyncBaseClient<C extends Credentials, U extends CommonPro
 
     @Override
     public final CompletableFuture<C> getCredentials(AsyncWebContext context) {
+        init(context);
         return retrieveCredentials(context)
                 .thenCompose(c -> {
                     if (c == null) {
