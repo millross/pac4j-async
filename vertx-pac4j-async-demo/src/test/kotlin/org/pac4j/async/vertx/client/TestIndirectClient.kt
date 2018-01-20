@@ -22,6 +22,7 @@ class TestIndirectClient: AsyncOAuth20Client<TestOAuth20Profile, OAuth20Configur
         setConfiguration(OAuth20Configuration())
         configuration.key = TEST_CLIENT_ID
         configuration.secret = TEST_CLIENT_SECRET
+        profileUrlCalculator = TestUrlProfileCalculator()
     }
 
     override fun notifySessionRenewal(oldSessionId: String?, context: AsyncWebContext) {
