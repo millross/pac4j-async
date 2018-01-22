@@ -118,6 +118,33 @@ class AsyncSecurityHandlerTest {
     }
 
     @Test(timeout=3000)
+    fun testDirectClientAuthSuccess(testContext: TestContext) {
+        val async = testContext.async()
+        launch {
+            startServer(vertx, configFactory.directClientConfig())
+            val client = TestClient(vertx)
+            // Now retrieve the private endpoint without spoofing login
+            val response = client.withRequestDecorator { req ->
+                with (req) {
+                    headers().add("Authorization", "ABC")
+                    headers().add(HEADER_USER_ID, GOOD_USERNAME)
+                    headers().add(HEADER_EMAIL, TEST_EMAIL)
+                }
+            }.getSecuredEndpoint()
+
+            with (response) {
+                assertThat(statusCode(), `is`(200))
+                with (bodyAsJsonObject()) {
+                    assertThat(getString(USER_ID_KEY), `is`(GOOD_USERNAME))
+                    assertThat(getString(SESSION_ID_KEY), `is`(notNullValue()))
+                    assertThat(getString(EMAIL_KEY), `is`(TEST_EMAIL))
+                }
+            }
+            async.complete()
+        }
+    }
+
+    @Test(timeout=3000)
     fun testDirectClientAuthFailure(testContext: TestContext) {
         val async = testContext.async()
         val vertx = rule.vertx()

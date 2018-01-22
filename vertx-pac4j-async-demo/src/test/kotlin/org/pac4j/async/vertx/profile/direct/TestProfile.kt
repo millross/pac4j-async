@@ -7,22 +7,17 @@ import org.pac4j.core.profile.CommonProfile
 /**
  *
  */
-class TestProfile(name: String): CommonProfile() {
+class TestProfile(userId: String, email: String): CommonProfile() {
 
     companion object {
         fun from(credentials: TestCredentials): TestProfile {
-            return TestProfile(credentials.userId)
+            return TestProfile(credentials.userId, credentials.email)
         }
     }
 
-    class SimpleTestProfile(userId: String?, email: String?): CommonProfile() {
-
-        init {
-            super.setId(userId)
-            super.addAttribute(FIELD_EMAIL, email)
-            super.addAttribute(FIELD_USER_ID, userId)
-        }
-
+    init {
+        super.setId(userId)
+        super.addAttribute(FIELD_EMAIL, email)
     }
 
     override fun equals(that: Any?): Boolean {
