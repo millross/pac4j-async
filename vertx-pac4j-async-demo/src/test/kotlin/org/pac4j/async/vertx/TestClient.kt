@@ -9,6 +9,7 @@ import io.vertx.ext.web.client.WebClientOptions
 import io.vertx.kotlin.coroutines.awaitResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.prefs.BackingStoreException
 
 /**
  * Test client to wrap a set of http calls to our test server. We will also record any state (such as session cookies)
@@ -73,21 +74,14 @@ class TestClient(val vertx: Vertx) {
         LOG.info("Third party login simulation succeeded")
     }
 
-    suspend fun getCallbackUrl() {
+    suspend fun getCallbackUrl(): HttpResponse<Buffer> {
         LOG.info("Attempting to GET callback url")
         val request = usingSessionCookie {
             client.post(8080, "localhost", "/callback?")
                 .addQueryParam("client_name", TEST_CLIENT_NAME)
         }
-        val response: HttpResponse<Buffer> = retrievingSessionCookie {
-            awaitResult { request.send(it) }
-        }
-        if (response.statusCode() != 302) {
-            // We should fail now
-            LOG.info("statusCode: " + response.statusCode())
-            throw RuntimeException("Failed to GET callback url")
-        }
-        LOG.info("Callback invocation failed")
+
+        return awaitResult { request.send(it) }
     }
 
     suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {

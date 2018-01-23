@@ -5,7 +5,6 @@ import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
-import org.pac4j.async.vertx.GOOD_USERNAME
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -45,7 +44,6 @@ class TokenRequestHandler(val vertx: Vertx, val context: Context): Handler<Routi
             rc.fail(401) // We couldn't resolve to a token
         }
         LOG.info("Token request endpoint completing")
-        rc.response().setStatusCode(204).end()
     }
 
 }

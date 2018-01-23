@@ -14,7 +14,7 @@ import org.pac4j.oauth.profile.OAuth20Profile;
 /**
  *
  */
-public class AsyncOAuth20ProfileCreator<U extends OAuth20Profile, C extends OAuth20Configuration, PC extends OAuthProfileUrlCalculator<OAuth2AccessToken, C>> extends AsyncOAuthProfileCreator<OAuth20Credentials, U, C, OAuth2AccessToken, PC> {
+public class AsyncOAuth20ProfileCreator<U extends OAuth20Profile, C extends OAuth20Configuration, PC extends    OAuthProfileUrlCalculator<OAuth2AccessToken, C>> extends AsyncOAuthProfileCreator<OAuth20Credentials, U, C, OAuth2AccessToken, PC> {
 
     public AsyncOAuth20ProfileCreator(C configuration, PC profileUrlCalculator) {
         super(configuration, profileUrlCalculator);
