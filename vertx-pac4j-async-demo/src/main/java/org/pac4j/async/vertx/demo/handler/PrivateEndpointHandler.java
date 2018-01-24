@@ -32,7 +32,7 @@ public class PrivateEndpointHandler implements Handler<RoutingContext> {
         profileFuture.thenAccept(profile -> {
             rc.put("userProfiles", profile);
 
-            engine.render(rc, "", "templates/protectedIndex.hbs", res -> {
+            engine.render(rc, "templates", "/protectedIndex.hbs", res -> {
                 if (res.succeeded()) {
                     generatedContentConsumer.accept(rc, res.result());
                 } else {

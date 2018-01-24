@@ -23,7 +23,9 @@ import org.pac4j.async.vertx.context.VertxAsyncWebContext;
 import org.pac4j.async.vertx.demo.handler.IndexHandler;
 import org.pac4j.async.vertx.demo.handler.PrivateEndpointHandler;
 import org.pac4j.async.vertx.demo.handler.SetContentTypeHandler;
+import org.pac4j.async.vertx.handler.impl.CallbackHandlerOptions;
 import org.pac4j.async.vertx.handler.impl.SecurityHandlerOptions;
+import org.pac4j.async.vertx.handler.impl.VertxAsyncCallbackHandler;
 import org.pac4j.async.vertx.handler.impl.VertxAsyncSecurityHandler;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.profile.CommonProfile;
@@ -66,6 +68,10 @@ public class DemoServerVerticle extends AbstractVerticle {
         router.get("/facebook/index.html").handler(new VertxAsyncSecurityHandler(vertx, context, config,
                 pac4jAuthProvider, options));
         router.get("/facebook/index.html").handler(new PrivateEndpointHandler(computationAdapter, (rc, buf) -> rc.response().end(buf)));
+
+        CallbackHandlerOptions callbackHandlerOptions = new CallbackHandlerOptions().setDefaultUrl("/");
+        VertxAsyncCallbackHandler callbackHandler = new VertxAsyncCallbackHandler(vertx, context, config, callbackHandlerOptions);
+        router.get("/callback").handler(callbackHandler); // This will deploy the callback handler
 
         vertx.createHttpServer()
                 .requestHandler(router::accept)
