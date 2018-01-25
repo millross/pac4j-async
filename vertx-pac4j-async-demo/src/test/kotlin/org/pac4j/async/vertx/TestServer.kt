@@ -19,10 +19,7 @@ import org.pac4j.async.core.config.AsyncConfig
 import org.pac4j.async.core.context.AsyncWebContext
 import org.pac4j.async.vertx.auth.Pac4jAuthProvider
 import org.pac4j.async.vertx.context.VertxAsyncWebContext
-import org.pac4j.async.vertx.handler.impl.CallbackHandlerOptions
-import org.pac4j.async.vertx.handler.impl.SecurityHandlerOptions
-import org.pac4j.async.vertx.handler.impl.VertxAsyncCallbackHandler
-import org.pac4j.async.vertx.handler.impl.VertxAsyncSecurityHandler
+import org.pac4j.async.vertx.handler.impl.*
 import org.pac4j.async.vertx.profile.indirect.TestOAuth20Profile
 import org.pac4j.core.profile.CommonProfile
 import org.slf4j.Logger
@@ -77,6 +74,12 @@ class TestServer(val vertx: Vertx) {
             return VertxAsyncCallbackHandler(vertx, context, config, CallbackHandlerOptions())
         }
 
+        fun logoutHandler(vertx: Vertx,
+                          context: Context,
+                          config: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>): VertxAsyncLogoutHandler {
+            return VertxAsyncLogoutHandler(vertx, context, config, LogoutHandlerOptions().setDefaultUrl("/"))
+        }
+
     }
 
     lateinit var pac4jConfiguration: AsyncConfig<Void, CommonProfile, VertxAsyncWebContext>
@@ -117,6 +120,7 @@ class TestServer(val vertx: Vertx) {
             router.post("/callback").handler(BodyHandler.create().setMergeFormAttributes(true))
             router.post("/callback").handler(callbackHandler)
 
+            router.get("/logout").handler(logoutHandler(vertx, context, pac4jConfiguration))
         }
         AsyncSecurityHandlerTest.LOG.info("Starting server")
         awaitResult<HttpServer> { vertx.createHttpServer().requestHandler(router::accept).listen(8080, it) }
