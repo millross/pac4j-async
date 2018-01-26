@@ -33,7 +33,9 @@ class TestClient(val vertx: Vertx) {
     suspend fun retrievingSessionCookie(processing: suspend () -> HttpResponse<Buffer>): HttpResponse<Buffer> {
         val response = processing()
         val cookie = response.headers().get("set-cookie")
-        cookieHolder.persist(cookie)
+        if (cookie != null) {
+            cookieHolder.persist(cookie)
+        }
         return response
     }
 
@@ -82,6 +84,22 @@ class TestClient(val vertx: Vertx) {
         }
 
         return awaitResult { request.send(it) }
+    }
+
+    suspend fun logout() {
+        LOG.info("Attempting to logout")
+        val request = usingSessionCookie {
+            client.get(8080, "localhost", "/logout")
+        }
+        val response: HttpResponse<Buffer> = retrievingSessionCookie {
+            awaitResult { request.send(it) }
+        }
+        if (response.statusCode() != 302) {
+            // We should fail now
+            LOG.info("statusCode: " + response.statusCode())
+            throw RuntimeException("Failed to GET logout url")
+        }
+        LOG.info("Logout invocation failed")
     }
 
     suspend fun getSecuredEndpoint(): HttpResponse<Buffer> {
