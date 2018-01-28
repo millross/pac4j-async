@@ -24,8 +24,10 @@ import org.pac4j.async.vertx.demo.handler.IndexHandler;
 import org.pac4j.async.vertx.demo.handler.PrivateEndpointHandler;
 import org.pac4j.async.vertx.demo.handler.SetContentTypeHandler;
 import org.pac4j.async.vertx.handler.impl.CallbackHandlerOptions;
+import org.pac4j.async.vertx.handler.impl.LogoutHandlerOptions;
 import org.pac4j.async.vertx.handler.impl.SecurityHandlerOptions;
 import org.pac4j.async.vertx.handler.impl.VertxAsyncCallbackHandler;
+import org.pac4j.async.vertx.handler.impl.VertxAsyncLogoutHandler;
 import org.pac4j.async.vertx.handler.impl.VertxAsyncSecurityHandler;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.profile.CommonProfile;
@@ -67,11 +69,15 @@ public class DemoServerVerticle extends AbstractVerticle {
         final Pac4jAuthProvider pac4jAuthProvider = new Pac4jAuthProvider();
         router.get("/facebook/index.html").handler(new VertxAsyncSecurityHandler(vertx, context, config,
                 pac4jAuthProvider, options));
+        router.get("/facebook/index.html").handler(new SetContentTypeHandler(HttpHeaders.TEXT_HTML));
         router.get("/facebook/index.html").handler(new PrivateEndpointHandler(computationAdapter, (rc, buf) -> rc.response().end(buf)));
 
         CallbackHandlerOptions callbackHandlerOptions = new CallbackHandlerOptions().setDefaultUrl("/");
         VertxAsyncCallbackHandler callbackHandler = new VertxAsyncCallbackHandler(vertx, context, config, callbackHandlerOptions);
         router.get("/callback").handler(callbackHandler); // This will deploy the callback handler
+
+        final VertxAsyncLogoutHandler logoutHandler = new VertxAsyncLogoutHandler(vertx, context, config, new LogoutHandlerOptions().setDefaultUrl("/"));
+        router.get("/logout").handler(logoutHandler);
 
         vertx.createHttpServer()
                 .requestHandler(router::accept)
