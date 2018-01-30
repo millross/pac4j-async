@@ -24,7 +24,7 @@ A small project was used to investigate some of the characteristics of Completab
 trigger immediately). This project can be found [here](https://github.com/millross/vertx-completablefuture-demo) 
 and led to the following conclusions
 
-* If followup procesisng is attached to a CompletableFuture which has already been completed then 
+* If followup processing is attached to a CompletableFuture which has already been completed then 
 the processing will be triggered immediately. Therefore it is legitimate for asynchronous functions
 to create and return CompletableFutures as there is no requirement for
 preconfigured processing.
@@ -37,3 +37,16 @@ or .completeExceptionally method. This means that completing immediately is fine
 complete the associated future immediatley)
 * Where subsequent processing is attached to a CompletableFuture which has already completed, the 
 processing is perfomed on the thread which attached the subsequent processing.
+
+## Demo
+The submodule vertx-pac4j-async-demo provides a fully non-blocking demo based on vert.x.
+To build, run
+```
+mvn clean package
+``` 
+in the pac4j-async directory.
+To run the demo following build, use the following command in the pac4j-async directory
+```
+java -jar vertx-pac4j-async-demo/target/vertx-pac4j-async-demo-0.0.1-SNAPSHOT-fat.jar
+```
+ 
